@@ -91,7 +91,12 @@ export async function deleteSession(sid: string) {
 }
 export async function clearSession(res: Response, sid?: string) {
   if (sid) await deleteSession(sid);
-  res.clearCookie(SESSION_COOKIE, { path: "/", secure: true, httpOnly: true, sameSite: "lax" });
+  res.clearCookie(SESSION_COOKIE, {
+  path: "/",
+  secure: process.env.NODE_ENV === "production",
+  httpOnly: true,
+  sameSite: "lax"
+ });
 }
 export function getSessionId(req: Request): string | undefined {
   return req.cookies?.[SESSION_COOKIE];

@@ -11,7 +11,12 @@ const flowCookies = [
   "entra_verifier", "entra_nonce", "entra_state", "entra_return",
   "pilot_verifier", "pilot_nonce", "pilot_state", "pilot_return",
 ] as const;
-const cookieOptions = { httpOnly: true, secure: true, sameSite: "lax" as const, path: "/" };
+const cookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax" as const,
+  path: "/",
+};
 // AZURE: Replit's own hosts (*.replit.dev / *.replit.app) are always trusted,
 // since they're never attacker-controlled. Any other host — an Azure App
 // Service/Container Apps hostname (*.azurewebsites.net, a custom domain,
@@ -30,15 +35,34 @@ function isAllowedAuthHost(hostname: string): boolean {
   const lower = hostname.toLowerCase();
   return lower.endsWith(".replit.dev") || lower.endsWith(".replit.app") || extraAllowedHosts.has(lower);
 }
+
 function origin(req: Request) {
   const host = req.get("x-forwarded-host") || req.get("host");
-  if (!host || /[,/\\\s]/.test(host)) throw new Error("Invalid request host");
-  const parsed = new URL(`https://${host}`);
-  if (process.env.NODE_ENV !== "test" && !isAllowedAuthHost(parsed.hostname)) {
-    throw new Error("Sign-in is not available on this host. Set AUTH_ALLOWED_HOSTS to include it.");
+
+  if (!host || /[,/\\\s]/.test(host)) {
+    throw new Error("Invalid request host");
   }
+
+  // Local development uses HTTP.
+  // Production deployments always use HTTPS.
+  const protocol =
+    process.env.NODE_ENV === "production" ? "https" : "http";
+
+  const parsed = new URL(`${protocol}://${host}`);
+
+  if (
+    process.env.NODE_ENV !== "test" &&
+    !isAllowedAuthHost(parsed.hostname)
+  ) {
+    throw new Error(
+      "Sign-in is not available on this host. Set AUTH_ALLOWED_HOSTS to include it."
+    );
+  }
+
   return parsed.origin;
 }
+
+
 function clearFlow(res: Response) {
   for (const name of flowCookies) res.clearCookie(name, cookieOptions);
 }
@@ -92,7 +116,9 @@ router.get("/auth/callback", async (req, res) => {
   const previous = getSessionId(req) ?? req.cookies?.pilot_sid;
   if (previous) await clearSession(res, previous);
   res.cookie(SESSION_COOKIE, await createSession(session), { ...cookieOptions, maxAge: SESSION_TTL });
-  res.redirect(returnTo);
+  // res.redirect(returnTo);
+  const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:5175";
+  res.redirect(new URL(returnTo, appBaseUrl).toString());
 });
 router.get("/logout", async (req, res) => {
   res.set("Cache-Control", "no-store");
@@ -100,7 +126,8 @@ router.get("/logout", async (req, res) => {
   const session = sid ? await getSession(sid) : null;
   await clearSession(res, sid ?? req.cookies?.pilot_sid);
   clearLegacySessionCookie(res);
-  const clientId = process.env.CLIENT_ID;
+  const clientId =
+  process.env.AZURE_CLIENT_ID || process.env.CLIENT_ID;
   if (!clientId) throw new Error("Microsoft Entra authentication requires CLIENT_ID.");
   const endSessionParams: { client_id: string; post_logout_redirect_uri: string; id_token_hint?: string } = {
     client_id: clientId,
