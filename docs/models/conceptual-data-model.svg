@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="960" viewBox="0 0 1600 960" role="img" aria-label="Conceptual Data Model">
+<title>Conceptual Data Model</title><desc>Business entities and interactions. Labels use large dark text on white backgrounds.</desc>
+<defs><marker id="concept-model-arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 Z" fill="#4f745d"/></marker></defs>
+<rect width="1600" height="960" fill="#fffefa"/>
+<text x="50" y="49" text-anchor="start" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="700">SHAREHOLDER MANAGEMENT  /  PHASE 1</text>
+<text x="50" y="95" text-anchor="start" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="34" font-weight="700">Conceptual Data Model</text>
+<path d="M400 235 H620" fill="none" stroke="#4f745d" stroke-width="3" marker-end="url(#concept-model-arrow)"/>
+<path d="M980 235 H1180" fill="none" stroke="#4f745d" stroke-width="3" marker-end="url(#concept-model-arrow)"/>
+<path d="M800 490 V320" fill="none" stroke="#4f745d" stroke-width="3" marker-end="url(#concept-model-arrow)"/>
+<path d="M400 467 H510 V535 H620" fill="none" stroke="#4f745d" stroke-width="3" marker-end="url(#concept-model-arrow)"/>
+<path d="M400 705 H485 V600 H620" fill="none" stroke="#4f745d" stroke-width="3" marker-end="url(#concept-model-arrow)"/>
+<path d="M980 535 H1060 V365 H1365 V320" fill="none" stroke="#4f745d" stroke-width="3" marker-end="url(#concept-model-arrow)"/>
+<path d="M980 610 H1180" fill="none" stroke="#4f745d" stroke-width="3" marker-end="url(#concept-model-arrow)"/>
+<path d="M1365 320 V490" fill="none" stroke="#4f745d" stroke-width="3" marker-end="url(#concept-model-arrow)"/>
+<path d="M225 790 V850 H1180" fill="none" stroke="#4f745d" stroke-width="3" marker-end="url(#concept-model-arrow)"/>
+<rect x="50" y="150" width="350" height="170" rx="14" fill="#173d2d" stroke="#173d2d" stroke-width="2"/>
+<text x="72" y="186" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans,Arial,sans-serif" font-size="23" font-weight="700">Shareholder</text>
+<text x="72" y="220" text-anchor="start" fill="#edf4ef" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Personal &amp; contact details</text>
+<text x="72" y="249" text-anchor="start" fill="#edf4ef" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Family line / generation</text>
+<text x="72" y="278" text-anchor="start" fill="#edf4ef" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Protected SSN</text>
+<rect x="620" y="150" width="360" height="170" rx="14" fill="#eaf1ec" stroke="#aebfb4" stroke-width="2"/>
+<text x="642" y="186" text-anchor="start" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="23" font-weight="700">Share Certificate</text>
+<text x="642" y="220" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Common or Preferred</text>
+<text x="642" y="249" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Class-specific unique number</text>
+<text x="642" y="278" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Issued and remaining shares</text>
+<rect x="1180" y="150" width="370" height="170" rx="14" fill="#eaf1ec" stroke="#aebfb4" stroke-width="2"/>
+<text x="1202" y="186" text-anchor="start" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="23" font-weight="700">Completed Transfer</text>
+<text x="1202" y="220" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Originator → recipient</text>
+<text x="1202" y="249" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">One or multiple source certificates</text>
+<text x="1202" y="278" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">One new recipient certificate</text>
+<rect x="50" y="390" width="350" height="155" rx="14" fill="#eaf1ec" stroke="#aebfb4" stroke-width="2"/>
+<text x="72" y="426" text-anchor="start" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="23" font-weight="700">Application Settings</text>
+<text x="72" y="460" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Named signers and signatures</text>
+<text x="72" y="489" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Share prices and PDF templates</text>
+<rect x="620" y="490" width="360" height="180" rx="14" fill="#173d2d" stroke="#173d2d" stroke-width="2"/>
+<text x="642" y="526" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans,Arial,sans-serif" font-size="20" font-weight="700">Issuance / Transfer Request</text>
+<text x="642" y="560" text-anchor="start" fill="#edf4ef" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Requested transaction details</text>
+<text x="642" y="589" text-anchor="start" fill="#edf4ef" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Required signer snapshots</text>
+<text x="642" y="618" text-anchor="start" fill="#edf4ef" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Votes, actor IDs and timestamps</text>
+<rect x="1180" y="490" width="370" height="180" rx="14" fill="#eaf1ec" stroke="#aebfb4" stroke-width="2"/>
+<text x="1202" y="526" text-anchor="start" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="23" font-weight="700">Documents</text>
+<text x="1202" y="560" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Certificate PDFs</text>
+<text x="1202" y="589" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Photos, signatures, attachments</text>
+<text x="1202" y="618" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Object references and metadata</text>
+<rect x="50" y="620" width="350" height="170" rx="14" fill="#eaf1ec" stroke="#aebfb4" stroke-width="2"/>
+<text x="72" y="656" text-anchor="start" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="23" font-weight="700">Employee Identity</text>
+<text x="72" y="690" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Microsoft Entra sign-in</text>
+<text x="72" y="719" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Distinct from a Shareholder</text>
+<text x="72" y="748" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Verified email matches signer</text>
+<rect x="1180" y="780" width="370" height="125" rx="14" fill="#eaf1ec" stroke="#aebfb4" stroke-width="2"/>
+<text x="1202" y="816" text-anchor="start" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="20" font-weight="700">Activity &amp; Audit History</text>
+<text x="1202" y="850" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Shareholder and Settings changes</text>
+<text x="1202" y="879" text-anchor="start" fill="#17221d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="400">Individual actor and event time</text>
+<rect x="463.55" y="193" width="92.89999999999999" height="40" rx="10" fill="#fffefa" stroke="#cbd6ce"/><text x="510" y="221" text-anchor="middle" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="22" font-weight="700">holds</text>
+<rect x="988.12" y="193" width="183.76" height="40" rx="10" fill="#fffefa" stroke="#cbd6ce"/><text x="1080" y="221" text-anchor="middle" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="22" font-weight="700">moves shares</text>
+<rect x="669.1800000000001" y="380" width="261.64" height="40" rx="10" fill="#fffefa" stroke="#cbd6ce"/><text x="800" y="408" text-anchor="middle" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="22" font-weight="700">issues certificate</text>
+<rect x="400.12" y="425" width="183.76" height="40" rx="10" fill="#fffefa" stroke="#cbd6ce"/><text x="492" y="453" text-anchor="middle" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="22" font-weight="700">sets signers</text>
+<rect x="339.18" y="560" width="261.64" height="40" rx="10" fill="#fffefa" stroke="#cbd6ce"/><text x="470" y="588" text-anchor="middle" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="22" font-weight="700">submits / approves</text>
+<rect x="1039.71" y="341" width="300.58" height="40" rx="10" fill="#fffefa" stroke="#cbd6ce"/><text x="1190" y="369" text-anchor="middle" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="22" font-weight="700">completes on approval</text>
+<rect x="994.61" y="625" width="170.78" height="40" rx="10" fill="#fffefa" stroke="#cbd6ce"/><text x="1080" y="653" text-anchor="middle" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="22" font-weight="700">retains PDF</text>
+<rect x="1253.65" y="420" width="222.7" height="40" rx="10" fill="#fffefa" stroke="#cbd6ce"/><text x="1365" y="448" text-anchor="middle" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="22" font-weight="700">links documents</text>
+<rect x="566.83" y="825" width="456.34" height="40" rx="10" fill="#fffefa" stroke="#cbd6ce"/><text x="795" y="853" text-anchor="middle" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="22" font-weight="700">records who changed what and when</text>
+<text x="50" y="935" text-anchor="start" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="17" font-weight="400">Business view • Family line is a profile attribute • Files are external to PostgreSQL • Phase 2 self-service is out of scope</text>
+</svg>

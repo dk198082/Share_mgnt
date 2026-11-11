@@ -1,0 +1,1192 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+paths:
+  /auth/user:
+    get:
+      operationId: getCurrentAuthUser
+      responses:
+        "200":
+          description: Current pilot identity, or null when signed out
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [user]
+                properties:
+                  user:
+                    oneOf:
+                      - { $ref: "#/components/schemas/AuthUser" }
+                      - { type: "null" }
+  /login:
+    get:
+      operationId: beginBrowserLogin
+      parameters:
+        - in: query
+          name: returnTo
+          schema: { type: string }
+      responses:
+        "302": { description: Continue to account authorization }
+  /callback:
+    get:
+      operationId: handleBrowserLoginCallback
+      responses:
+        "302": { description: Complete verified sign-in }
+  /logout:
+    get:
+      operationId: logoutBrowserSession
+      parameters:
+        - in: query
+          name: returnTo
+          schema: { type: string }
+      responses:
+        "302": { description: Clear session and sign out }
+  /settings/pilot-data:
+    get:
+      operationId: getPilotDataStatus
+      responses:
+        "200":
+          description: Import status in this app's database
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PilotDataStatus" }
+        "401": { description: Sign-in required }
+    post:
+      operationId: importPilotData
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PilotDataImportInput" }
+      responses:
+        "200":
+          description: Atomic pilot import or safe replay
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [alreadyImported, shareholdersAdded, certificatesAdded, transfersAdded]
+                properties:
+                  alreadyImported: { type: boolean }
+                  shareholdersAdded: { type: integer }
+                  certificatesAdded: { type: integer }
+                  transfersAdded: { type: integer }
+        "400": { description: Explicit fictional-data confirmation required }
+        "401": { description: Sign-in required }
+        "403": { description: Cross-origin write denied }
+        "409": { description: Conflicting or incomplete pilot data; nothing was changed }
+  /settings/audit:
+    get:
+      operationId: listSettingsAudit
+      parameters:
+        - in: query
+          name: before
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Admin-only settings audit, newest first, 50 entries per page
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SettingsAuditPage" }
+        "400":
+          description: Invalid pagination cursor
+        "401":
+          description: Sign-in required
+        "403":
+          description: Administrator access required
+  /session:
+    get:
+      operationId: getSession
+      responses:
+        "200":
+          description: Employee access
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [authorized, role]
+                properties:
+                  authorized: { type: boolean }
+                  role: { type: [string, "null"] }
+  /settings/users:
+    get:
+      operationId: listAccessUsers
+      responses:
+        "200":
+          description: All Clerk accounts and pending invitations in this environment
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/AccessUser" }
+    post:
+      operationId: addAccessUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AccessUserInput" }
+      responses:
+        "201":
+          description: Existing verified account granted access or invitation sent
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AccessUser" }
+  /settings/users/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+    delete:
+      operationId: removeAccessUser
+      responses:
+        "204":
+          description: Application access removed or pending invitation revoked; account and history retained
+  /settings/share-prices:
+    get:
+      operationId: getSharePrices
+      responses:
+        "200":
+          description: Current configured prices, initially unset
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SharePrices" }
+    put:
+      operationId: saveSharePrices
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SharePriceInput" }
+      responses:
+        "200":
+          description: Prices saved without changing historical transactions
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SharePrices" }
+  /share-prices/current:
+    get:
+      operationId: getCurrentSharePrices
+      responses:
+        "200":
+          description: Current USD prices from Settings, available to employees for new transfer defaults
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SharePrices" }
+  /share-prices:
+    get:
+      operationId: lookupSharePrices
+      parameters:
+        - in: query
+          name: date
+          required: true
+          schema: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
+      responses:
+        "200":
+          description: USD reference prices effective on the requested calendar date
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SharePrices" }
+  /share-prices/history:
+    get:
+      operationId: listSharePriceHistory
+      responses:
+        "200":
+          description: Append-only price history, including undated legacy values
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SharePriceRecord" }
+  /settings/signoffs:
+    get:
+      operationId: listSignoffs
+      responses:
+        "200":
+          description: Configured signatories; does not change approval enforcement
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Signoff" }
+    post:
+      operationId: addSignoff
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SignoffInput" }
+      responses:
+        "201":
+          description: Signatory configured
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Signoff" }
+  /settings/signoffs/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+    put:
+      operationId: updateSignoff
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SignoffInput" }
+      responses:
+        "200":
+          description: Signatory updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Signoff" }
+    delete:
+      operationId: removeSignoff
+      responses:
+        "204":
+          description: Signatory configuration removed; existing approvals unchanged
+  /settings/signature-uploads:
+    post:
+      operationId: requestSignatureUpload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/SignatureUploadInput" }
+      responses:
+        "200":
+          description: Private signature image upload target
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [uploadURL, objectPath]
+                properties:
+                  uploadURL: { type: string }
+                  objectPath: { type: string }
+  /shareholders:
+    get:
+      operationId: listShareholders
+      responses:
+        "200":
+          description: Registry
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Shareholder" }
+    post:
+      operationId: createShareholder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShareholderInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Shareholder" }
+  /shareholders/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+    get:
+      operationId: getShareholder
+      responses:
+        "200":
+          description: Record
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Shareholder" }
+    put:
+      operationId: updateShareholder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ShareholderInput" }
+      responses:
+        "200":
+          description: Saved
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Shareholder" }
+  /shareholders/{id}/history:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+      - in: query
+        name: before
+        required: false
+        schema: { type: string, maxLength: 100 }
+    get:
+      operationId: listShareholderHistory
+      responses:
+        "200":
+          description: Employee-only audit history, newest first, 50 entries per page
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareholderHistoryPage" }
+  /shareholders/{id}/certificates:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+    get:
+      operationId: listCertificates
+      responses:
+        "200":
+          description: Shareholder certificates and company-wide share basis
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CertificateLedger" }
+    post:
+      operationId: issueCertificate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CertificateInput" }
+      responses:
+        "201":
+          description: Issuance request awaiting all configured signers; no certificate allocated yet
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TransferRequest" }
+        "409":
+          description: Request key was already used with different certificate details
+  /shareholders/{id}/certificates/{certificateId}/transfers:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+      - in: path
+        name: certificateId
+        required: true
+        schema: { type: string }
+    post:
+      operationId: transferShares
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TransferInput" }
+      responses:
+        "201":
+          description: Pending request created; no shares or certificate numbers change until all configured signers approve
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TransferRequest" }
+        "409":
+          description: Certificate balance changed or request key reused
+  /transfers:
+    get:
+      operationId: listTransfers
+      responses:
+        "200":
+          description: All completed transfers, including legacy transfers
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ShareTransfer" }
+  /transfers/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+    get:
+      operationId: getTransfer
+      responses:
+        "200":
+          description: Completed transfer and supporting documents
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareTransfer" }
+  /transfers/{id}/attachments:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: string }
+    post:
+      operationId: attachTransferFiles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TransferAttachmentInput" }
+      responses:
+        "200":
+          description: Supporting documents appended without changing transfer terms
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ShareTransfer" }
+  /transfer-requests/{requestId}/attachments:
+    parameters:
+      - in: path
+        name: requestId
+        required: true
+        schema: { type: string }
+    post:
+      operationId: attachRequestFiles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TransferAttachmentInput" }
+      responses:
+        "200":
+          description: Requester or administrator may append documents before any sign-off
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TransferRequest" }
+  /sign-off-requests:
+    get:
+      operationId: listMySignoffRequests
+      responses:
+        "200":
+          description: Pending transfer and issuance requests requiring this employee's verified-email sign-off
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/TransferRequest" }
+  /certificates:
+    get:
+      operationId: listAllCertificates
+      responses:
+        "200":
+          description: Company-wide directory with current and original holders
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/CertificateDirectoryEntry" }
+  /sign-off-history:
+    get:
+      operationId: listSignoffHistory
+      parameters:
+        - in: query
+          name: shareholderId
+          schema: { type: string }
+      responses:
+        "200":
+          description: Transfer and issuance requests, optionally filtered to one shareholder
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/TransferRequest" }
+  /transfer-requests:
+    get:
+      operationId: listTransferRequests
+      parameters:
+        - in: query
+          name: shareholderId
+          schema: { type: string }
+      responses:
+        "200":
+          description: Approval requests visible to employees
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/TransferRequest" }
+  /transfer-requests/{requestId}:
+    parameters:
+      - in: path
+        name: requestId
+        required: true
+        schema: { type: string }
+    get:
+      operationId: getTransferRequest
+      responses:
+        "200":
+          description: Request and recorded sign-offs
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TransferRequest" }
+    post:
+      operationId: decideTransferRequest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/TransferDecisionInput" }
+      responses:
+        "200":
+          description: Decision recorded; the last required approval executes the request atomically
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/TransferRequest" }
+        "403":
+          description: Only verified login emails matching a captured Settings signer may decide; self-approval is allowed
+        "409":
+          description: Transfer no longer executable; no approval or ledger changes committed
+  /transfer-requests/{requestId}/email-notifications/retry:
+    parameters:
+      - in: path
+        name: requestId
+        required: true
+        schema: { type: string }
+    post:
+      operationId: retrySignoffEmailNotifications
+      summary: Retry failed Outlook notifications for a pending request
+      responses:
+        "200":
+          description: Current per-request email notification counts
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/EmailNotificationSummary" }
+        "401":
+          description: Sign-in required
+        "403":
+          description: Administrator access required
+        "404":
+          description: Request not found
+        "409":
+          description: Request is no longer pending
+  /reports/{reportType}/export:
+    parameters:
+      - in: path
+        name: reportType
+        required: true
+        schema:
+          type: string
+          enum: [detailed-cap-table, shareholder-information, shareholder-transactions]
+    post:
+      operationId: exportShareholderReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportExportInput"
+      responses:
+        "200":
+          description: Private Excel workbook generated from a consistent read-only ledger snapshot; SSNs are masked
+          content:
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema: { type: string, format: binary }
+        "400":
+          description: Invalid filters or historical data cannot be reconstructed reliably
+        "401":
+          description: Sign-in required
+        "403":
+          description: Administrator access required
+  /summary:
+    get:
+      operationId: getSummary
+      responses:
+        "200":
+          description: Summary
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [totalShareholders, totalShares, familyLines, documents]
+                properties:
+                  totalShareholders: { type: integer }
+                  totalShares: { type: number }
+                  familyLines: { type: integer }
+                  documents: { type: integer }
+  /activity:
+    get:
+      operationId: listActivity
+      responses:
+        "200":
+          description: Recent record activity
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Activity" }
+  /storage/uploads/request-url:
+    post:
+      operationId: requestUploadUrl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UploadInput" }
+      responses:
+        "200":
+          description: Upload destination
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [uploadURL, objectPath]
+                properties:
+                  uploadURL: { type: string }
+                  objectPath: { type: string }
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /settings/certificate-templates:
+    get:
+      operationId: listCertificateTemplates
+      responses:
+        "200":
+          description: Current and retained template versions
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/CertificateTemplate" } }
+    post:
+      operationId: saveCertificateTemplate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CertificateTemplateInput" }
+      responses:
+        "201":
+          description: Validated blank template saved as the active version
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CertificateTemplate" }
+  /settings/certificate-templates/{id}/pdf:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: string } }
+    get:
+      operationId: getCertificateTemplatePdf
+      responses:
+        "200":
+          description: Authenticated blank editable PDF
+          content:
+            application/pdf:
+              schema: { type: string, format: binary }
+  /certificate-pdfs:
+    get:
+      operationId: listCertificatePdfs
+      parameters:
+        - { in: query, name: shareholderId, schema: { type: string } }
+        - { in: query, name: certificateId, schema: { type: string } }
+        - { in: query, name: transferId, schema: { type: string } }
+        - { in: query, name: requestId, schema: { type: string } }
+      responses:
+        "200":
+          description: Immutable completed certificate PDFs
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: "#/components/schemas/CertificatePdfRecord" } }
+  /certificate-pdfs/{id}:
+    parameters:
+      - { in: path, name: id, required: true, schema: { type: string } }
+    get:
+      operationId: getRetainedCertificatePdf
+      responses:
+        "200":
+          description: Authenticated retained certificate PDF
+          content:
+            application/pdf:
+              schema: { type: string, format: binary }
+components:
+  schemas:
+    PilotDataImportInput:
+      type: object
+      additionalProperties: false
+      required: [confirmation]
+      properties:
+        confirmation: { type: string, enum: ["IMPORT FICTIONAL PILOT DATA"] }
+    PilotDataStatus:
+      type: object
+      required: [state, pilotShareholders]
+      properties:
+        state: { type: string, enum: [available, imported, conflict] }
+        pilotShareholders: { type: integer }
+    AuthUser:
+      type: object
+      required: [id, email, emailVerified, firstName, lastName, profileImageUrl]
+      properties:
+        id: { type: string }
+        email: { type: [string, "null"] }
+        emailVerified: { type: boolean }
+        firstName: { type: [string, "null"] }
+        lastName: { type: [string, "null"] }
+        profileImageUrl: { type: [string, "null"] }
+    CertificateTemplateInput:
+      type: object
+      additionalProperties: false
+      required: [shareClass, objectPath, name]
+      properties:
+        shareClass: { type: string, enum: [Common, Preferred] }
+        objectPath: { type: string, pattern: '^/objects/uploads/[a-zA-Z0-9-]+$' }
+        name: { type: string, minLength: 1, maxLength: 255 }
+    CertificateTemplate:
+      type: object
+      required: [id, shareClass, name, fields, active, createdBy, createdAt]
+      properties:
+        id: { type: string }
+        shareClass: { type: string, enum: [Common, Preferred] }
+        name: { type: string }
+        fields: { type: array, items: { type: string } }
+        active: { type: boolean }
+        createdBy: { type: string }
+        createdAt: { type: string }
+    CertificatePdfRecord:
+      type: object
+      required: [id, certificateId, requestId, templateId, shareholderId, originatorId, transferId, createdAt]
+      properties:
+        id: { type: string }
+        certificateId: { type: string }
+        requestId: { type: string }
+        templateId: { type: string }
+        shareholderId: { type: string }
+        originatorId: { type: [string, "null"] }
+        transferId: { type: [string, "null"] }
+        createdAt: { type: string }
+    ReportExportInput:
+      type: object
+      additionalProperties: false
+      properties:
+        asOfDate: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
+        shareholderId: { type: string, minLength: 1 }
+    SettingsAuditEntry:
+      type: object
+      required: [id, actorId, actorName, action, targetId, outcome, changes, detail, createdAt, completedAt]
+      properties:
+        id: { type: string }
+        actorId: { type: string }
+        actorName: { type: string }
+        action: { type: string }
+        targetId: { type: string }
+        outcome: { type: string, enum: [pending, succeeded, failed] }
+        changes:
+          type: array
+          items: { $ref: "#/components/schemas/HistoryChange" }
+        detail: { type: [string, "null"] }
+        createdAt: { type: string }
+        completedAt: { type: [string, "null"] }
+    SettingsAuditPage:
+      type: object
+      required: [entries, nextCursor]
+      properties:
+        entries:
+          type: array
+          items: { $ref: "#/components/schemas/SettingsAuditEntry" }
+        nextCursor: { type: [string, "null"] }
+    AccessUserInput:
+      type: object
+      required: [email, role]
+      properties:
+        name: { type: string, maxLength: 200 }
+        email: { type: string, minLength: 3, maxLength: 254 }
+        role: { type: string, enum: [admin] }
+    AccessUser:
+      type: object
+      required: [id, kind, name, email, role, status, isCurrent, createdAt, lastSignInAt]
+      properties:
+        id: { type: string }
+        kind: { type: string, enum: [account, invitation] }
+        name: { type: string }
+        email: { type: string }
+        role: { type: [string, "null"] }
+        status: { type: string, enum: [Active, No access, Invited] }
+        isCurrent: { type: boolean }
+        createdAt: { type: string }
+        lastSignInAt: { type: [string, "null"] }
+    SharePriceInput:
+      type: object
+      required: [common, preferred, effectiveDate]
+      properties:
+        common: { type: string, pattern: '^[0-9]{1,18}(\.[0-9]{1,6})?$', maxLength: 25 }
+        preferred: { type: string, pattern: '^[0-9]{1,18}(\.[0-9]{1,6})?$', maxLength: 25 }
+        effectiveDate: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
+        reason: { type: string, maxLength: 2000 }
+    SharePrices:
+      type: object
+      required: [common, preferred, updatedAt, effectiveDate, currency]
+      properties:
+        common: { type: [string, "null"] }
+        preferred: { type: [string, "null"] }
+        updatedAt: { type: [string, "null"] }
+        effectiveDate: { type: [string, "null"] }
+        currency: { type: string, enum: [USD] }
+    SharePriceRecord:
+      type: object
+      required: [id, common, preferred, effectiveDate, currency, recordedAt, recordedBy, reason, legacy]
+      properties:
+        id: { type: integer }
+        common: { type: [string, "null"] }
+        preferred: { type: [string, "null"] }
+        effectiveDate: { type: [string, "null"] }
+        currency: { type: string, enum: [USD] }
+        recordedAt: { type: string }
+        recordedBy: { type: string }
+        reason: { type: [string, "null"] }
+        legacy: { type: boolean }
+    SignoffInput:
+      type: object
+      required: [name, email, signaturePath]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 200 }
+        email: { type: string, minLength: 3, maxLength: 254 }
+        signaturePath: { type: string, minLength: 1, maxLength: 500 }
+        emailNotificationsEnabled: { type: boolean, default: true }
+    Signoff:
+      type: object
+      required: [id, name, email, signaturePath, emailNotificationsEnabled, updatedAt]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        email: { type: string }
+        signaturePath: { type: string }
+        emailNotificationsEnabled: { type: boolean }
+        updatedAt: { type: string }
+    SignatureUploadInput:
+      type: object
+      required: [name, size, contentType]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 255 }
+        size: { type: integer, minimum: 1, maximum: 2097152 }
+        contentType: { type: string, enum: [image/png, image/jpeg, image/webp] }
+    HistoryChange:
+      type: object
+      required: [field, before, after, protected]
+      properties:
+        field: { type: string }
+        before: { type: [string, "null"] }
+        after: { type: [string, "null"] }
+        protected: { type: boolean }
+    ShareholderHistoryEntry:
+      type: object
+      required: [id, action, actorId, actorName, createdAt, changes, detailed]
+      properties:
+        id: { type: string }
+        action: { type: string }
+        actorId: { type: string }
+        actorName: { type: string }
+        createdAt: { type: string }
+        detailed: { type: boolean }
+        changes:
+          type: array
+          items: { $ref: "#/components/schemas/HistoryChange" }
+    ShareholderHistoryPage:
+      type: object
+      required: [entries, nextCursor, notice]
+      properties:
+        entries:
+          type: array
+          items: { $ref: "#/components/schemas/ShareholderHistoryEntry" }
+        nextCursor: { type: [string, "null"] }
+        notice: { type: string }
+    ShareholderInput:
+      type: object
+      required: [name]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 200 }
+        email: { type: string, maxLength: 254 }
+        dateOfBirth: { type: string }
+        dateOfPassing: { type: string }
+        ssn: { type: string, description: "Write-only; blank preserves existing secured value." }
+        address: { type: string, maxLength: 1000 }
+        phone: { type: string, maxLength: 50 }
+        familyLine: { type: string, maxLength: 200 }
+        generationNumber: { type: string, maxLength: 100 }
+        financialNotes: { type: string, maxLength: 5000 }
+        picturePath: { type: string }
+        documents:
+          type: array
+          items: { $ref: "#/components/schemas/Document" }
+    Shareholder:
+      type: object
+      required: [id, name, email, familyLine, generationNumber, shares, documents, updatedAt, ssnMasked]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        email: { type: string }
+        dateOfBirth: { type: string }
+        dateOfPassing: { type: string }
+        ssnMasked: { type: string }
+        address: { type: string }
+        phone: { type: string }
+        familyLine: { type: string }
+        generationNumber: { type: string }
+        financialNotes: { type: string }
+        picturePath: { type: string }
+        updatedAt: { type: string }
+        shares:
+          type: array
+          items: { $ref: "#/components/schemas/Holding" }
+        documents:
+          type: array
+          items: { $ref: "#/components/schemas/Document" }
+    CertificateInput:
+      type: object
+      additionalProperties: false
+      required: [shareClass, quantity, issueDate, vestingSchedule, requestId]
+      properties:
+        shareClass: { type: string, enum: [Common, Preferred] }
+        quantity: { type: integer, minimum: 1, maximum: 1000000000000 }
+        issueDate: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
+        vestingSchedule: { type: string, minLength: 1, maxLength: 500 }
+        requestId: { type: string, format: uuid }
+    Certificate:
+      type: object
+      required: [id, shareholderId, shareClass, quantity, remainingQuantity, transferredQuantity, issueDate, status, vestingSchedule, fullyDiluted, percentFullyDiluted, createdAt]
+      properties:
+        id: { type: string }
+        shareholderId: { type: string }
+        shareClass: { type: string, enum: [Common, Preferred] }
+        quantity: { type: integer }
+        remainingQuantity: { type: integer }
+        transferredQuantity: { type: integer }
+        issueDate: { type: [string, "null"] }
+        status: { type: string, enum: [Outstanding, Partially Transferred, Transferred, Cancelled] }
+        vestingSchedule: { type: string }
+        fullyDiluted: { type: number }
+        percentFullyDiluted: { type: number }
+        createdAt: { type: string }
+    CertificateLedger:
+      type: object
+      required: [certificates, transfers, companyFullyDiluted, totalShares, calculationNote]
+      properties:
+        certificates:
+          type: array
+          items: { $ref: "#/components/schemas/Certificate" }
+        transfers:
+          type: array
+          items: { $ref: "#/components/schemas/ShareTransfer" }
+        companyFullyDiluted: { type: number }
+        totalShares: { type: number }
+        calculationNote: { type: string }
+    TransferDecisionInput:
+      type: object
+      additionalProperties: false
+      required: [decision]
+      properties:
+        decision: { type: string, enum: [approve, reject] }
+    ApprovalSigner:
+      type: object
+      required: [id, name, email, signaturePath]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        email: { type: string }
+        signaturePath: { type: string }
+        emailNotificationsEnabled: { type: boolean }
+    ApprovalVote:
+      allOf:
+        - $ref: "#/components/schemas/ApprovalSigner"
+        - type: object
+          required: [userId, approvedAt]
+          properties:
+            userId: { type: string }
+            approvedAt: { type: string }
+    IssuanceDetails:
+      type: object
+      required: [requestId, shareClass, quantity, issueDate, vestingSchedule]
+      properties:
+        requestId: { type: string }
+        shareClass: { type: string, enum: [Common, Preferred] }
+        quantity: { type: integer }
+        issueDate: { type: string }
+        vestingSchedule: { type: string }
+    EmailNotificationSummary:
+      type: object
+      additionalProperties: false
+      required: [total, accepted, failed, unknown, pending, skipped]
+      properties:
+        total: { type: integer, minimum: 0 }
+        accepted: { type: integer, minimum: 0 }
+        failed: { type: integer, minimum: 0 }
+        unknown: { type: integer, minimum: 0 }
+        pending: { type: integer, minimum: 0 }
+        skipped: { type: integer, minimum: 0 }
+    TransferRequest:
+      type: object
+      required: [id, kind, requiredSigners, approvals, issuance, canApprove, canReject, legacyApprovals, originatorId, originatorName, recipientId, recipientName, sourceCertificateId, shareClass, vestingSchedule, input, status, requestedBy, ceoApprovedBy, ceoApprovedAt, cfoApprovedBy, cfoApprovedAt, rejectedBy, rejectedAt, completedTransferId, recipientCertificateId, createdAt]
+      properties:
+        kind: { type: string, enum: [Transfer, Issuance] }
+        requiredSigners:
+          type: array
+          items: { $ref: "#/components/schemas/ApprovalSigner" }
+        approvals:
+          type: array
+          items: { $ref: "#/components/schemas/ApprovalVote" }
+        issuance:
+          oneOf:
+            - $ref: "#/components/schemas/IssuanceDetails"
+            - { type: "null" }
+        canApprove: { type: boolean }
+        canReject: { type: boolean }
+        legacyApprovals: { type: boolean }
+        emailNotificationSummary: { $ref: "#/components/schemas/EmailNotificationSummary" }
+        id: { type: string }
+        originatorId: { type: string }
+        originatorName: { type: string }
+        recipientId: { type: [string, "null"] }
+        recipientName: { type: string }
+        sourceCertificateId: { type: string }
+        shareClass: { type: string, enum: [Common, Preferred] }
+        vestingSchedule: { type: string }
+        input: { $ref: "#/components/schemas/TransferInput" }
+        status: { type: string, enum: [Pending, Completed, Rejected] }
+        requestedBy: { type: string }
+        ceoApprovedBy: { type: [string, "null"] }
+        ceoApprovedAt: { type: [string, "null"] }
+        cfoApprovedBy: { type: [string, "null"] }
+        cfoApprovedAt: { type: [string, "null"] }
+        rejectedBy: { type: [string, "null"] }
+        rejectedAt: { type: [string, "null"] }
+        completedTransferId: { type: [string, "null"] }
+        recipientCertificateId: { type: [string, "null"] }
+        createdAt: { type: string }
+    CertificateSuccessor:
+      type: object
+      required: [certificateId, shareholderId, shareholderName, quantity]
+      properties:
+        certificateId: { type: string }
+        shareholderId: { type: string }
+        shareholderName: { type: string }
+        quantity: { type: integer }
+    CertificateDirectoryEntry:
+      allOf:
+        - $ref: "#/components/schemas/Certificate"
+        - type: object
+          required: [currentHolderId, currentHolderName, originalHolderId, originalHolderName, successors]
+          properties:
+            currentHolderId: { type: [string, "null"] }
+            currentHolderName: { type: [string, "null"] }
+            originalHolderId: { type: string }
+            originalHolderName: { type: string }
+            successors:
+              type: array
+              items: { $ref: "#/components/schemas/CertificateSuccessor" }
+    TransferAttachmentInput:
+      type: object
+      required: [attachments]
+      properties:
+        attachments:
+          type: array
+          minItems: 1
+          maxItems: 20
+          items: { $ref: "#/components/schemas/Document" }
+    TransferInput:
+      type: object
+      additionalProperties: false
+      required: [quantity, transferDate, requestId]
+      properties:
+        sources:
+          type: array
+          minItems: 1
+          maxItems: 100
+          items: { $ref: "#/components/schemas/TransferSource" }
+        recipientId: { type: string, minLength: 1 }
+        newRecipient: { $ref: "#/components/schemas/RecipientInput" }
+        quantity: { type: integer, minimum: 1, maximum: 1000000000000 }
+        transferDate: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
+        reason: { type: string, maxLength: 1000 }
+        pricePerShare: { type: string, pattern: '^[0-9]{1,18}(\.[0-9]{1,6})?$', maxLength: 25 }
+        requestId: { type: string, format: uuid }
+        attachments:
+          type: array
+          maxItems: 20
+          items: { $ref: "#/components/schemas/Document" }
+    TransferSource:
+      type: object
+      additionalProperties: false
+      required: [certificateId, quantity]
+      properties:
+        certificateId: { type: string, minLength: 1, maxLength: 100 }
+        quantity: { type: integer, minimum: 1, maximum: 1000000000000 }
+    RecipientInput:
+      type: object
+      additionalProperties: false
+      required: [name]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 200 }
+        email: { type: string, maxLength: 254 }
+    ShareTransfer:
+      type: object
+      required: [id, sourceCertificateId, recipientCertificateId, originatorId, originatorName, recipientId, recipientName, shareClass, quantity, transferDate, reason, pricePerShare, createdAt, attachments]
+      properties:
+        sources:
+          type: [array, "null"]
+          items: { $ref: "#/components/schemas/TransferSource" }
+        id: { type: string }
+        sourceCertificateId: { type: string }
+        recipientCertificateId: { type: string }
+        originatorId: { type: string }
+        originatorName: { type: string }
+        recipientId: { type: string }
+        recipientName: { type: string }
+        shareClass: { type: string, enum: [Common, Preferred] }
+        quantity: { type: integer }
+        transferDate: { type: string }
+        reason: { type: string }
+        pricePerShare: { type: [string, "null"] }
+        createdAt: { type: string }
+        attachments:
+          type: array
+          items: { $ref: "#/components/schemas/Document" }
+    Holding:
+      type: object
+      required: [shareClass, quantity]
+      properties:
+        shareClass: { type: string, minLength: 1, maxLength: 100 }
+        quantity: { type: number, minimum: 0, maximum: 1000000000000 }
+        certificateNumber: { type: string, maxLength: 100 }
+    Document:
+      type: object
+      required: [name, objectPath, size]
+      properties:
+        name: { type: string, maxLength: 255 }
+        objectPath: { type: string }
+        size: { type: number, minimum: 0 }
+    Activity:
+      type: object
+      required: [id, shareholderId, name, action, createdAt]
+      properties:
+        id: { type: string }
+        shareholderId: { type: string }
+        name: { type: string }
+        action: { type: string }
+        createdAt: { type: string }
+    UploadInput:
+      type: object
+      required: [name, size, contentType]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 255 }
+        size: { type: integer, minimum: 1, maximum: 10485760 }
+        contentType: { type: string }
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+

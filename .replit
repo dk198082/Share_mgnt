@@ -1,0 +1,37 @@
+modules = ["nodejs-24", "python-base-3.13", "postgresql-16"]
+
+[deployment]
+router = "application"
+deploymentTarget = "autoscale"
+
+[deployment.postBuild]
+args = ["pnpm", "store", "prune"]
+env = { "CI" = "true" }
+
+[workflows]
+runButton = "Project"
+
+[agent]
+stack = "PNPM_WORKSPACE"
+expertMode = true
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 20000
+
+[nix]
+channel = "stable-25_05"
+packages = ["freetype", "gumbo", "harfbuzz", "jbig2dec", "libjpeg_turbo", "mupdf", "openjpeg", "swig", "xcbuild"]
+
+[userenv]
+
+[userenv.production]
+DATABASE_PROVIDER = "azure"
+MAINTENANCE_READ_ONLY = "false"
+OBJECT_STORAGE_PROVIDER = "sharepoint"
+
+[userenv.shared]
+AZURE_STORAGE_CONTAINER = "tod365-synapse-prod"
+
+[userenv.development]
+OBJECT_STORAGE_PROVIDER = "sharepoint"

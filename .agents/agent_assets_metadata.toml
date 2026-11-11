@@ -1,0 +1,142 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "15kIXJiVv3SIqKSMLDtX2"
+uri = "file://generated-artifacts/certificate-templates/common-blank.pdf"
+type = "pdf"
+title = "Common — blank editable certificate"
+description = "Validated blank Common template with embedded attachments removed. Upload in the published app under Settings → Certificate templates → Common."
+logical_id = "dc6ea273-b1d4-4659-af6b-a61d21dff73f"
+content_hash = "sha256:7164305587629e2ad7fe5e276ad8bde5f23f50eb763b8f20399d3b8d3f85b2d4"
+size = 35183
+mtime_ms = 1793653392725
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/dc6ea273-b1d4-4659-af6b-a61d21dff73f/cf44e0fd-bbb9-4a3c-940a-4121312dfc2b"
+storage_version_token = "1793653416149293"
+content_type = "application/pdf"
+
+[[outputs]]
+id = "NqaoG32OQdukgN1EE5BW1"
+uri = "file://generated-artifacts/certificate-templates/preferred-blank.pdf"
+type = "pdf"
+title = "Preferred — blank editable certificate"
+description = "Validated blank Preferred template with embedded attachments removed. Upload in the published app under Settings → Certificate templates → Preferred."
+logical_id = "129f9353-9a68-4242-af0b-cdf08319874f"
+content_hash = "sha256:7f1f5357f93ae883086e5888020c149e794ab2ed0c1f722338c963821a7bfe5f"
+size = 36545
+mtime_ms = 1793653392837
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/129f9353-9a68-4242-af0b-cdf08319874f/7141bfcb-7ff8-4c8f-92ae-c96162348901"
+storage_version_token = "1793653416736045"
+content_type = "application/pdf"
+
+[[outputs]]
+id = "o0qrFqIjefXf_zM1_yJLd"
+uri = "file://docs/shareholder-application-models.html"
+type = "html"
+title = "Shareholder Application Models — Updated"
+description = "Retained overall document, now using Logical Data Model Summary in place of the detailed logical diagram. The descriptive data dictionary remains available below it."
+logical_id = "2dbcb796-3d1b-4d14-810c-501aa956d110"
+content_hash = "sha256:6a89ce2703366bd1600ab4465b678943a61e36f6f625d238348ae1bddea0c478"
+size = 61130
+mtime_ms = 1794324561242
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/2dbcb796-3d1b-4d14-810c-501aa956d110/0e8241b8-1ab7-49eb-a447-58462cb513d8"
+storage_version_token = "1794324569493472"
+content_type = "text/html"
+
+[[outputs]]
+id = "xVDdoZgSGbqKhIaVrRl0G"
+uri = "file://generated-artifacts/shareholder-models/conceptual-data-model.png"
+type = "image"
+title = "Conceptual Data Model — PNG"
+description = "Standalone diagram with larger, high-contrast interaction labels. Ready to insert into presentations and documents."
+logical_id = "092d5c28-7480-42dc-9e47-8cd08a1c638b"
+content_hash = "sha256:2c80c1830959bf88a850e517968d4088dbdd002d69b6c4a0677e6ab5cc5ca33f"
+size = 196115
+mtime_ms = 1794324061604
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/092d5c28-7480-42dc-9e47-8cd08a1c638b/b1abaf5e-e4c7-407b-8371-3f5d4c277d17"
+storage_version_token = "1794324128560512"
+content_type = "image/png"
+
+[[outputs]]
+id = "-No0bGBjvpvpDuGSt7Od_"
+uri = "file://docs/models/conceptual-data-model.svg"
+type = "image"
+title = "Conceptual Data Model — Scalable SVG"
+description = "Standalone vector diagram for lossless resizing, sharing, and presentation embedding."
+logical_id = "8cf50072-9825-4b55-91e3-cff833899ba3"
+content_hash = "sha256:f5b5778de1213543ccb55d341bf1c5442dcfc7c4ec3b77233039ac6558a148cc"
+size = 10244
+mtime_ms = 1794324094644
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/8cf50072-9825-4b55-91e3-cff833899ba3/e5139c91-24fb-4720-929e-3c73e125a353"
+storage_version_token = "1794324129255053"
+content_type = "image/svg+xml"
+
+[[outputs]]
+id = "FWboedW52rxmCyYbCFhYt"
+uri = "file://generated-artifacts/shareholder-models/logical-data-model.png"
+type = "image"
+title = "Logical Data Model — PNG"
+description = "Standalone diagram showing all 18 tables, 162 columns, PK/FK/UQ markers, data types, and an enforced foreign-key index."
+logical_id = "6442c97f-a4d0-47e2-802b-e8dd01d1e448"
+content_hash = "sha256:9856b555dc2abe2c596c28b409b98540c276b3bfd55808c030029f03001720e7"
+size = 723263
+mtime_ms = 1794324062156
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/6442c97f-a4d0-47e2-802b-e8dd01d1e448/a30a1b06-e344-415d-8c4c-40ee6e4f8bd6"
+storage_version_token = "1794324129853303"
+content_type = "image/png"
+
+[[outputs]]
+id = "yPKx7c67Am2SBCeF9qgkY"
+uri = "file://docs/models/logical-data-model.svg"
+type = "image"
+title = "Logical Data Model — Scalable SVG"
+description = "Full logical schema in vector format. Best for zooming into details or embedding without loss of clarity."
+logical_id = "27d63c14-8fbc-4046-b0c5-9b8e218908f9"
+content_hash = "sha256:af59f05ac566c1d55bd853c4bc43e46b119c5982f2910c1253789781f48e1dc7"
+size = 67696
+mtime_ms = 1794324094646
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/27d63c14-8fbc-4046-b0c5-9b8e218908f9/0fae33b8-b1cd-4b2d-aaa9-16f5454374c3"
+storage_version_token = "1794324130452276"
+content_type = "image/svg+xml"
+
+[[outputs]]
+id = "KUDn6LrGw_cPyPQ35Vjnd"
+uri = "file://docs/models/logical-data-model-detailed.svg"
+type = "image"
+title = "Logical Data Model Detailed"
+description = "Renamed full-column SVG, preserving all 18 tables and their columns."
+logical_id = "72278150-9780-46c3-a68c-ea61d63f800c"
+content_hash = "sha256:dad3b9b994e3ceb563b517e0c56d5029089dc9e3d7e8552892cf71acfce5b776"
+size = 67648
+mtime_ms = 1794324561238
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/72278150-9780-46c3-a68c-ea61d63f800c/251eb92d-c097-4e44-adb3-e786c9e5f01a"
+storage_version_token = "1794324570075495"
+content_type = "image/svg+xml"
+
+[[outputs]]
+id = "jT2hL2sKSLoDIfXADArdk"
+uri = "file://docs/models/logical-data-model-summary.svg"
+type = "image"
+title = "Logical Data Model Summary — SVG"
+description = "New scalable diagram showing only table names, primary keys, foreign keys, and enforced table relationships."
+logical_id = "f8b07c5a-20eb-458d-a0d7-57c851a75405"
+content_hash = "sha256:91ad288fd7f03916ab3cf725c3efed60159cd83a3886559bef91250f89aad907"
+size = 28798
+mtime_ms = 1794324561240
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/f8b07c5a-20eb-458d-a0d7-57c851a75405/55f7b591-08ef-47f8-9af6-2857d105ae19"
+storage_version_token = "1794324570714190"
+content_type = "image/svg+xml"
+
+[[outputs]]
+id = "Ig0gT2ywH3MEqQ2Y7BGwZ"
+uri = "file://generated-artifacts/shareholder-models/logical-data-model-summary.png"
+type = "image"
+title = "Logical Data Model Summary — PNG"
+description = "Presentation-friendly image of the key-only summary model."
+logical_id = "02383461-230f-4e8b-a5d1-f4e17b117e54"
+content_hash = "sha256:a846b95a029d57c25f9a594f1b5aeb76541b07a11fa190f8272f7f61bb59699b"
+size = 365678
+mtime_ms = 1794324472980
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/02383461-230f-4e8b-a5d1-f4e17b117e54/df140568-1743-4ae6-9ab5-abd57e0102b5"
+storage_version_token = "1794324571321092"
+content_type = "image/png"

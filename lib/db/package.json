@@ -1,0 +1,33 @@
+{
+  "name": "@workspace/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts"
+  },
+  "scripts": {
+    "push": "drizzle-kit push --config ./drizzle.config.ts",
+    "push-force": "drizzle-kit push --force --config ./drizzle.config.ts",
+    "azure:migrations:status": "node ./scripts/azure-migrate.mjs status",
+    "azure:migrations:apply": "node ./scripts/azure-migrate.mjs apply",
+    "azure:schema:check": "node --import tsx ./scripts/azure-schema-check.mjs",
+    "test:azure-schema": "node --import tsx --test ./scripts/azure-schema.test.mjs",
+    "test:azure-migrations": "node --test ./scripts/azure-migration-lib.test.mjs ./scripts/azure-migrate.test.mjs",
+    "test:azure-migrations:postgres": "node --test ./scripts/azure-migrate.postgres.test.mjs"
+  },
+  "dependencies": {
+    "drizzle-orm": "catalog:",
+    "drizzle-zod": "^0.8.3",
+    "pg": "^8.23.0",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/pg": "^8.23.1",
+    "drizzle-kit": "^0.31.10",
+    "pgsql-ast-parser": "^12.0.2",
+    "tsx": "catalog:"
+  }
+}

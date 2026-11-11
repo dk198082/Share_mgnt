@@ -1,0 +1,15 @@
+- [Phase scope](phase-scope.md) — Employee management only until the user explicitly begins phase 2.
+- [Reporting policy](reporting-policy.md) — Examples are formats, not seed data; mask SSNs and do not invent financial rights or historical personal details.
+- [Certificate rules](certificate-rules.md) — Independent Common and Preferred numbering; certificates form the shareholder holdings ledger.
+- [Certificate PDF policy](certificate-pdf-policy.md) — Class-specific editable blanks, recorded approval signatures, and immutable completed PDFs in both parties' histories.
+- [Database check constraints](database-check-constraints.md) — Schema push can leave existing named CHECK definitions unchanged; verify expanded status constraints.
+- [History policy](history-policy.md) — Preserve legacy summaries without invented diffs; keep employee attribution and exclude SSN values from audit history.
+- [Settings scope](settings-scope.md) — Share prices and named Settings signers for issuance and transfers; uploads alone are not approval.
+- [Workflow lifecycle](workflow-lifecycle.md) — After merges, failed managed workflows can coexist with old listeners; distinguish lifecycle conflicts from code failures.
+- [Pilot identity transition](auth-transition.md) — Fresh Replit identities retain individual tracking; do not rewrite historical Clerk actors or recorded approvals.
+- [Sidebar and highlight colors](sidebar-color-scope.md) — Preserve the app's existing look; use the workspace green only in the sidebar and field highlights.
+- [Pilot data and terminology](pilot-data-policy.md) — Fictional pilot records are authorized, must stay distinguishable, and app/report copy must say Shareholder.
+- [Disposable database isolation](disposable-database-isolation.md) — Localhost is not proof of isolation; migration tests must own their database cluster.
+- [Cross-database verification](cross-database-verification.md) — Default collations can reorder identical rows; verify copies with order-independent full-row equality.
+- [Legacy Azure uploads](azure-object-storage.md) — Legacy migration/rollback only; keep SAS credentials server-side.
+- [SharePoint storage policy](sharepoint-storage-policy.md) — SharePoint-only application files; preserve originals and account for Graph upload-session quirks.

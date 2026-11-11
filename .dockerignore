@@ -1,0 +1,16 @@
+node_modules
+dist
+.turbo
+*.tsbuildinfo
+.git
+.github
+.replit*
+.config
+.cache
+.local
+screenshots
+attached_assets
+test-evidence
+reports
+generated-artifacts
+*.log

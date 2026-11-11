@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Shareholder Management"
+description = "Internal HR and Finance shareholder registry with searchable records, family lineage, holdings and documents."
+version = "1.0.0"
+id = "artifacts/shareholder-management"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24972
+
+[services.development]
+run = "pnpm --filter @workspace/shareholder-management run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/shareholder-management", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/shareholder-management/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24972"
+BASE_PATH = "/"

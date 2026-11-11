@@ -1,0 +1,459 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="3000" height="2920" viewBox="0 0 3000 2920" role="img" aria-label="Logical Data Model Detailed">
+<title>Logical Data Model Detailed</title><desc>All 18 application tables. PK, FK and UQ badges identify key columns. Reference lines and the FK index identify enforced relationships.</desc>
+<defs><marker id="logical-model-arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0 0 L9 4.5 L0 9 Z" fill="#4f745d"/></marker></defs>
+<rect width="3000" height="2920" fill="#fffefa"/>
+<text x="50" y="49" text-anchor="start" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="18" font-weight="700">SHAREHOLDER MANAGEMENT  /  PHASE 1</text>
+<text x="50" y="95" text-anchor="start" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="34" font-weight="700">Logical Data Model Detailed</text>
+<text x="50" y="130" text-anchor="start" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="20" font-weight="400">PK primary key   •   FK enforced foreign key   •   UQ column-level uniqueness   •   JSONB attributes remain embedded, not separate tables</text>
+<text x="50" y="185" text-anchor="start" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="21" font-weight="700">A  OWNERSHIP, TRANSACTIONS &amp; CERTIFICATE EVIDENCE</text>
+<text x="50" y="1260" text-anchor="start" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="21" font-weight="700">B  NUMBERING, SIGNERS, TEMPLATES &amp; PRICING</text>
+<text x="50" y="2025" text-anchor="start" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="21" font-weight="700">C  IDENTITY, HISTORY, UPLOADS &amp; EMAIL DELIVERY</text>
+<path d="M530 270 H640" fill="none" stroke="#4f745d" stroke-width="3" marker-end="url(#logical-model-arrow)"/>
+<text x="585.0" y="213" text-anchor="middle" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="700">1 → N</text>
+<path d="M1120 270 H1230" fill="none" stroke="#4f745d" stroke-width="3" marker-end="url(#logical-model-arrow)"/>
+<text x="1175.0" y="213" text-anchor="middle" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="700">source / new</text>
+<path d="M1710 270 H1820" fill="none" stroke="#4f745d" stroke-width="3" marker-end="url(#logical-model-arrow)"/>
+<text x="1765.0" y="213" text-anchor="middle" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="700">completion</text>
+<path d="M2300 270 H2410" fill="none" stroke="#4f745d" stroke-width="3" marker-end="url(#logical-model-arrow)"/>
+<text x="2355.0" y="213" text-anchor="middle" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="700">request PDF</text>
+<rect x="50" y="225" width="480" height="209" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M59 225 H521 Q530 225 530 234 V274 H50 V234 Q50 225 59 225" fill="#173d2d"/>
+<text x="66" y="257" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">shareholders</text>
+<text x="62" y="300" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="115" y="300" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">id</text>
+<text x="517" y="300" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="115" y="329" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">data</text>
+<text x="517" y="329" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">jsonb</text>
+<text x="115" y="358" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">ssn_encrypted</text>
+<text x="517" y="358" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="115" y="387" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">ssn_last4</text>
+<text x="517" y="387" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="115" y="416" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">updated_at</text>
+<text x="517" y="416" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<rect x="640" y="225" width="480" height="412" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M649 225 H1111 Q1120 225 1120 234 V274 H640 V234 Q640 225 649 225" fill="#173d2d"/>
+<text x="656" y="257" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">certificates</text>
+<text x="652" y="300" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="705" y="300" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">id</text>
+<text x="1107" y="300" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="705" y="329" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">sequence_number</text>
+<text x="1107" y="329" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">integer</text>
+<text x="652" y="358" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK</text>
+<text x="705" y="358" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">shareholder_id</text>
+<text x="1107" y="358" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="705" y="387" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">share_class</text>
+<text x="1107" y="387" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="705" y="416" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">quantity</text>
+<text x="1107" y="416" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">bigint</text>
+<text x="705" y="445" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">transferred_quantity</text>
+<text x="1107" y="445" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">bigint</text>
+<text x="705" y="474" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">issue_date</text>
+<text x="1107" y="474" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">date</text>
+<text x="705" y="503" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">status</text>
+<text x="1107" y="503" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="705" y="532" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">vesting_schedule</text>
+<text x="1107" y="532" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="652" y="561" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">UQ</text>
+<text x="705" y="561" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">request_id</text>
+<text x="1107" y="561" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="705" y="590" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">issued_by</text>
+<text x="1107" y="590" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="705" y="619" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">created_at</text>
+<text x="1107" y="619" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<rect x="1230" y="225" width="480" height="586" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M1239 225 H1701 Q1710 225 1710 234 V274 H1230 V234 Q1230 225 1239 225" fill="#173d2d"/>
+<text x="1246" y="257" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">share_transfers</text>
+<text x="1242" y="300" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="1295" y="300" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">id</text>
+<text x="1697" y="300" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1242" y="329" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK</text>
+<text x="1295" y="329" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">source_certificate_id</text>
+<text x="1697" y="329" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1295" y="358" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">sources</text>
+<text x="1697" y="358" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">jsonb</text>
+<text x="1242" y="387" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK/UQ</text>
+<text x="1295" y="387" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">recipient_certificate_id</text>
+<text x="1697" y="387" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1242" y="416" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK</text>
+<text x="1295" y="416" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">originator_id</text>
+<text x="1697" y="416" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1242" y="445" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK</text>
+<text x="1295" y="445" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">recipient_id</text>
+<text x="1697" y="445" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1295" y="474" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">originator_name</text>
+<text x="1697" y="474" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1295" y="503" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">recipient_name</text>
+<text x="1697" y="503" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1295" y="532" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">share_class</text>
+<text x="1697" y="532" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1295" y="561" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">quantity</text>
+<text x="1697" y="561" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">bigint</text>
+<text x="1295" y="590" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">transfer_date</text>
+<text x="1697" y="590" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">date</text>
+<text x="1295" y="619" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">reason</text>
+<text x="1697" y="619" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1295" y="648" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">attachments</text>
+<text x="1697" y="648" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">jsonb</text>
+<text x="1295" y="677" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">price_per_share</text>
+<text x="1697" y="677" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1242" y="706" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">UQ</text>
+<text x="1295" y="706" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">request_id</text>
+<text x="1697" y="706" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1295" y="735" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">request_fingerprint</text>
+<text x="1697" y="735" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1295" y="764" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">recorded_by</text>
+<text x="1697" y="764" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1295" y="793" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">created_at</text>
+<text x="1697" y="793" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<rect x="1820" y="225" width="480" height="847" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M1829 225 H2291 Q2300 225 2300 234 V274 H1820 V234 Q1820 225 1829 225" fill="#173d2d"/>
+<text x="1836" y="257" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">transfer_requests</text>
+<text x="1832" y="300" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="1885" y="300" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">id</text>
+<text x="2287" y="300" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1832" y="329" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK</text>
+<text x="1885" y="329" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">originator_id</text>
+<text x="2287" y="329" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="358" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">originator_name</text>
+<text x="2287" y="358" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1832" y="387" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK</text>
+<text x="1885" y="387" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">recipient_id</text>
+<text x="2287" y="387" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="416" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">recipient_name</text>
+<text x="2287" y="416" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1832" y="445" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK</text>
+<text x="1885" y="445" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">source_certificate_id</text>
+<text x="2287" y="445" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="474" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">kind</text>
+<text x="2287" y="474" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="503" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">required_signers</text>
+<text x="2287" y="503" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">jsonb</text>
+<text x="1885" y="532" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">approvals</text>
+<text x="2287" y="532" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">jsonb</text>
+<text x="1885" y="561" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">issuance</text>
+<text x="2287" y="561" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">jsonb</text>
+<text x="1885" y="590" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">share_class</text>
+<text x="2287" y="590" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="619" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">vesting_schedule</text>
+<text x="2287" y="619" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="648" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">input</text>
+<text x="2287" y="648" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">jsonb</text>
+<text x="1885" y="677" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">fingerprint</text>
+<text x="2287" y="677" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="706" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">requested_by</text>
+<text x="2287" y="706" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="735" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">requester_email</text>
+<text x="2287" y="735" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="764" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">app_origin</text>
+<text x="2287" y="764" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="793" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">status</text>
+<text x="2287" y="793" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="822" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">ceo_approved_by</text>
+<text x="2287" y="822" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="851" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">ceo_approved_at</text>
+<text x="2287" y="851" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<text x="1885" y="880" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">cfo_approved_by</text>
+<text x="2287" y="880" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="909" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">cfo_approved_at</text>
+<text x="2287" y="909" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<text x="1885" y="938" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">rejected_by</text>
+<text x="2287" y="938" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="967" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">rejected_at</text>
+<text x="2287" y="967" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<text x="1832" y="996" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK</text>
+<text x="1885" y="996" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">completed_transfer_id</text>
+<text x="2287" y="996" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1832" y="1025" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK</text>
+<text x="1885" y="1025" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">recipient_certificate_id</text>
+<text x="2287" y="1025" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="1054" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">created_at</text>
+<text x="2287" y="1054" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<rect x="2410" y="225" width="480" height="325" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M2419 225 H2881 Q2890 225 2890 234 V274 H2410 V234 Q2410 225 2419 225" fill="#173d2d"/>
+<text x="2426" y="257" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">certificate_documents</text>
+<text x="2422" y="300" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="2475" y="300" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">id</text>
+<text x="2877" y="300" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2422" y="329" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK</text>
+<text x="2475" y="329" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">certificate_id</text>
+<text x="2877" y="329" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2422" y="358" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK</text>
+<text x="2475" y="358" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">request_id</text>
+<text x="2877" y="358" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2422" y="387" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK</text>
+<text x="2475" y="387" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">template_id</text>
+<text x="2877" y="387" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="416" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">shareholder_id</text>
+<text x="2877" y="416" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="445" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">originator_id</text>
+<text x="2877" y="445" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="474" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">transfer_id</text>
+<text x="2877" y="474" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="503" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">object_path</text>
+<text x="2877" y="503" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="532" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">created_at</text>
+<text x="2877" y="532" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<rect x="50" y="1300" width="480" height="122" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M59 1300 H521 Q530 1300 530 1309 V1349 H50 V1309 Q50 1300 59 1300" fill="#173d2d"/>
+<text x="66" y="1332" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">certificate_counters</text>
+<text x="62" y="1375" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="115" y="1375" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">share_class</text>
+<text x="517" y="1375" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="115" y="1404" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">last_number</text>
+<text x="517" y="1404" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">integer</text>
+<rect x="50" y="1530" width="480" height="209" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M59 1530 H521 Q530 1530 530 1539 V1579 H50 V1539 Q50 1530 59 1530" fill="#173d2d"/>
+<text x="66" y="1562" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">company_settings</text>
+<text x="62" y="1605" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="115" y="1605" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">id</text>
+<text x="517" y="1605" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="115" y="1634" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">common_price</text>
+<text x="517" y="1634" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">numeric</text>
+<text x="115" y="1663" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">preferred_price</text>
+<text x="517" y="1663" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">numeric</text>
+<text x="115" y="1692" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">updated_by</text>
+<text x="517" y="1692" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="115" y="1721" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">updated_at</text>
+<text x="517" y="1721" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<rect x="640" y="1300" width="480" height="296" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M649 1300 H1111 Q1120 1300 1120 1309 V1349 H640 V1309 Q640 1300 649 1300" fill="#173d2d"/>
+<text x="656" y="1332" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">certificate_templates</text>
+<text x="652" y="1375" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="705" y="1375" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">id</text>
+<text x="1107" y="1375" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="705" y="1404" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">share_class</text>
+<text x="1107" y="1404" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="705" y="1433" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">name</text>
+<text x="1107" y="1433" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="705" y="1462" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">object_path</text>
+<text x="1107" y="1462" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="705" y="1491" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">fields</text>
+<text x="1107" y="1491" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">jsonb</text>
+<text x="705" y="1520" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">active</text>
+<text x="1107" y="1520" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">boolean</text>
+<text x="705" y="1549" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">created_by</text>
+<text x="1107" y="1549" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="705" y="1578" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">created_at</text>
+<text x="1107" y="1578" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<rect x="1230" y="1300" width="480" height="122" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M1239 1300 H1701 Q1710 1300 1710 1309 V1349 H1230 V1309 Q1230 1300 1239 1300" fill="#173d2d"/>
+<text x="1246" y="1332" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">certificate_request_templates</text>
+<text x="1242" y="1375" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK/FK</text>
+<text x="1295" y="1375" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">request_id</text>
+<text x="1697" y="1375" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1242" y="1404" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK</text>
+<text x="1295" y="1404" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">template_id</text>
+<text x="1697" y="1404" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<rect x="1820" y="1300" width="480" height="267" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M1829 1300 H2291 Q2300 1300 2300 1309 V1349 H1820 V1309 Q1820 1300 1829 1300" fill="#173d2d"/>
+<text x="1836" y="1332" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">signoffs</text>
+<text x="1832" y="1375" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="1885" y="1375" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">id</text>
+<text x="2287" y="1375" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="1404" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">name</text>
+<text x="2287" y="1404" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1832" y="1433" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">UQ</text>
+<text x="1885" y="1433" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">email</text>
+<text x="2287" y="1433" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="1462" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">signature_path</text>
+<text x="2287" y="1462" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="1491" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">email_notifications_enabled</text>
+<text x="2287" y="1491" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">boolean</text>
+<text x="1885" y="1520" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">updated_by</text>
+<text x="2287" y="1520" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="1549" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">updated_at</text>
+<text x="2287" y="1549" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<rect x="2410" y="1300" width="480" height="325" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M2419 1300 H2881 Q2890 1300 2890 1309 V1349 H2410 V1309 Q2410 1300 2419 1300" fill="#173d2d"/>
+<text x="2426" y="1332" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">share_price_history</text>
+<text x="2422" y="1375" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="2475" y="1375" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">id</text>
+<text x="2877" y="1375" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">serial</text>
+<text x="2475" y="1404" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">common</text>
+<text x="2877" y="1404" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="1433" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">preferred</text>
+<text x="2877" y="1433" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="1462" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">effective_date</text>
+<text x="2877" y="1462" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">date</text>
+<text x="2475" y="1491" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">currency</text>
+<text x="2877" y="1491" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="1520" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">recorded_at</text>
+<text x="2877" y="1520" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<text x="2475" y="1549" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">recorded_by</text>
+<text x="2877" y="1549" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="1578" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">recorded_by_id</text>
+<text x="2877" y="1578" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="1607" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">reason</text>
+<text x="2877" y="1607" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<rect x="50" y="2070" width="480" height="296" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M59 2070 H521 Q530 2070 530 2079 V2119 H50 V2079 Q50 2070 59 2070" fill="#173d2d"/>
+<text x="66" y="2102" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">users</text>
+<text x="62" y="2145" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="115" y="2145" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">id</text>
+<text x="517" y="2145" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">varchar</text>
+<text x="62" y="2174" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">UQ</text>
+<text x="115" y="2174" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">email</text>
+<text x="517" y="2174" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">varchar</text>
+<text x="115" y="2203" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">email_verified</text>
+<text x="517" y="2203" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">boolean</text>
+<text x="115" y="2232" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">first_name</text>
+<text x="517" y="2232" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">varchar</text>
+<text x="115" y="2261" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">last_name</text>
+<text x="517" y="2261" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">varchar</text>
+<text x="115" y="2290" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">profile_image_url</text>
+<text x="517" y="2290" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">varchar</text>
+<text x="115" y="2319" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">created_at</text>
+<text x="517" y="2319" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<text x="115" y="2348" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">updated_at</text>
+<text x="517" y="2348" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<rect x="50" y="2430" width="480" height="354" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M59 2430 H521 Q530 2430 530 2439 V2479 H50 V2439 Q50 2430 59 2430" fill="#173d2d"/>
+<text x="66" y="2462" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">settings_audit</text>
+<text x="62" y="2505" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="115" y="2505" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">id</text>
+<text x="517" y="2505" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="115" y="2534" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">actor_id</text>
+<text x="517" y="2534" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="115" y="2563" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">actor_name</text>
+<text x="517" y="2563" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="115" y="2592" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">action</text>
+<text x="517" y="2592" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="115" y="2621" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">target_id</text>
+<text x="517" y="2621" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="115" y="2650" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">outcome</text>
+<text x="517" y="2650" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="115" y="2679" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">changes</text>
+<text x="517" y="2679" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">jsonb</text>
+<text x="115" y="2708" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">detail</text>
+<text x="517" y="2708" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="115" y="2737" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">created_at</text>
+<text x="517" y="2737" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<text x="115" y="2766" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">completed_at</text>
+<text x="517" y="2766" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<rect x="640" y="2070" width="480" height="151" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M649 2070 H1111 Q1120 2070 1120 2079 V2119 H640 V2079 Q640 2070 649 2070" fill="#173d2d"/>
+<text x="656" y="2102" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">sessions</text>
+<text x="652" y="2145" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="705" y="2145" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">sid</text>
+<text x="1107" y="2145" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">varchar</text>
+<text x="705" y="2174" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">sess</text>
+<text x="1107" y="2174" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">jsonb</text>
+<text x="705" y="2203" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">expire</text>
+<text x="1107" y="2203" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<rect x="640" y="2290" width="480" height="209" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M649 2290 H1111 Q1120 2290 1120 2299 V2339 H640 V2299 Q640 2290 649 2290" fill="#173d2d"/>
+<text x="656" y="2322" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">shareholder_uploads</text>
+<text x="652" y="2365" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="705" y="2365" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">object_path</text>
+<text x="1107" y="2365" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="705" y="2394" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">owner_id</text>
+<text x="1107" y="2394" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="705" y="2423" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">name</text>
+<text x="1107" y="2423" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="705" y="2452" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">content_type</text>
+<text x="1107" y="2452" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="705" y="2481" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">purpose</text>
+<text x="1107" y="2481" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<rect x="1230" y="2070" width="480" height="296" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M1239 2070 H1701 Q1710 2070 1710 2079 V2119 H1230 V2079 Q1230 2070 1239 2070" fill="#173d2d"/>
+<text x="1246" y="2102" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">shareholder_activity</text>
+<text x="1242" y="2145" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="1295" y="2145" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">id</text>
+<text x="1697" y="2145" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1295" y="2174" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">shareholder_id</text>
+<text x="1697" y="2174" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1295" y="2203" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">name</text>
+<text x="1697" y="2203" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1295" y="2232" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">action</text>
+<text x="1697" y="2232" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1295" y="2261" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">actor</text>
+<text x="1697" y="2261" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1295" y="2290" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">actor_name</text>
+<text x="1697" y="2290" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1295" y="2319" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">changes</text>
+<text x="1697" y="2319" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">jsonb</text>
+<text x="1295" y="2348" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">created_at</text>
+<text x="1697" y="2348" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<rect x="1820" y="2070" width="480" height="412" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M1829 2070 H2291 Q2300 2070 2300 2079 V2119 H1820 V2079 Q1820 2070 1829 2070" fill="#173d2d"/>
+<text x="1836" y="2102" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">signoff_email_notifications</text>
+<text x="1832" y="2145" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="1885" y="2145" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">id</text>
+<text x="2287" y="2145" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1832" y="2174" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK</text>
+<text x="1885" y="2174" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">request_id</text>
+<text x="2287" y="2174" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="2203" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">signer_id</text>
+<text x="2287" y="2203" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="2232" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">recipient_email</text>
+<text x="2287" y="2232" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="2261" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">app_origin</text>
+<text x="2287" y="2261" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="2290" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">status</text>
+<text x="2287" y="2290" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="2319" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">attempts</text>
+<text x="2287" y="2319" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">integer</text>
+<text x="1885" y="2348" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">provider_status</text>
+<text x="2287" y="2348" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">integer</text>
+<text x="1885" y="2377" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">failure_code</text>
+<text x="2287" y="2377" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="1885" y="2406" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">created_at</text>
+<text x="2287" y="2406" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<text x="1885" y="2435" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">updated_at</text>
+<text x="2287" y="2435" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<text x="1885" y="2464" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">accepted_at</text>
+<text x="2287" y="2464" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<rect x="2410" y="2070" width="480" height="412" rx="9" fill="#ffffff" stroke="#aebfb4" stroke-width="2"/>
+<path d="M2419 2070 H2881 Q2890 2070 2890 2079 V2119 H2410 V2079 Q2410 2070 2419 2070" fill="#173d2d"/>
+<text x="2426" y="2102" text-anchor="start" fill="#ffffff" font-family="DejaVu Sans Mono,monospace" font-size="19" font-weight="700">signoff_result_email_notifications</text>
+<text x="2422" y="2145" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">PK</text>
+<text x="2475" y="2145" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">id</text>
+<text x="2877" y="2145" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2422" y="2174" text-anchor="start" fill="#a14f2c" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700">FK</text>
+<text x="2475" y="2174" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">request_id</text>
+<text x="2877" y="2174" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="2203" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">recipient_email</text>
+<text x="2877" y="2203" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="2232" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">app_origin</text>
+<text x="2877" y="2232" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="2261" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">outcome</text>
+<text x="2877" y="2261" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="2290" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">status</text>
+<text x="2877" y="2290" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="2319" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">attempts</text>
+<text x="2877" y="2319" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">integer</text>
+<text x="2475" y="2348" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">provider_status</text>
+<text x="2877" y="2348" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">integer</text>
+<text x="2475" y="2377" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">failure_code</text>
+<text x="2877" y="2377" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">text</text>
+<text x="2475" y="2406" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">created_at</text>
+<text x="2877" y="2406" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<text x="2475" y="2435" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">updated_at</text>
+<text x="2877" y="2435" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<text x="2475" y="2464" text-anchor="start" fill="#17221d" font-family="DejaVu Sans Mono,monospace" font-size="17" font-weight="400">accepted_at</text>
+<text x="2877" y="2464" text-anchor="end" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="14" font-weight="400">timestamp</text>
+<text x="640" y="1690" text-anchor="start" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="20" font-weight="700">ENFORCED FOREIGN-KEY INDEX</text>
+<text x="640" y="1726" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">certificates.shareholder_id → shareholders.id</text>
+<text x="640" y="1751" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">share_transfers.source_certificate_id → certificates.id</text>
+<text x="640" y="1776" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">share_transfers.recipient_certificate_id → certificates.id</text>
+<text x="640" y="1801" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">share_transfers.originator_id → shareholders.id</text>
+<text x="640" y="1826" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">share_transfers.recipient_id → shareholders.id</text>
+<text x="640" y="1851" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">transfer_requests.originator_id → shareholders.id</text>
+<text x="640" y="1876" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">transfer_requests.recipient_id → shareholders.id</text>
+<text x="640" y="1901" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">transfer_requests.source_certificate_id → certificates.id</text>
+<text x="640" y="1926" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">transfer_requests.completed_transfer_id → share_transfers.id</text>
+<text x="640" y="1951" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">transfer_requests.recipient_certificate_id → certificates.id</text>
+<text x="1790" y="1726" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">certificate_documents.certificate_id → certificates.id</text>
+<text x="1790" y="1751" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">certificate_documents.request_id → transfer_requests.id</text>
+<text x="1790" y="1776" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">certificate_documents.template_id → certificate_templates.id</text>
+<text x="1790" y="1801" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">certificate_request_templates.request_id → transfer_requests.id</text>
+<text x="1790" y="1826" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">certificate_request_templates.template_id → certificate_templates.id</text>
+<text x="1790" y="1851" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">signoff_email_notifications.request_id → transfer_requests.id</text>
+<text x="1790" y="1876" text-anchor="start" fill="#52645a" font-family="DejaVu Sans Mono,monospace" font-size="15" font-weight="400">signoff_result_email_notifications.request_id → transfer_requests.id</text>
+<text x="640" y="2690" text-anchor="start" fill="#173d2d" font-family="DejaVu Sans,Arial,sans-serif" font-size="21" font-weight="700">MODEL NOTES</text>
+<text x="640" y="2725" text-anchor="start" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="19" font-weight="400">• Shareholder profile fields are stored in shareholders.data JSONB; encrypted SSN fields are separate.</text>
+<text x="640" y="2754" text-anchor="start" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="19" font-weight="400">• Batch certificate sources and approval votes are JSONB arrays, not normalized junction tables.</text>
+<text x="640" y="2783" text-anchor="start" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="19" font-weight="400">• Actor / owner / holder references without FK badges are application-level references.</text>
+<text x="640" y="2812" text-anchor="start" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="19" font-weight="400">• Table-level composite/filtered unique indexes and CHECK constraints are described in the main document.</text>
+<text x="640" y="2841" text-anchor="start" fill="#52645a" font-family="DejaVu Sans,Arial,sans-serif" font-size="19" font-weight="400">• Legacy CEO/CFO columns do not define current signer policy. Preview archive is outside this active model.</text>
+</svg>
