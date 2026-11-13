@@ -1,4 +1,4 @@
-name: Azure schema release approval
+name: Azure schema release approvals
 
 on:
   push:
