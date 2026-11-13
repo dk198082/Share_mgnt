@@ -101,12 +101,15 @@ router.get("/auth/callback", async (req, res) => {
       pkceCodeVerifier: verifier, expectedState: state, expectedNonce: nonce, idTokenExpected: true,
     });
     const claims = tokens.claims();
-    if (!claims) throw new Error("Missing identity claims");
+    
+      if (!claims) throw new Error("Missing identity claims");
+      const identity = identityFromClaims(
+        claims as unknown as Record<string, unknown>
+      );
+
       session = {
         provider: "entra",
-        user: identityFromClaims(
-          claims as unknown as Record<string, unknown>
-        ),
+        user: identity,
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
         id_token: tokens.id_token,
@@ -117,10 +120,16 @@ router.get("/auth/callback", async (req, res) => {
 
         // Microsoft logout hint
         login_hint:
-          typeof claims.login_hint === "string"
+          (typeof claims.login_hint === "string"
             ? claims.login_hint
-            : undefined,
+            : null) ||
+          (typeof claims.preferred_username === "string"
+            ? claims.preferred_username
+            : null) ||
+          identity.email ||
+          undefined,
       };
+
   } catch (error) {
     req.log.warn({ errorType: error instanceof Error ? error.name : "Error" }, "Microsoft Entra sign-in could not be completed");
     res.redirect("/sign-in?error=failed"); return;

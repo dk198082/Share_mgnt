@@ -14,6 +14,7 @@ export interface SessionData {
   id_token?: string;
   refresh_token?: string;
   expires_at?: number;
+  login_hint?: string;
 }
 let config: Promise<oidc.Configuration> | undefined;
 
@@ -131,12 +132,4 @@ export function safeReturnTo(value: unknown): string {
   return typeof value === "string" && value.startsWith("/") && !value.startsWith("//") &&
     !/[\\\u0000-\u001f]/.test(value) ? value : "/";
 }
-export interface SessionData {
-  provider: "entra";
-  user: AuthUser;
-  access_token: string;
-  id_token?: string;
-  refresh_token?: string;
-  expires_at?: number;
-  login_hint?: string;
-}
+
