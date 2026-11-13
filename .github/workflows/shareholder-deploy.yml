@@ -1,0 +1,132 @@
+
+name: Build and Deploy Shareholder Management
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shareholder-production
+  cancel-in-progress: false
+
+env:
+  ACR_NAME: shmprod
+  IMAGE_NAME: shareholder-management
+  RESOURCE_GROUP: TOAXRGP
+  APP_NAME: sharehubProd
+  WEBSITES_PORT: 8080
+
+jobs:
+  build-and-deploy:
+    name: Build and Deploy to Azure
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # 1. Checkout Source Code
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+
+      # 2. Azure Authentication
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: |
+            {
+              "clientId": "${{ secrets.AZURE_CLIENT_ID }}",
+              "clientSecret": "${{ secrets.AZURE_CLIENT_SECRET }}",
+              "subscriptionId": "${{ secrets.AZURE_SUBSCRIPTION_ID }}",
+              "tenantId": "${{ secrets.AZURE_TENANT_ID }}"
+            }
+
+      # 3. Verify Azure Resources
+      - name: Verify Azure Resources
+        run: |
+          set -euo pipefail
+
+          az account show
+
+          az acr show \
+            --name "$ACR_NAME" \
+            --resource-group "$RESOURCE_GROUP"
+
+          az webapp show \
+            --name "$APP_NAME" \
+            --resource-group "$RESOURCE_GROUP"
+
+      # 4. Login to Azure Container Registry
+      - name: Login to Azure Container Registry
+        run: |
+          set -euo pipefail
+          az acr login --name "$ACR_NAME"
+
+      # 5. Build Docker Image
+      - name: Build Docker Image
+        run: |
+          set -euo pipefail
+
+          docker build \
+            --pull \
+            -t "$ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }}" \
+            -t "$ACR_NAME.azurecr.io/$IMAGE_NAME:latest" \
+            .
+
+      # 6. Push Docker Image
+      - name: Push Docker Image
+        run: |
+          set -euo pipefail
+
+          docker push "$ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }}"
+          docker push "$ACR_NAME.azurecr.io/$IMAGE_NAME:latest"
+
+      # 7. Configure Azure App Service
+      - name: Configure Azure App Service
+        run: |
+          set -euo pipefail
+
+          az webapp config set \
+            --name "$APP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --linux-fx-version "DOCKER|$ACR_NAME.azurecr.io/$IMAGE_NAME:${{ github.sha }}" \
+            --generic-configurations '{"acrUseManagedIdentityCreds":true}'
+
+      # 8. Configure Application Settings
+      - name: Configure Application Settings
+        run: |
+          set -euo pipefail
+
+          az webapp config appsettings set \
+            --name "$APP_NAME" \
+            --resource-group "$RESOURCE_GROUP" \
+            --settings \
+              WEBSITES_PORT="$WEBSITES_PORT" \
+              WEBSITES_ENABLE_APP_SERVICE_STORAGE=false
+
+      # 9. Restart Azure App Service
+      - name: Restart Azure App Service
+        run: |
+          set -euo pipefail
+
+          az webapp restart \
+            --name "$APP_NAME" \
+            --resource-group "$RESOURCE_GROUP"
+
+      # 10. Deployment Information
+      - name: Deployment Summary
+        run: |
+          echo "======================================"
+          echo "Shareholder Management Deployment"
+          echo "======================================"
+          echo "Application: $APP_NAME"
+          echo "Resource Group: $RESOURCE_GROUP"
+          echo "Container Registry: $ACR_NAME"
+          echo "Image: $IMAGE_NAME"
+          echo "Image Tag: ${{ github.sha }}"
+          echo "Status: Deployment command completed"
+          echo "======================================"
