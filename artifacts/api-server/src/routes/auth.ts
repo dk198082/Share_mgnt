@@ -102,13 +102,25 @@ router.get("/auth/callback", async (req, res) => {
     });
     const claims = tokens.claims();
     if (!claims) throw new Error("Missing identity claims");
-    session = {
-      provider: "entra",
-      user: identityFromClaims(claims as unknown as Record<string, unknown>),
-      access_token: tokens.access_token, refresh_token: tokens.refresh_token,
-      id_token: tokens.id_token,
-      expires_at: tokens.expiresIn() ? Math.floor(Date.now() / 1000) + tokens.expiresIn()! : claims.exp,
-    };
+      session = {
+        provider: "entra",
+        user: identityFromClaims(
+          claims as unknown as Record<string, unknown>
+        ),
+        access_token: tokens.access_token,
+        refresh_token: tokens.refresh_token,
+        id_token: tokens.id_token,
+
+        expires_at: tokens.expiresIn()
+          ? Math.floor(Date.now() / 1000) + tokens.expiresIn()!
+          : claims.exp,
+
+        // Microsoft logout hint
+        login_hint:
+          typeof claims.login_hint === "string"
+            ? claims.login_hint
+            : undefined,
+      };
   } catch (error) {
     req.log.warn({ errorType: error instanceof Error ? error.name : "Error" }, "Microsoft Entra sign-in could not be completed");
     res.redirect("/sign-in?error=failed"); return;
@@ -161,6 +173,7 @@ router.get("/logout", async (req, res) => {
       client_id: string;
       post_logout_redirect_uri: string;
       id_token_hint?: string;
+      logout_hint?: string;
     } = {
       client_id: clientId,
       post_logout_redirect_uri:
@@ -168,10 +181,13 @@ router.get("/logout", async (req, res) => {
     };
 
     // 8. Include ID token for proper logout
-    if (session?.id_token) {
-      endSessionParams.id_token_hint =
-        session.id_token;
-    }
+      if (session?.id_token) {
+        endSessionParams.id_token_hint = session.id_token;
+      }
+
+      if (session?.login_hint) {
+        endSessionParams.logout_hint = session.login_hint;
+      }
 
     const config = await getOidcConfig();
 
@@ -196,6 +212,4 @@ router.get("/logout", async (req, res) => {
     return res.redirect(new URL("/", appBaseUrl).href);
   }
 });
-
-
 export default router;
