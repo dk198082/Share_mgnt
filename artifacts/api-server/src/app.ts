@@ -68,7 +68,24 @@ app.use((err: unknown, req: express.Request, res: express.Response, _next: expre
     res.status(err.status).json({ error: err.message });
     return;
   }
-  req.log.error({ errorType: err instanceof Error ? err.name : "Error" }, "Request failed");
+  const dbError = err as {
+  code?: string;
+  detail?: string;
+  constraint?: string;
+  table?: string;
+  schema?: string;
+};
+
+req.log.error({
+  errorType: err instanceof Error ? err.name : "Error",
+  errorMessage: err instanceof Error ? err.message : String(err),
+  errorCode: dbError.code,
+  errorDetail: dbError.detail,
+  errorTable: dbError.table,
+  errorSchema: dbError.schema,
+  errorConstraint: dbError.constraint,
+}, "Request failed");
+
   res.status(500).json({ error: "The request could not be completed. Please try again." });
 });
 
