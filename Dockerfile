@@ -33,7 +33,8 @@ WORKDIR /repo
 
 RUN corepack enable
 
-COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+
 COPY artifacts/api-server/package.json artifacts/api-server/package.json
 COPY artifacts/mockup-sandbox/package.json artifacts/mockup-sandbox/package.json
 COPY artifacts/shareholder-management/package.json artifacts/shareholder-management/package.json
@@ -42,7 +43,7 @@ COPY lib/api-spec/package.json lib/api-spec/package.json
 COPY lib/api-zod/package.json lib/api-zod/package.json
 COPY lib/db/package.json lib/db/package.json
 COPY lib/replit-auth-web/package.json lib/replit-auth-web/package.json
-COPY scripts/package.json scripts/package.json
+COPY scripts/ ./scripts/
 
 RUN pnpm install --frozen-lockfile
 
