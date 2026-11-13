@@ -121,50 +121,25 @@ router.get("/auth/callback", async (req, res) => {
   res.redirect(new URL(returnTo, appBaseUrl).toString());
 });
 
+
 router.get("/logout", async (req, res) => {
   res.set("Cache-Control", "no-store");
 
+  // Get current session
   const sid = getSessionId(req);
-  const session = sid ? await getSession(sid) : null;
 
+  // Destroy application session
   await clearSession(res, sid ?? req.cookies?.pilot_sid);
+
+  // Clear legacy session cookie
   clearLegacySessionCookie(res);
 
-  const clientId =
-    process.env.AZURE_CLIENT_ID || process.env.CLIENT_ID;
-
-  if (!clientId) {
-    throw new Error(
-      "Microsoft Entra authentication requires CLIENT_ID."
-    );
-  }
-
+  // Redirect to main website homepage
   const appBaseUrl =
-    process.env.APP_BASE_URL || "http://localhost:5175";
+    process.env.APP_BASE_URL ||
+    "http://localhost:5175";
 
-  const endSessionParams: {
-    client_id: string;
-    post_logout_redirect_uri: string;
-    id_token_hint?: string;
-  } = {
-    client_id: clientId,
-    post_logout_redirect_uri: new URL(
-      safeReturnTo(req.query.returnTo),
-      appBaseUrl
-    ).href,
-  };
-
-  if (session?.id_token) {
-    endSessionParams.id_token_hint = session.id_token;
-  }
-
-  const redirect = oidc.buildEndSessionUrl(
-    await getOidcConfig(),
-    endSessionParams
-  );
-
-  res.redirect(redirect.href);
+  res.redirect(new URL("/", appBaseUrl).href);
 });
-
 
 export default router;
