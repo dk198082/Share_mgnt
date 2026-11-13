@@ -16,31 +16,57 @@ export interface SessionData {
   expires_at?: number;
 }
 let config: Promise<oidc.Configuration> | undefined;
+
 export function getOidcConfig() {
   if (!config) {
-    const clientId = process.env.CLIENT_ID;
-    const clientSecret = process.env.CLIENT_SECRET;
+    const clientId =
+      process.env.AZURE_CLIENT_ID || process.env.CLIENT_ID;
+
+    const clientSecret =
+      process.env.AZURE_CLIENT_SECRET || process.env.CLIENT_SECRET;
+
     const tenantId = getTenantId();
+
     if (!clientId || !clientSecret) {
-      throw new Error("Microsoft Entra authentication requires CLIENT_ID and CLIENT_SECRET.");
+      throw new Error(
+        "Microsoft Entra authentication requires AZURE_CLIENT_ID and AZURE_CLIENT_SECRET."
+      );
     }
-    const issuer = process.env.NODE_ENV === "test" && process.env.AUTH_TEST_ISSUER
-      ? process.env.AUTH_TEST_ISSUER
-      : `https://login.microsoftonline.com/${encodeURIComponent(tenantId)}/v2.0`;
-    config = oidc.discovery(new URL(issuer), clientId, clientSecret).catch(error => {
+
+    const issuer =
+      process.env.NODE_ENV === "test" && process.env.AUTH_TEST_ISSUER
+        ? process.env.AUTH_TEST_ISSUER
+        : `https://login.microsoftonline.com/${encodeURIComponent(tenantId)}/v2.0`;
+
+    config = oidc.discovery(
+      new URL(issuer),
+      clientId,
+      clientSecret
+    ).catch(error => {
       config = undefined;
       throw error;
     });
   }
+
   return config;
 }
+
 function getTenantId() {
-  const tenantId = process.env.NODE_ENV === "test" && process.env.AUTH_TEST_TENANT_ID
-    ? process.env.AUTH_TEST_TENANT_ID
-    : process.env.TENANT_ID;
-  if (!tenantId) throw new Error("Microsoft Entra authentication requires TENANT_ID.");
-  return tenantId;
+  const tenantId =
+    process.env.NODE_ENV === "test" && process.env.AUTH_TEST_TENANT_ID
+      ? process.env.AUTH_TEST_TENANT_ID
+      : process.env.AZURE_TENANT_ID || process.env.TENANT_ID;
+
+  if (!tenantId) {
+    throw new Error(
+      "Microsoft Entra authentication requires AZURE_TENANT_ID."
+    );
+  }
+
+  return tenantId.trim();
 }
+
+
 export function identityFromClaims(claims: Record<string, unknown>): AuthUser {
   const stringOrNull = (v: unknown) => typeof v === "string" && v ? v : null;
   const oid = stringOrNull(claims.oid);
