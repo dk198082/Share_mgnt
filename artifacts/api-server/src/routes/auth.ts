@@ -120,14 +120,9 @@ router.get("/auth/callback", async (req, res) => {
 
         // Microsoft logout hint
         login_hint:
-          (typeof claims.login_hint === "string"
+          typeof claims.login_hint === "string"
             ? claims.login_hint
-            : null) ||
-          (typeof claims.preferred_username === "string"
-            ? claims.preferred_username
-            : null) ||
-          identity.email ||
-          undefined,
+            : undefined,
       };
 
   } catch (error) {
@@ -141,8 +136,6 @@ router.get("/auth/callback", async (req, res) => {
   const appBaseUrl = process.env.APP_BASE_URL || "http://localhost:5175";
   res.redirect(new URL(returnTo, appBaseUrl).toString());
 });
-
-
 
 router.get("/logout", async (req, res) => {
   res.set("Cache-Control", "no-store");
