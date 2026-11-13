@@ -122,24 +122,80 @@ router.get("/auth/callback", async (req, res) => {
 });
 
 
+
 router.get("/logout", async (req, res) => {
   res.set("Cache-Control", "no-store");
 
-  // Get current session
-  const sid = getSessionId(req);
+  try {
+    // 1. Get current session ID
+    const sessionId =
+      getSessionId(req) ?? req.cookies?.pilot_sid;
 
-  // Destroy application session
-  await clearSession(res, sid ?? req.cookies?.pilot_sid);
+    // 2. Get session BEFORE destroying it
+    const session = sessionId
+      ? await getSession(sessionId)
+      : null;
 
-  // Clear legacy session cookie
-  clearLegacySessionCookie(res);
+    // 3. Destroy application session
+    await clearSession(res, sessionId);
 
-  // Redirect to main website homepage
-  const appBaseUrl =
-    process.env.APP_BASE_URL ||
-    "http://localhost:5175";
+    // 4. Clear legacy cookie
+    clearLegacySessionCookie(res);
 
-  res.redirect(new URL("/", appBaseUrl).href);
+    // 5. Get Microsoft Client ID
+    const clientId =
+      process.env.AZURE_CLIENT_ID ||
+      process.env.CLIENT_ID;
+
+    const appBaseUrl =
+      process.env.APP_BASE_URL ||
+      "http://localhost:5175";
+
+    // 6. If no Client ID, redirect to website
+    if (!clientId) {
+      return res.redirect(new URL("/", appBaseUrl).href);
+    }
+
+    // 7. Build Microsoft Entra logout URL
+    const endSessionParams: {
+      client_id: string;
+      post_logout_redirect_uri: string;
+      id_token_hint?: string;
+    } = {
+      client_id: clientId,
+      post_logout_redirect_uri:
+        new URL("/", appBaseUrl).href,
+    };
+
+    // 8. Include ID token for proper logout
+    if (session?.id_token) {
+      endSessionParams.id_token_hint =
+        session.id_token;
+    }
+
+    const config = await getOidcConfig();
+
+    const logoutUrl = oidc.buildEndSessionUrl(
+      config,
+      endSessionParams
+    );
+
+    // 9. Redirect to Microsoft logout
+    return res.redirect(logoutUrl.href);
+
+  } catch (error) {
+    req.log.error(
+      { error },
+      "Microsoft logout failed"
+    );
+
+    const appBaseUrl =
+      process.env.APP_BASE_URL ||
+      "http://localhost:5175";
+
+    return res.redirect(new URL("/", appBaseUrl).href);
+  }
 });
+
 
 export default router;
