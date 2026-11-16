@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 import { eq, sql } from "drizzle-orm";
 import { db, activityTable, certificatesTable, certificateCountersTable, shareholdersTable, type CertificateRow } from "@workspace/db";
 import { change, recordActivity } from "./audit";
+import { isShareQuantity, SHARE_QUANTITY_MESSAGE, subtractShares, sumShares } from "@workspace/share-quantities";
 
 export type CertificateIssueInput = {
   requestId: string;
@@ -18,6 +19,7 @@ export class CertificateError extends Error {
 // Counter allocation, certificate creation and activity recording commit together.
 // A failed issuance rolls back its number; successful numbers are never reused.
 export async function issueCertificateInTransaction(tx: Transaction, shareholderId: string, input: CertificateIssueInput, actor: string) {
+  if (!isShareQuantity(input.quantity)) throw new CertificateError(400, SHARE_QUANTITY_MESSAGE);
   // Serializes retries of the same operation, even if payload/class was changed.
   await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtextextended(${input.requestId}, 0))`);
   const [existing] = await tx.select().from(certificatesTable).where(eq(certificatesTable.requestId, input.requestId));
@@ -54,7 +56,7 @@ export async function issueCertificateInTransaction(tx: Transaction, shareholder
 }
 
 export function remainingShares(row: CertificateRow) {
-  return ["Outstanding", "Partially Transferred"].includes(row.status) ? row.quantity - row.transferredQuantity : 0;
+  return ["Outstanding", "Partially Transferred"].includes(row.status) ? subtractShares(row.quantity, row.transferredQuantity) : 0;
 }
 export function presentCertificate(row: CertificateRow, companyShares: number) {
   const fullyDiluted = remainingShares(row);
@@ -67,5 +69,5 @@ export function presentCertificate(row: CertificateRow, companyShares: number) {
   };
 }
 export function outstandingTotal(rows: CertificateRow[]) {
-  return rows.reduce((sum, r) => sum + remainingShares(r), 0);
+  return sumShares(rows.map(remainingShares));
 }

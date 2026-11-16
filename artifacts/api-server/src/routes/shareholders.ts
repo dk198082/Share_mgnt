@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { sumShares } from "@workspace/share-quantities";
 import { randomUUID } from "node:crypto";
 import { db, shareholdersTable, activityTable, uploadsTable, certificatesTable, type ShareholderRow, type CertificateRow } from "@workspace/db";
 import { desc, eq } from "drizzle-orm";
@@ -115,7 +116,7 @@ router.get("/summary", async (_req, res) => {
   const rows = (await db.select().from(shareholdersTable)).map(r => publicRecord(r, certificates));
   res.json(GetSummaryResponse.parse({
     totalShareholders: rows.length,
-    totalShares: rows.reduce((sum, row) => sum + row.shares.reduce((s, h) => s + h.quantity, 0), 0),
+    totalShares: sumShares(rows.flatMap(row => row.shares.map(h => h.quantity))),
     familyLines: new Set(rows.map(r => r.familyLine).filter(Boolean)).size,
     documents: rows.reduce((sum, row) => sum + row.documents.length, 0),
   }));

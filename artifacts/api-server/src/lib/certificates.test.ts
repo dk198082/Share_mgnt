@@ -176,7 +176,7 @@ test("certificate ledger numbering and persistence", async (t) => {
         { ...transferInput(1), newRecipient: { name: "Ambiguous" } },
         { ...transferInput(1), recipientId: undefined, newRecipient: { name: "  " } },
         { ...transferInput(1), recipientId: undefined, newRecipient: { name: "Invalid", email: "bad" } },
-        transferInput(0), transferInput(-1), transferInput(1.5), transferInput(11),
+        transferInput(0), transferInput(-1), transferInput(1.001), transferInput(11),
       ];
       for (const data of badInputs) await assert.rejects(transfer("C-3", data), (e: unknown) => e instanceof CertificateError);
       await assert.rejects(transaction(tx => transferInTransaction(tx, "recipient", "C-3", transferInput(1), "test")),
@@ -208,7 +208,7 @@ test("certificate ledger numbering and persistence", async (t) => {
     });
     await t.test("invalid share quantities, classes and manual IDs are rejected", () => {
       assert.equal(IssueCertificateBody.safeParse({ ...input(), quantity: 0 }).success, false);
-      assert.equal(IssueCertificateBody.safeParse({ ...input(), quantity: 1.2 }).success, false);
+      assert.equal(IssueCertificateBody.safeParse({ ...input(), quantity: 1.234 }).success, false);
       assert.equal(IssueCertificateBody.safeParse({ ...input(), shareClass: "Other" }).success, false);
       assert.equal(IssueCertificateBody.strict().safeParse({ ...input(), id: "C-9000" }).success, false);
     });

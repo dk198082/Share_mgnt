@@ -1,5 +1,6 @@
 import type { CertificateRow, ShareTransferRow, ShareholderRow } from "@workspace/db";
 import { transferSources } from "./transfers";
+import { shareUnits, sumShares } from "@workspace/share-quantities";
 
 export const reportTypes = ["detailed-cap-table", "shareholder-information", "shareholder-transactions"] as const;
 export type ReportType = typeof reportTypes[number];
@@ -21,20 +22,20 @@ const ratio = (part: number, total: number) => total ? part / total : 0;
 const externalId = (holder: ReportHolder | undefined) => text(holder, "generationNumber");
 const unique = (items: string[]) => [...new Set(items)].join("; ");
 const joinDates = (items: string[]) => unique(items.sort());
-const sum = (values: number[]) => values.reduce((total, value) => {
-  const result = total + value;
-  if (!Number.isSafeInteger(result)) throw new ReportError("Report totals exceed the exact numeric range. Narrow the report before exporting.");
-  return result;
-}, 0);
+const sum = (values: number[]) => {
+  try { return sumShares(values); }
+  catch { throw new ReportError("Report totals exceed the exact numeric range or contain unsupported share precision. Narrow or correct the report before exporting."); }
+};
 // Exact consideration arithmetic; Excel cannot preserve >15 significant digits.
 function consideration(transfers: ReportTransfer[]): string | number | null {
   if (!transfers.length || transfers.some(t => t.pricePerShare === null)) return null;
   let total = 0n;
   for (const t of transfers) {
     const [whole, fraction = ""] = t.pricePerShare!.split(".");
-    total += (BigInt(whole) * 1_000_000n + BigInt(fraction.padEnd(6, "0"))) * BigInt(t.quantity);
+    total += (BigInt(whole) * 1_000_000n + BigInt(fraction.padEnd(6, "0"))) * shareUnits(t.quantity);
   }
-  const value = `${total / 1_000_000n}.${String(total % 1_000_000n).padStart(6, "0")}`;
+  const decimals = String(total % 100_000_000n).padStart(8, "0");
+  const value = `${total / 100_000_000n}.${decimals.slice(0, 6)}${decimals.slice(6).replace(/0+$/, "")}`;
   const [whole, fraction] = value.split(".");
   return (whole.replace(/^0+/, "") + fraction.replace(/0+$/, "")).length > 15 ? value : Number(value);
 }
@@ -123,7 +124,7 @@ export function buildReport(
   // Certificate-level views use each source's allocation; shareholder events
   // below retain one aggregate transfer so the recipient is never counted twice.
   const outgoing = (id: string) => transfers.filter(t => allocationQuantity(t, id) > 0).map(t => ({ ...t, quantity: allocationQuantity(t, id) }));
-  const remaining = (c: CertificateRow) => c.status === "Cancelled" ? 0 : c.quantity - sum(outgoing(c.id).map(t => t.quantity));
+  const remaining = (c: CertificateRow) => c.status === "Cancelled" ? 0 : sum([c.quantity, -sum(outgoing(c.id).map(t => t.quantity))]);
   if (certificates.some(c => remaining(c) < 0))
     throw new ReportError("The dated ledger contains transfers exceeding a certificate's issued shares. Correct the ledger before running this report.");
   const common = sum(certificates.filter(c => c.shareClass === "Common").map(remaining));
@@ -168,7 +169,7 @@ export function buildReport(
             "Shares Transferred": transferred, "Transfer Date": joinDates(out.map(t => t.transferDate)),
             "Transferred To": unique(out.map(t => `${t.recipientCertificateId} (${t.recipientName})`)),
             "Amount Paid for Transfer": consideration(out), "Transfer Reason": unique(out.map(t => t.reason ?? "")),
-            "Shares Cancelled": c.status === "Cancelled" ? c.quantity - transferred : 0, "Certificate Status": status,
+            "Shares Cancelled": c.status === "Cancelled" ? sum([c.quantity, -transferred]) : 0, "Certificate Status": status,
           };
           return certificateColumns.map(col => values[col.label] ?? null);
         }),
@@ -195,7 +196,7 @@ export function buildReport(
     events.push({ ...base, holderId: t.recipientId, delta: t.quantity, event: `${t.quantity} ${t.shareClass} shares transferred in`, counterparty: t.originatorName });
   }
   for (const c of certificates.filter(c => c.status === "Cancelled")) {
-    const amount = c.quantity - sum(outgoing(c.id).map(t => t.quantity));
+    const amount = sum([c.quantity, -sum(outgoing(c.id).map(t => t.quantity))]);
     events.push({ holderId: c.shareholderId, date: "undated", order: c.id, delta: -amount, event: "Cancellation — effective date not recorded",
       shareClass: c.shareClass, source: c.id, destination: "", counterparty: "", reason: "", price: null });
   }

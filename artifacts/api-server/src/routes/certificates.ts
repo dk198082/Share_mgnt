@@ -38,7 +38,7 @@ router.post("/shareholders/:id/certificates", async (req, res) => {
   const params = IssueCertificateParams.safeParse(req.params);
   const parsed = IssueCertificateBody.strict().safeParse(req.body);
   if (!params.success || !parsed.success) {
-    res.status(400).json({ error: "Choose Common or Preferred, a positive whole share quantity, a valid issue date, and a vesting schedule." }); return;
+    res.status(400).json({ error: "Choose Common or Preferred, a positive share quantity with up to 2 decimal places, a valid issue date, and a vesting schedule." }); return;
   }
   const input = { ...parsed.data, vestingSchedule: parsed.data.vestingSchedule.trim() };
   const date = new Date(input.issueDate);
@@ -70,7 +70,7 @@ router.post("/shareholders/:id/certificates/:certificateId/transfers", async (re
   const params = TransferSharesParams.safeParse(req.params);
   const parsed = TransferSharesBody.strict().safeParse(req.body);
   if (!params.success || !parsed.success) {
-    res.status(400).json({ error: "Enter a recipient, a positive whole share quantity, a valid transfer date, and an optional nonnegative price (up to six decimal places)." }); return;
+    res.status(400).json({ error: "Enter a recipient, a positive share quantity with up to 2 decimal places, a valid transfer date, and an optional nonnegative price (up to six decimal places)." }); return;
   }
   const origin = getNotificationOrigin(req);
   if (!origin) { res.status(400).json({ error: "A secure app origin is required to notify the configured signers." }); return; }

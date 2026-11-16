@@ -3,6 +3,7 @@ import { db, settingsAuditTable } from "@workspace/db";
 import { and, desc, eq, lt, or } from "drizzle-orm";
 import { ListSettingsAuditQueryParams, ListSettingsAuditResponse } from "@workspace/api-zod";
 import { CertificateError, type Transaction } from "../lib/certificates";
+import { loadCentralizedAudit } from "../lib/centralized-audit";
 
 const router: IRouter = Router();
 export async function loadSettingsAudit(cursor?: string, reader: Pick<Transaction, "select"> = db) {
@@ -21,7 +22,8 @@ export async function loadSettingsAudit(cursor?: string, reader: Pick<Transactio
 // Mounted only behind the settings employee/admin middleware.
 router.get("/audit", async (req, res): Promise<void> => {
   const parsed = ListSettingsAuditQueryParams.safeParse(req.query);
-  if (!parsed.success) { res.status(400).json({ error: "Invalid audit cursor." }); return; }
-  res.json(await loadSettingsAudit(parsed.data.before));
+  if (!parsed.success) { res.status(400).json({ error: "Invalid activity filters or audit cursor." }); return; }
+  res.set("Cache-Control", "no-store");
+  res.json(await loadCentralizedAudit(parsed.data));
 });
 export default router;

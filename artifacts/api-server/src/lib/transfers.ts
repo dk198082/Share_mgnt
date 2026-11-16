@@ -3,6 +3,7 @@ import { eq, inArray, sql } from "drizzle-orm";
 import { activityTable, certificatesTable, shareholdersTable, shareTransfersTable, type ShareTransferRow } from "@workspace/db";
 import { CertificateError, issueCertificateInTransaction, remainingShares, type Transaction } from "./certificates";
 import { change, profileChanges, recordActivity } from "./audit";
+import { addShares, isShareQuantity, SHARE_QUANTITY_MESSAGE, shareUnits, subtractShares } from "@workspace/share-quantities";
 
 export type TransferInput = {
   sources?: { certificateId: string; quantity: number }[];
@@ -20,12 +21,12 @@ export function transferSources(row: { sourceCertificateId: string; quantity: nu
 }
 export function inputSources(certificateId: string, input: TransferInput) {
   const sources = input.sources ?? [{ certificateId, quantity: input.quantity }];
-  if (!sources.length || sources.length > 100 ||
+  if (!isShareQuantity(input.quantity) || !sources.length || sources.length > 100 ||
       new Set(sources.map(s => s.certificateId)).size !== sources.length ||
       !sources.some(s => s.certificateId === certificateId) ||
-      sources.some(s => !s.certificateId || !Number.isSafeInteger(s.quantity) || s.quantity <= 0 || s.quantity > 1e12) ||
-      sources.reduce((n, s) => n + s.quantity, 0) !== input.quantity) {
-    throw new CertificateError(400, "Select up to 100 distinct source certificates with positive whole quantities adding up to the transfer total.");
+      sources.some(s => !s.certificateId || !isShareQuantity(s.quantity)) ||
+      sources.reduce((units, s) => units + shareUnits(s.quantity), 0n) !== shareUnits(input.quantity)) {
+    throw new CertificateError(400, "Select up to 100 distinct source certificates with positive quantities of up to 2 decimal places adding up to the transfer total.");
   }
   // Rebuild keys as well as sorting rows: JSONB can reorder object properties.
   // Approval execution and retries must hash the same allocation payload.
@@ -57,7 +58,7 @@ export function presentTransfer(row: ShareTransferRow) {
 export function validateTransferInput(originatorId: string, input: TransferInput) {
   if (Boolean(input.recipientId) === Boolean(input.newRecipient)) throw new CertificateError(400, "Choose an existing recipient or add a new recipient, not both.");
   if (input.recipientId === originatorId) throw new CertificateError(400, "The recipient must be a different shareholder.");
-  if (!Number.isSafeInteger(input.quantity) || input.quantity <= 0 || input.quantity > 1e12) throw new CertificateError(400, "Enter a positive whole share quantity.");
+  if (!isShareQuantity(input.quantity)) throw new CertificateError(400, SHARE_QUANTITY_MESSAGE);
   const day = new Date(input.transferDate);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(input.transferDate) || Number.isNaN(day.getTime()) ||
       day.toISOString().slice(0, 10) !== input.transferDate || input.transferDate > new Date().toISOString().slice(0, 10)) {
@@ -108,7 +109,7 @@ export async function transferInTransaction(tx: Transaction, originatorId: strin
     vestingSchedule: source.vestingSchedule, requestId: `transfer:${input.requestId}`,
   }, actor);
   for (const row of sourceRows) {
-    const transferredQuantity = row.transferredQuantity + allocations.find(s => s.certificateId === row.id)!.quantity;
+    const transferredQuantity = addShares(row.transferredQuantity, allocations.find(s => s.certificateId === row.id)!.quantity);
     await tx.update(certificatesTable).set({
       transferredQuantity, status: transferredQuantity === row.quantity ? "Transferred" : "Partially Transferred",
     }).where(eq(certificatesTable.id, row.id));
@@ -135,8 +136,8 @@ export async function transferInTransaction(tx: Transaction, originatorId: strin
     changes: [...details, change("Recipient", null, String(recipient.data.name)),
       ...sourceRows.flatMap(row => {
         const amount = allocations.find(s => s.certificateId === row.id)!.quantity;
-        return [change(`${row.id} remaining shares`, remainingShares(row), remainingShares(row) - amount),
-          change(`${row.id} status`, row.status, row.transferredQuantity + amount === row.quantity ? "Transferred" : "Partially Transferred")];
+        return [change(`${row.id} remaining shares`, remainingShares(row), subtractShares(remainingShares(row), amount)),
+          change(`${row.id} status`, row.status, addShares(row.transferredQuantity, amount) === row.quantity ? "Transferred" : "Partially Transferred")];
       })] });
   await recordActivity(tx, { shareholderId: recipientId, name: String(recipient.data.name), actor,
     action: `${input.quantity} ${source.shareClass} shares received from ${originator.data.name} · ${allocations.map(s => s.certificateId).join(", ")} → ${issued.id}`,

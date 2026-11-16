@@ -1,5 +1,6 @@
 import { PDFDocument, PDFTextField, PDFDict, PDFArray, StandardFonts, rgb } from "pdf-lib";
 import sharp from "sharp";
+import { isShareQuantity, SHARE_QUANTITY_MESSAGE } from "@workspace/share-quantities";
 
 export type CertificatePdfInput = {
   certificateId: string; holderName: string; quantity: number; issueDate: string; shareClass: "Common" | "Preferred";
@@ -39,6 +40,7 @@ export async function validateCertificateTemplate(bytes: Uint8Array): Promise<st
 }
 
 export async function renderCertificatePdf(template: Uint8Array, data: CertificatePdfInput): Promise<Uint8Array> {
+  if (!isShareQuantity(data.quantity)) throw new Error(SHARE_QUANTITY_MESSAGE);
   const pdf = await PDFDocument.load(template);
   const font = await pdf.embedFont(StandardFonts.TimesRoman);
   const form = pdf.getForm();

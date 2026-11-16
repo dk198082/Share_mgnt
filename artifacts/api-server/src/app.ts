@@ -8,6 +8,8 @@ import router from "./routes";
 import { logger } from "./lib/logger";
 import cookieParser from "cookie-parser";
 import { authMiddleware } from "./middlewares/authMiddleware";
+import { requireEmployee } from "./middlewares/employee";
+import { requireImportUpload } from "./lib/legacy-import/access";
 
 const app: Express = express();
 
@@ -39,9 +41,11 @@ app.use(
 );
 app.use(cors({ origin: false }));
 app.use(cookieParser());
+app.use(authMiddleware);
+// XLSX bytes exist transiently in this bounded request only, never in logs or DB.
+app.use("/api/settings/data-import/analyze", requireEmployee, requireImportUpload, express.json({ limit: "8mb" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(authMiddleware);
 app.use((req, res, next) => {
   if (process.env.MAINTENANCE_READ_ONLY === "true" && !["GET", "HEAD", "OPTIONS"].includes(req.method)) {
     res.set("Retry-After", "60");
@@ -62,38 +66,30 @@ app.use("/api", (_req, res) => {
   res.status(404).json({ error: "Not found" });
 });
 app.use((err: unknown, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+  if (req.path === "/api/settings/data-import/analyze") {
+    const bodyError = err as { type?: string };
+    if (bodyError.type === "entity.too.large" || bodyError.type === "entity.parse.failed") {
+      res.status(bodyError.type === "entity.too.large" ? 413 : 400).json({
+        error: "Invalid import request or upload exceeds the supported size. Choose standard XLSX files totaling at most 5 MB.",
+      });
+      return;
+    }
+  }
   if (err instanceof IdentityLookupError) {
     req.log.warn({ errorType: err.name, upstreamStatus: err.upstreamStatus }, "Live sign-in verification failed");
     if (err.status === 503) res.set("Retry-After", "1");
     res.status(err.status).json({ error: err.message });
     return;
   }
-  const dbError = err as {
-  code?: string;
-  detail?: string;
-  constraint?: string;
-  table?: string;
-  schema?: string;
-};
-
-req.log.error({
-  errorType: err instanceof Error ? err.name : "Error",
-  errorMessage: err instanceof Error ? err.message : String(err),
-  errorCode: dbError.code,
-  errorDetail: dbError.detail,
-  errorTable: dbError.table,
-  errorSchema: dbError.schema,
-  errorConstraint: dbError.constraint,
-}, "Request failed");
-
+  req.log.error({ errorType: err instanceof Error ? err.name : "Error" }, "Request failed");
   res.status(500).json({ error: "The request could not be completed. Please try again." });
 });
 
 // AZURE: on Replit, the frontend (artifacts/shareholder-management) and this
-// API are two separate deployed services behind Replit's own router. On
-// Azure this ships as one container, so this server also serves the built
-// frontend as static files, with an SPA fallback for client-side routes.
-// Unset in local dev; set by the Dockerfile below in production.
+// API are two separate deployed services. On Azure this ships as one
+// container, so this server also serves the built frontend as static files,
+// with an SPA fallback for client-side routes. Unset in local dev; set by
+// the Dockerfile below in production.
 const staticDir = process.env.STATIC_DIR;
 if (staticDir) {
   const indexHtml = path.join(staticDir, "index.html");

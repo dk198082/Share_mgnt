@@ -5,8 +5,10 @@ import { CertificateError, type CertificateIssueInput, type Transaction } from "
 import { requireConfiguredSigners } from "./approval-policy";
 import { change, recordActivity } from "./audit";
 import { enqueueSignoffEmails } from "./signoff-email-outbox";
+import { isShareQuantity, SHARE_QUANTITY_MESSAGE } from "@workspace/share-quantities";
 
 export async function requestIssuance(tx: Transaction, shareholderId: string, input: CertificateIssueInput, actor: string, appOrigin?: string, requesterEmail?: string) {
+  if (!isShareQuantity(input.quantity)) throw new CertificateError(400, SHARE_QUANTITY_MESSAGE);
   await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtextextended(${"transfer-request:" + input.requestId}, 0))`);
   const fingerprint = createHash("sha256").update(JSON.stringify({ kind: "Issuance", shareholderId, input })).digest("hex");
   const [existing] = await tx.select().from(transferRequestsTable).where(eq(transferRequestsTable.id, input.requestId));

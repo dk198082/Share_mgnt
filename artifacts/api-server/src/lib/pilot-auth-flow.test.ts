@@ -20,6 +20,7 @@ test("Microsoft Entra OIDC callbacks preserve tenant identities, private session
     CLIENT_ID: process.env.CLIENT_ID,
     CLIENT_SECRET: process.env.CLIENT_SECRET,
     TENANT_ID: process.env.TENANT_ID,
+    APP_PUBLIC_ORIGIN: process.env.APP_PUBLIC_ORIGIN,
   };
   process.env.NODE_ENV = "test";
   process.env.AUTH_TEST_ISSUER = issuer;
@@ -27,6 +28,7 @@ test("Microsoft Entra OIDC callbacks preserve tenant identities, private session
   process.env.CLIENT_ID = "fixture-client-id";
   process.env.CLIENT_SECRET = "fixture-client-secret";
   process.env.TENANT_ID = tenantId;
+  process.env.APP_PUBLIC_ORIGIN = "https://pilot.example.test";
   const originalFetch = globalThis.fetch;
   const ids = [randomUUID(), randomUUID()];
   const legacyId = `legacy-replit-${randomUUID()}`;
@@ -34,7 +36,7 @@ test("Microsoft Entra OIDC callbacks preserve tenant identities, private session
   const sids: string[] = [];
   const { publicKey, privateKey } = generateKeyPairSync("rsa", { modulusLength: 2048 });
   const jwk = { ...publicKey.export({ format: "jwk" }), kid: "test-key", alg: "RS256", use: "sig" };
-  const codes = new Map<string, { oid: string; tid: string; email: string; name: string; nonce: string; challenge: string }>();
+  const codes = new Map<string, { oid: string; tid: string; email: string; name: string; nonce: string; challenge: string; audience?: string; tampered?: boolean }>();
   const json = (body: unknown) => new Response(JSON.stringify(body), { headers: { "content-type": "application/json" } });
   globalThis.fetch = async (input, init) => {
     const url = String(input instanceof Request ? input.url : input);
@@ -56,12 +58,12 @@ test("Microsoft Entra OIDC callbacks preserve tenant identities, private session
       const now = Math.floor(Date.now() / 1000);
       const head = Buffer.from(JSON.stringify({ alg: "RS256", kid: "test-key" })).toString("base64url");
       const payload = Buffer.from(JSON.stringify({
-        iss: issuer, aud: process.env.CLIENT_ID, sub: `subject-${fixture.oid}`,
+        iss: issuer, aud: fixture.audience ?? process.env.CLIENT_ID, sub: `subject-${fixture.oid}`,
         oid: fixture.oid, tid: fixture.tid, email: fixture.email, preferred_username: fixture.email,
         email_verified: true, name: fixture.name, nonce: fixture.nonce, iat: now, exp: now + 300,
       })).toString("base64url");
       const content = `${head}.${payload}`;
-      const signature = sign("RSA-SHA256", Buffer.from(content), privateKey).toString("base64url");
+      const signature = (fixture.tampered ? Buffer.alloc(256, 0) : sign("RSA-SHA256", Buffer.from(content), privateKey)).toString("base64url");
       return json({ access_token: "synthetic-oidc-access-token", token_type: "Bearer", expires_in: 300, id_token: `${content}.${signature}` });
     }
     throw new Error("Unexpected network request in isolated auth test");
@@ -128,6 +130,17 @@ test("Microsoft Entra OIDC callbacks preserve tenant identities, private session
     };
     const john = await login(0, "John");
     const kathy = await login(1, "Kathy");
+    for (const alteration of [{ audience: "another-application" }, { tampered: true }]) {
+      const start = await request(app).get("/api/login").set("Host", "pilot.example.test").expect(302);
+      const authorization = new URL(start.headers.location), code = randomUUID();
+      codes.set(code, {
+        oid: ids[0], tid: tenantId, email: johnEmail, name: "Synthetic Forgery", ...alteration,
+        nonce: authorization.searchParams.get("nonce")!, challenge: authorization.searchParams.get("code_challenge")!,
+      });
+      await request(app).get(`/api/auth/callback?${new URLSearchParams({
+        code, state: authorization.searchParams.get("state")!, iss: issuer,
+      })}`).set("Host", "pilot.example.test").set("Cookie", cookiesOf(start)).expect(302).expect("Location", "/sign-in?error=failed");
+    }
     const legacyRows = await db.select().from(usersTable).where(eq(usersTable.id, legacyId));
     assert.equal(legacyRows.length, 1, "matching email does not merge or overwrite the legacy identity");
     assert.equal(legacyRows[0].lastName, "Legacy");

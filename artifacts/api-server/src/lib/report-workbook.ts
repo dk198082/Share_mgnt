@@ -36,7 +36,7 @@ export async function reportWorkbook(report: Report): Promise<Buffer> {
     spec.columns.forEach((col, i) => {
       const column = sheet.getColumn(i + 1);
       column.width = spec.name === "Notes" ? 120 : /Name|Shareholder$|Event|Address|Comments|Vesting Schedule|Transferred To/.test(col.label) ? 34 : Math.min(28, Math.max(16, col.label.length + 2));
-      column.numFmt = col.format === "percent" ? "0.0000%" : col.format === "money" ? "#,##0.00####" : col.format === "date" ? "yyyy-mm-dd" : "#,##0.########";
+      column.numFmt = col.format === "percent" ? "0.0000%" : col.format === "money" ? "#,##0.00######" : col.format === "date" ? "yyyy-mm-dd" : "#,##0.##";
     });
     for (const values of spec.rows) {
       const row = sheet.addRow(values.map((value: ReportCell, index) => {
