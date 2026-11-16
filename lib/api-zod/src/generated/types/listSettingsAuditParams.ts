@@ -5,7 +5,26 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { ListSettingsAuditCategory } from './listSettingsAuditCategory';
 
 export type ListSettingsAuditParams = {
+/**
+ * @maxLength 200
+ */
 before?: string;
+category?: ListSettingsAuditCategory;
+/**
+ * @maxLength 200
+ */
+search?: string;
+/**
+ * First included UTC day, YYYY-MM-DD (years 0001–9999), starting at 00:00:00 UTC.
+ * @pattern ^\d{4}-\d{2}-\d{2}$
+ */
+from?: string;
+/**
+ * Last included UTC day, YYYY-MM-DD (years 0001–9999). Includes all timestamps strictly before 00:00:00 UTC on the next day.
+ * @pattern ^\d{4}-\d{2}-\d{2}$
+ */
+to?: string;
 };

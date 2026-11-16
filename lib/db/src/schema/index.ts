@@ -30,3 +30,4 @@ export * from "./certificate-templates";
 export * from "./certificate-request-templates";
 export * from "./certificate-documents";
 export * from "./signoff-result-email-notifications";
+export * from "./legacy-imports";

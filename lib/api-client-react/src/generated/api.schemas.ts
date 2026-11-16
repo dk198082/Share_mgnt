@@ -5,6 +5,111 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export type LegacyImportStatusMode = typeof LegacyImportStatusMode[keyof typeof LegacyImportStatusMode];
+
+
+export const LegacyImportStatusMode = {
+  off: 'off',
+  preview: 'preview',
+  azure: 'azure',
+} as const;
+
+export interface LegacyImportStatus {
+  enabled: boolean;
+  environment: string;
+  message: string;
+  mode: LegacyImportStatusMode;
+  requiresSyntheticData: boolean;
+}
+
+export interface LegacyImportFile {
+  /**
+     * @minLength 1
+     * @maxLength 255
+     */
+  name: string;
+  /**
+     * @minLength 1
+     * @maxLength 7000000
+     */
+  base64: string;
+}
+
+export interface LegacyImportInput {
+  syntheticOnly: boolean;
+  /**
+     * @minItems 3
+     * @maxItems 7
+     */
+  files: LegacyImportFile[];
+}
+
+export interface LegacyImportConfirmation {
+  acknowledgeWarnings: boolean;
+  syntheticOnly: boolean;
+}
+
+export type LegacyImportIssueSeverity = typeof LegacyImportIssueSeverity[keyof typeof LegacyImportIssueSeverity];
+
+
+export const LegacyImportIssueSeverity = {
+  error: 'error',
+  warning: 'warning',
+} as const;
+
+export interface LegacyImportIssue {
+  severity: LegacyImportIssueSeverity;
+  code: string;
+  location: string;
+  message: string;
+}
+
+export interface LegacyImportCounts {
+  shareholders: number;
+  certificates: number;
+  transfers: number;
+  excludedSecurities: number;
+  commonShares: number;
+  preferredShares: number;
+}
+
+export interface LegacyImportSource {
+  name: string;
+  sha256: string;
+  objectPath?: string;
+}
+
+export interface LegacyImportBalance {
+  externalId: string;
+  shareClass: string;
+  expected: number;
+  calculated: number;
+  matches: boolean;
+}
+
+export type LegacyImportRunStatus = typeof LegacyImportRunStatus[keyof typeof LegacyImportRunStatus];
+
+
+export const LegacyImportRunStatus = {
+  ready: 'ready',
+  blocked: 'blocked',
+  committed: 'committed',
+} as const;
+
+export interface LegacyImportRun {
+  id: string;
+  status: LegacyImportRunStatus;
+  operator: string;
+  createdAt: string;
+  /** @nullable */
+  committedAt: string | null;
+  sources: LegacyImportSource[];
+  counts: LegacyImportCounts;
+  issues: LegacyImportIssue[];
+  balances: LegacyImportBalance[];
+  shareholderIds: string[];
+}
+
 export type PilotDataImportInputConfirmation = typeof PilotDataImportInputConfirmation[keyof typeof PilotDataImportInputConfirmation];
 
 
@@ -109,6 +214,26 @@ export const SettingsAuditEntryOutcome = {
   failed: 'failed',
 } as const;
 
+export type SettingsAuditEntrySource = typeof SettingsAuditEntrySource[keyof typeof SettingsAuditEntrySource];
+
+
+export const SettingsAuditEntrySource = {
+  administration: 'administration',
+  shareholder: 'shareholder',
+} as const;
+
+export type SettingsAuditEntryCategory = typeof SettingsAuditEntryCategory[keyof typeof SettingsAuditEntryCategory];
+
+
+export const SettingsAuditEntryCategory = {
+  administration: 'administration',
+  shareholders: 'shareholders',
+  issuance: 'issuance',
+  transfers: 'transfers',
+  approvals: 'approvals',
+  documents: 'documents',
+} as const;
+
 export interface HistoryChange {
   field: string;
   /** @nullable */
@@ -131,6 +256,13 @@ export interface SettingsAuditEntry {
   createdAt: string;
   /** @nullable */
   completedAt: string | null;
+  source?: SettingsAuditEntrySource;
+  category?: SettingsAuditEntryCategory;
+  /** @nullable */
+  shareholderId?: string | null;
+  /** @nullable */
+  shareholderName?: string | null;
+  detailed?: boolean;
 }
 
 export interface SettingsAuditPage {
@@ -393,7 +525,7 @@ export const CertificateInputShareClass = {
 export interface CertificateInput {
   shareClass: CertificateInputShareClass;
   /**
-     * @minimum 1
+     * @minimum 0.01
      * @maximum 1000000000000
      */
   quantity: number;
@@ -448,7 +580,7 @@ export interface TransferSource {
      */
   certificateId: string;
   /**
-     * @minimum 1
+     * @minimum 0.01
      * @maximum 1000000000000
      */
   quantity: number;
@@ -591,7 +723,7 @@ export interface TransferInput {
   recipientId?: string;
   newRecipient?: RecipientInput;
   /**
-     * @minimum 1
+     * @minimum 0.01
      * @maximum 1000000000000
      */
   quantity: number;
@@ -720,8 +852,39 @@ export type ImportPilotData200 = {
 };
 
 export type ListSettingsAuditParams = {
+/**
+ * @maxLength 200
+ */
 before?: string;
+category?: ListSettingsAuditCategory;
+/**
+ * @maxLength 200
+ */
+search?: string;
+/**
+ * First included UTC day, YYYY-MM-DD (years 0001–9999), starting at 00:00:00 UTC.
+ * @pattern ^\d{4}-\d{2}-\d{2}$
+ */
+from?: string;
+/**
+ * Last included UTC day, YYYY-MM-DD (years 0001–9999). Includes all timestamps strictly before 00:00:00 UTC on the next day.
+ * @pattern ^\d{4}-\d{2}-\d{2}$
+ */
+to?: string;
 };
+
+export type ListSettingsAuditCategory = typeof ListSettingsAuditCategory[keyof typeof ListSettingsAuditCategory];
+
+
+export const ListSettingsAuditCategory = {
+  all: 'all',
+  administration: 'administration',
+  shareholders: 'shareholders',
+  issuance: 'issuance',
+  transfers: 'transfers',
+  approvals: 'approvals',
+  documents: 'documents',
+} as const;
 
 export type GetSession200 = {
   authorized: boolean;

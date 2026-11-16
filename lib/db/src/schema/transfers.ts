@@ -1,4 +1,4 @@
-import { pgTable, text, bigint, date, timestamp, check, index, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, numeric, date, timestamp, check, index, jsonb } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { shareholdersTable } from "./shareholders";
@@ -14,7 +14,7 @@ export const shareTransfersTable = pgTable("share_transfers", {
   originatorName: text("originator_name").notNull(),
   recipientName: text("recipient_name").notNull(),
   shareClass: text("share_class").$type<"Common" | "Preferred">().notNull(),
-  quantity: bigint("quantity", { mode: "number" }).notNull(),
+  quantity: numeric("quantity", { precision: 15, scale: 2, mode: "number" }).notNull(),
   transferDate: date("transfer_date", { mode: "string" }).notNull(),
   reason: text("reason").notNull().default(""),
   attachments: jsonb("attachments").$type<{ name: string; objectPath: string; size: number }[]>().notNull().default([]),
@@ -25,7 +25,7 @@ export const shareTransfersTable = pgTable("share_transfers", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 }, t => [
   check("transfer_different_owners", sql`${t.originatorId} <> ${t.recipientId}`),
-  check("transfer_positive_quantity", sql`${t.quantity} > 0 AND ${t.quantity} <= 1000000000000`),
+  check("transfer_positive_quantity", sql`${t.quantity} > 0::numeric AND ${t.quantity} <= 1000000000000::numeric`),
   index("transfer_originator_index").on(t.originatorId),
   index("transfer_recipient_index").on(t.recipientId),
 ]);

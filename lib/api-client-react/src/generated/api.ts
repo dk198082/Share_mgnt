@@ -36,6 +36,10 @@ import type {
   GetSummary200,
   HealthStatus,
   ImportPilotData200,
+  LegacyImportConfirmation,
+  LegacyImportInput,
+  LegacyImportRun,
+  LegacyImportStatus,
   ListCertificatePdfsParams,
   ListSettingsAuditParams,
   ListShareholderHistoryParams,
@@ -92,6 +96,313 @@ const withQueryKey = <T extends object, K>(query: T, queryKey: K): T & { queryKe
   }
   return result;
 };
+
+export const getGetLegacyImportStatusUrl = () => {
+
+
+
+
+  return `/api/settings/data-import/status`
+}
+
+export const getLegacyImportStatus = async ( options?: Parameters<typeof customFetch>[1]): Promise<LegacyImportStatus> => {
+
+  return customFetch<LegacyImportStatus>(getGetLegacyImportStatusUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetLegacyImportStatusQueryKey = () => {
+    return [
+    `/api/settings/data-import/status`
+    ] as const;
+    }
+
+
+export const getGetLegacyImportStatusQueryOptions = <TData = Awaited<ReturnType<typeof getLegacyImportStatus>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLegacyImportStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetLegacyImportStatusQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLegacyImportStatus>>> = ({ signal }) => getLegacyImportStatus({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLegacyImportStatus>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetLegacyImportStatusQueryResult = NonNullable<Awaited<ReturnType<typeof getLegacyImportStatus>>>
+export type GetLegacyImportStatusQueryError = ErrorType<unknown>
+
+
+
+export function useGetLegacyImportStatus<TData = Awaited<ReturnType<typeof getLegacyImportStatus>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLegacyImportStatus>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetLegacyImportStatusQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListLegacyImportRunsUrl = () => {
+
+
+
+
+  return `/api/settings/data-import/runs`
+}
+
+export const listLegacyImportRuns = async ( options?: Parameters<typeof customFetch>[1]): Promise<LegacyImportRun[]> => {
+
+  return customFetch<LegacyImportRun[]>(getListLegacyImportRunsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListLegacyImportRunsQueryKey = () => {
+    return [
+    `/api/settings/data-import/runs`
+    ] as const;
+    }
+
+
+export const getListLegacyImportRunsQueryOptions = <TData = Awaited<ReturnType<typeof listLegacyImportRuns>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listLegacyImportRuns>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListLegacyImportRunsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listLegacyImportRuns>>> = ({ signal }) => listLegacyImportRuns({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listLegacyImportRuns>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListLegacyImportRunsQueryResult = NonNullable<Awaited<ReturnType<typeof listLegacyImportRuns>>>
+export type ListLegacyImportRunsQueryError = ErrorType<unknown>
+
+
+
+export function useListLegacyImportRuns<TData = Awaited<ReturnType<typeof listLegacyImportRuns>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listLegacyImportRuns>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListLegacyImportRunsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getAnalyzeLegacyImportUrl = () => {
+
+
+
+
+  return `/api/settings/data-import/analyze`
+}
+
+export const analyzeLegacyImport = async (legacyImportInput: LegacyImportInput, options?: Parameters<typeof customFetch>[1]): Promise<LegacyImportRun> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<LegacyImportRun>(getAnalyzeLegacyImportUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(legacyImportInput)
+  }
+);}
+
+
+
+
+
+export const getAnalyzeLegacyImportMutationKey = () => ['analyzeLegacyImport'] as const;
+
+export const getAnalyzeLegacyImportMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof analyzeLegacyImport>>, TError,AnalyzeLegacyImportMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof analyzeLegacyImport>>, TError,AnalyzeLegacyImportMutationVariables, TContext> => {
+
+const mutationKey = getAnalyzeLegacyImportMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof analyzeLegacyImport>>, AnalyzeLegacyImportMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  analyzeLegacyImport(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AnalyzeLegacyImportMutationResult = NonNullable<Awaited<ReturnType<typeof analyzeLegacyImport>>>
+    export type AnalyzeLegacyImportMutationBody = BodyType<LegacyImportInput>
+    export type AnalyzeLegacyImportMutationError = ErrorType<void>
+    export type AnalyzeLegacyImportMutationVariables = {data: BodyType<LegacyImportInput>}
+
+    export const useAnalyzeLegacyImport = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof analyzeLegacyImport>>, TError,AnalyzeLegacyImportMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof analyzeLegacyImport>>,
+        TError,
+        AnalyzeLegacyImportMutationVariables,
+        TContext
+      > => {
+      return useMutation(getAnalyzeLegacyImportMutationOptions(options));
+    }
+
+export const getCommitLegacyImportUrl = (id: string,) => {
+
+
+
+
+  return `/api/settings/data-import/runs/${id}/commit`
+}
+
+export const commitLegacyImport = async (id: string,
+    legacyImportConfirmation: LegacyImportConfirmation, options?: Parameters<typeof customFetch>[1]): Promise<LegacyImportRun> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<LegacyImportRun>(getCommitLegacyImportUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(legacyImportConfirmation)
+  }
+);}
+
+
+
+
+
+export const getCommitLegacyImportMutationKey = () => ['commitLegacyImport'] as const;
+
+export const getCommitLegacyImportMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof commitLegacyImport>>, TError,CommitLegacyImportMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof commitLegacyImport>>, TError,CommitLegacyImportMutationVariables, TContext> => {
+
+const mutationKey = getCommitLegacyImportMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof commitLegacyImport>>, CommitLegacyImportMutationVariables> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  commitLegacyImport(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CommitLegacyImportMutationResult = NonNullable<Awaited<ReturnType<typeof commitLegacyImport>>>
+    export type CommitLegacyImportMutationBody = BodyType<LegacyImportConfirmation>
+    export type CommitLegacyImportMutationError = ErrorType<void>
+    export type CommitLegacyImportMutationVariables = {id: string;data: BodyType<LegacyImportConfirmation>}
+
+    export const useCommitLegacyImport = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof commitLegacyImport>>, TError,CommitLegacyImportMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof commitLegacyImport>>,
+        TError,
+        CommitLegacyImportMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCommitLegacyImportMutationOptions(options));
+    }
 
 export const getGetCurrentAuthUserUrl = () => {
 
@@ -559,6 +870,9 @@ export const getListSettingsAuditUrl = (params?: ListSettingsAuditParams,) => {
   return stringifiedParams.length > 0 ? `/api/settings/audit?${stringifiedParams}` : `/api/settings/audit`
 }
 
+/**
+ * Filter event creation timestamps before pagination. Date bounds are inclusive UTC calendar days; omit either bound for an open-ended range. Invalid dates or a from date after the to date return 400.
+ */
 export const listSettingsAudit = async (params?: ListSettingsAuditParams, options?: Parameters<typeof customFetch>[1]): Promise<SettingsAuditPage> => {
 
   return customFetch<SettingsAuditPage>(getListSettingsAuditUrl(params),

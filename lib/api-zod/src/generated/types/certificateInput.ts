@@ -10,7 +10,7 @@ import type { CertificateInputShareClass } from './certificateInputShareClass';
 export interface CertificateInput {
   shareClass: CertificateInputShareClass;
   /**
-     * @minimum 1
+     * @minimum 0.01
      * @maximum 1000000000000
      */
   quantity: number;

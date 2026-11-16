@@ -6,7 +6,9 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { HistoryChange } from './historyChange';
+import type { SettingsAuditEntryCategory } from './settingsAuditEntryCategory';
 import type { SettingsAuditEntryOutcome } from './settingsAuditEntryOutcome';
+import type { SettingsAuditEntrySource } from './settingsAuditEntrySource';
 
 export interface SettingsAuditEntry {
   id: string;
@@ -21,4 +23,11 @@ export interface SettingsAuditEntry {
   createdAt: string;
   /** @nullable */
   completedAt: string | null;
+  source?: SettingsAuditEntrySource;
+  category?: SettingsAuditEntryCategory;
+  /** @nullable */
+  shareholderId?: string | null;
+  /** @nullable */
+  shareholderName?: string | null;
+  detailed?: boolean;
 }

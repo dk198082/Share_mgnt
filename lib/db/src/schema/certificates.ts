@@ -1,4 +1,4 @@
-import { pgTable, text, integer, bigint, date, timestamp, check, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, numeric, date, timestamp, check, uniqueIndex } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
 import { shareholdersTable } from "./shareholders";
@@ -16,8 +16,8 @@ export const certificatesTable = pgTable("certificates", {
   sequenceNumber: integer("sequence_number").notNull(),
   shareholderId: text("shareholder_id").notNull().references(() => shareholdersTable.id, { onDelete: "restrict" }),
   shareClass: text("share_class").$type<"Common" | "Preferred">().notNull(),
-  quantity: bigint("quantity", { mode: "number" }).notNull(),
-  transferredQuantity: bigint("transferred_quantity", { mode: "number" }).notNull().default(0),
+  quantity: numeric("quantity", { precision: 15, scale: 2, mode: "number" }).notNull(),
+  transferredQuantity: numeric("transferred_quantity", { precision: 15, scale: 2, mode: "number" }).notNull().default(0),
   issueDate: date("issue_date", { mode: "string" }),
   status: text("status").$type<"Outstanding" | "Partially Transferred" | "Transferred" | "Cancelled">().notNull().default("Outstanding"),
   vestingSchedule: text("vesting_schedule").notNull(),
@@ -27,11 +27,11 @@ export const certificatesTable = pgTable("certificates", {
 }, (t) => [
   uniqueIndex("certificate_class_sequence_unique").on(t.shareClass, t.sequenceNumber),
   check("certificate_class_valid", sql`${t.shareClass} IN ('Common', 'Preferred')`),
-  check("certificate_quantity_positive", sql`${t.quantity} > 0 AND ${t.quantity} <= 1000000000000`),
+  check("certificate_quantity_positive", sql`${t.quantity} > 0::numeric AND ${t.quantity} <= 1000000000000::numeric`),
   check("certificate_number_positive", sql`${t.sequenceNumber} > 0`),
   check("certificate_id_matches_sequence", sql`${t.id} = (CASE WHEN ${t.shareClass} = 'Common' THEN 'C-' ELSE 'P-' END) || ${t.sequenceNumber}::text`),
   check("certificate_status_valid", sql`${t.status} IN ('Outstanding', 'Partially Transferred', 'Transferred', 'Cancelled')`),
-  check("certificate_transferred_range", sql`${t.transferredQuantity} >= 0 AND ${t.transferredQuantity} <= ${t.quantity}`),
+  check("certificate_transferred_range", sql`${t.transferredQuantity} >= 0::numeric AND ${t.transferredQuantity} <= ${t.quantity}`),
 ]);
 
 export const insertCertificateSchema = createInsertSchema(certificatesTable);

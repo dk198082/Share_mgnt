@@ -11,6 +11,63 @@ tags:
   - name: health
     description: Health operations
 paths:
+  /settings/data-import/status:
+    get:
+      operationId: getLegacyImportStatus
+      responses:
+        "200":
+          description: Preview import availability
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LegacyImportStatus" }
+  /settings/data-import/runs:
+    get:
+      operationId: listLegacyImportRuns
+      responses:
+        "200":
+          description: Import history and validation results
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/LegacyImportRun" }
+  /settings/data-import/analyze:
+    post:
+      operationId: analyzeLegacyImport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LegacyImportInput" }
+      responses:
+        "201":
+          description: Staged validation; no ledger records changed
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LegacyImportRun" }
+        "400": { description: Invalid files }
+        "403": { description: Import disabled outside Preview }
+  /settings/data-import/runs/{id}/commit:
+    post:
+      operationId: commitLegacyImport
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/LegacyImportConfirmation" }
+      responses:
+        "200":
+          description: Atomically imported, or already imported
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/LegacyImportRun" }
+        "409": { description: Blocking errors or conflicting records }
+        "403": { description: Import disabled outside Preview }
   /auth/user:
     get:
       operationId: getCurrentAuthUser
@@ -87,18 +144,33 @@ paths:
   /settings/audit:
     get:
       operationId: listSettingsAudit
+      description: Filter event creation timestamps before pagination. Date bounds are inclusive UTC calendar days; omit either bound for an open-ended range. Invalid dates or a from date after the to date return 400.
       parameters:
         - in: query
           name: before
-          schema: { type: string, format: uuid }
+          schema: { type: string, maxLength: 200 }
+        - in: query
+          name: category
+          schema: { type: string, enum: [all, administration, shareholders, issuance, transfers, approvals, documents] }
+        - in: query
+          name: search
+          schema: { type: string, maxLength: 200 }
+        - in: query
+          name: from
+          description: First included UTC day, YYYY-MM-DD (years 0001–9999), starting at 00:00:00 UTC.
+          schema: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
+        - in: query
+          name: to
+          description: Last included UTC day, YYYY-MM-DD (years 0001–9999). Includes all timestamps strictly before 00:00:00 UTC on the next day.
+          schema: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
       responses:
         "200":
-          description: Admin-only settings audit, newest first, 50 entries per page
+          description: Centralized administrative and shareholder activity, newest first, 50 entries per page
           content:
             application/json:
               schema: { $ref: "#/components/schemas/SettingsAuditPage" }
         "400":
-          description: Invalid pagination cursor
+          description: Invalid activity filters, calendar dates, reversed date range, or pagination cursor
         "401":
           description: Sign-in required
         "403":
@@ -714,6 +786,93 @@ paths:
               schema: { type: string, format: binary }
 components:
   schemas:
+    LegacyImportStatus:
+      type: object
+      required: [enabled, environment, message, mode, requiresSyntheticData]
+      properties:
+        enabled: { type: boolean }
+        environment: { type: string }
+        message: { type: string }
+        mode: { type: string, enum: [off, preview, azure] }
+        requiresSyntheticData: { type: boolean }
+    LegacyImportInput:
+      type: object
+      required: [syntheticOnly, files]
+      properties:
+        syntheticOnly: { type: boolean }
+        files:
+          type: array
+          minItems: 3
+          maxItems: 7
+          items: { $ref: "#/components/schemas/LegacyImportFile" }
+    LegacyImportFile:
+      type: object
+      required: [name, base64]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 255 }
+        base64: { type: string, minLength: 1, maxLength: 7000000 }
+    LegacyImportConfirmation:
+      type: object
+      required: [acknowledgeWarnings, syntheticOnly]
+      properties:
+        acknowledgeWarnings: { type: boolean }
+        syntheticOnly: { type: boolean }
+    LegacyImportIssue:
+      type: object
+      required: [severity, code, location, message]
+      properties:
+        severity: { type: string, enum: [error, warning] }
+        code: { type: string }
+        location: { type: string }
+        message: { type: string }
+    LegacyImportCounts:
+      type: object
+      required: [shareholders, certificates, transfers, excludedSecurities, commonShares, preferredShares]
+      properties:
+        shareholders: { type: integer }
+        certificates: { type: integer }
+        transfers: { type: integer }
+        excludedSecurities: { type: integer }
+        commonShares: { type: number }
+        preferredShares: { type: number }
+    LegacyImportSource:
+      type: object
+      required: [name, sha256]
+      properties:
+        name: { type: string }
+        sha256: { type: string }
+        objectPath: { type: string }
+    LegacyImportBalance:
+      type: object
+      required: [externalId, shareClass, expected, calculated, matches]
+      properties:
+        externalId: { type: string }
+        shareClass: { type: string }
+        expected: { type: number }
+        calculated: { type: number }
+        matches: { type: boolean }
+    LegacyImportRun:
+      type: object
+      required: [id, status, operator, createdAt, committedAt, sources, counts, issues, balances, shareholderIds]
+      properties:
+        id: { type: string }
+        status: { type: string, enum: [ready, blocked, committed] }
+        operator: { type: string }
+        createdAt: { type: string }
+        committedAt: { type: ["string", "null"] }
+        sources:
+          type: array
+          items: { $ref: "#/components/schemas/LegacyImportSource" }
+        counts: { $ref: "#/components/schemas/LegacyImportCounts" }
+        issues:
+          type: array
+          items: { $ref: "#/components/schemas/LegacyImportIssue" }
+        balances:
+          type: array
+          items: { $ref: "#/components/schemas/LegacyImportBalance" }
+        shareholderIds:
+          type: array
+          items: { type: string }
     PilotDataImportInput:
       type: object
       additionalProperties: false
@@ -789,6 +948,11 @@ components:
         detail: { type: [string, "null"] }
         createdAt: { type: string }
         completedAt: { type: [string, "null"] }
+        source: { type: string, enum: [administration, shareholder] }
+        category: { type: string, enum: [administration, shareholders, issuance, transfers, approvals, documents] }
+        shareholderId: { type: [string, "null"] }
+        shareholderName: { type: [string, "null"] }
+        detailed: { type: boolean }
     SettingsAuditPage:
       type: object
       required: [entries, nextCursor]
@@ -949,7 +1113,7 @@ components:
       required: [shareClass, quantity, issueDate, vestingSchedule, requestId]
       properties:
         shareClass: { type: string, enum: [Common, Preferred] }
-        quantity: { type: integer, minimum: 1, maximum: 1000000000000 }
+        quantity: { type: number, minimum: 0.01, maximum: 1000000000000, multipleOf: 0.01 }
         issueDate: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
         vestingSchedule: { type: string, minLength: 1, maxLength: 500 }
         requestId: { type: string, format: uuid }
@@ -960,9 +1124,9 @@ components:
         id: { type: string }
         shareholderId: { type: string }
         shareClass: { type: string, enum: [Common, Preferred] }
-        quantity: { type: integer }
-        remainingQuantity: { type: integer }
-        transferredQuantity: { type: integer }
+        quantity: { type: number }
+        remainingQuantity: { type: number }
+        transferredQuantity: { type: number }
         issueDate: { type: [string, "null"] }
         status: { type: string, enum: [Outstanding, Partially Transferred, Transferred, Cancelled] }
         vestingSchedule: { type: string }
@@ -1011,7 +1175,7 @@ components:
       properties:
         requestId: { type: string }
         shareClass: { type: string, enum: [Common, Preferred] }
-        quantity: { type: integer }
+        quantity: { type: number }
         issueDate: { type: string }
         vestingSchedule: { type: string }
     EmailNotificationSummary:
@@ -1071,7 +1235,7 @@ components:
         certificateId: { type: string }
         shareholderId: { type: string }
         shareholderName: { type: string }
-        quantity: { type: integer }
+        quantity: { type: number }
     CertificateDirectoryEntry:
       allOf:
         - $ref: "#/components/schemas/Certificate"
@@ -1106,7 +1270,7 @@ components:
           items: { $ref: "#/components/schemas/TransferSource" }
         recipientId: { type: string, minLength: 1 }
         newRecipient: { $ref: "#/components/schemas/RecipientInput" }
-        quantity: { type: integer, minimum: 1, maximum: 1000000000000 }
+        quantity: { type: number, minimum: 0.01, maximum: 1000000000000, multipleOf: 0.01 }
         transferDate: { type: string, pattern: '^\d{4}-\d{2}-\d{2}$' }
         reason: { type: string, maxLength: 1000 }
         pricePerShare: { type: string, pattern: '^[0-9]{1,18}(\.[0-9]{1,6})?$', maxLength: 25 }
@@ -1121,7 +1285,7 @@ components:
       required: [certificateId, quantity]
       properties:
         certificateId: { type: string, minLength: 1, maxLength: 100 }
-        quantity: { type: integer, minimum: 1, maximum: 1000000000000 }
+        quantity: { type: number, minimum: 0.01, maximum: 1000000000000, multipleOf: 0.01 }
     RecipientInput:
       type: object
       additionalProperties: false
@@ -1144,7 +1308,7 @@ components:
         recipientId: { type: string }
         recipientName: { type: string }
         shareClass: { type: string, enum: [Common, Preferred] }
-        quantity: { type: integer }
+        quantity: { type: number }
         transferDate: { type: string }
         reason: { type: string }
         pricePerShare: { type: [string, "null"] }

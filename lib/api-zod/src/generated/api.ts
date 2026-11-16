@@ -8,6 +8,150 @@
 import * as zod from 'zod';
 
 
+export const GetLegacyImportStatusResponse = zod.object({
+  "enabled": zod.boolean(),
+  "environment": zod.string(),
+  "message": zod.string(),
+  "mode": zod.enum(['off', 'preview', 'azure']),
+  "requiresSyntheticData": zod.boolean()
+})
+
+
+export const ListLegacyImportRunsResponseItem = zod.object({
+  "id": zod.string(),
+  "status": zod.enum(['ready', 'blocked', 'committed']),
+  "operator": zod.string(),
+  "createdAt": zod.string(),
+  "committedAt": zod.string().nullable(),
+  "sources": zod.array(zod.object({
+  "name": zod.string(),
+  "sha256": zod.string(),
+  "objectPath": zod.string().optional()
+})),
+  "counts": zod.object({
+  "shareholders": zod.number().int(),
+  "certificates": zod.number().int(),
+  "transfers": zod.number().int(),
+  "excludedSecurities": zod.number().int(),
+  "commonShares": zod.number(),
+  "preferredShares": zod.number()
+}),
+  "issues": zod.array(zod.object({
+  "severity": zod.enum(['error', 'warning']),
+  "code": zod.string(),
+  "location": zod.string(),
+  "message": zod.string()
+})),
+  "balances": zod.array(zod.object({
+  "externalId": zod.string(),
+  "shareClass": zod.string(),
+  "expected": zod.number(),
+  "calculated": zod.number(),
+  "matches": zod.boolean()
+})),
+  "shareholderIds": zod.array(zod.string())
+})
+export const ListLegacyImportRunsResponse = zod.array(ListLegacyImportRunsResponseItem)
+
+
+export const analyzeLegacyImportBodyFilesItemNameMax = 255;
+
+export const analyzeLegacyImportBodyFilesItemBase64Max = 7000000;
+
+export const analyzeLegacyImportBodyFilesMin = 3;
+export const analyzeLegacyImportBodyFilesMax = 7;
+
+
+
+export const AnalyzeLegacyImportBody = zod.object({
+  "syntheticOnly": zod.boolean(),
+  "files": zod.array(zod.object({
+  "name": zod.string().min(1).max(analyzeLegacyImportBodyFilesItemNameMax),
+  "base64": zod.string().min(1).max(analyzeLegacyImportBodyFilesItemBase64Max)
+})).min(analyzeLegacyImportBodyFilesMin).max(analyzeLegacyImportBodyFilesMax)
+})
+
+export const AnalyzeLegacyImportResponse = zod.object({
+  "id": zod.string(),
+  "status": zod.enum(['ready', 'blocked', 'committed']),
+  "operator": zod.string(),
+  "createdAt": zod.string(),
+  "committedAt": zod.string().nullable(),
+  "sources": zod.array(zod.object({
+  "name": zod.string(),
+  "sha256": zod.string(),
+  "objectPath": zod.string().optional()
+})),
+  "counts": zod.object({
+  "shareholders": zod.number().int(),
+  "certificates": zod.number().int(),
+  "transfers": zod.number().int(),
+  "excludedSecurities": zod.number().int(),
+  "commonShares": zod.number(),
+  "preferredShares": zod.number()
+}),
+  "issues": zod.array(zod.object({
+  "severity": zod.enum(['error', 'warning']),
+  "code": zod.string(),
+  "location": zod.string(),
+  "message": zod.string()
+})),
+  "balances": zod.array(zod.object({
+  "externalId": zod.string(),
+  "shareClass": zod.string(),
+  "expected": zod.number(),
+  "calculated": zod.number(),
+  "matches": zod.boolean()
+})),
+  "shareholderIds": zod.array(zod.string())
+})
+
+
+export const CommitLegacyImportParams = zod.object({
+  "id": zod.coerce.string()
+})
+
+export const CommitLegacyImportBody = zod.object({
+  "acknowledgeWarnings": zod.boolean(),
+  "syntheticOnly": zod.boolean()
+})
+
+export const CommitLegacyImportResponse = zod.object({
+  "id": zod.string(),
+  "status": zod.enum(['ready', 'blocked', 'committed']),
+  "operator": zod.string(),
+  "createdAt": zod.string(),
+  "committedAt": zod.string().nullable(),
+  "sources": zod.array(zod.object({
+  "name": zod.string(),
+  "sha256": zod.string(),
+  "objectPath": zod.string().optional()
+})),
+  "counts": zod.object({
+  "shareholders": zod.number().int(),
+  "certificates": zod.number().int(),
+  "transfers": zod.number().int(),
+  "excludedSecurities": zod.number().int(),
+  "commonShares": zod.number(),
+  "preferredShares": zod.number()
+}),
+  "issues": zod.array(zod.object({
+  "severity": zod.enum(['error', 'warning']),
+  "code": zod.string(),
+  "location": zod.string(),
+  "message": zod.string()
+})),
+  "balances": zod.array(zod.object({
+  "externalId": zod.string(),
+  "shareClass": zod.string(),
+  "expected": zod.number(),
+  "calculated": zod.number(),
+  "matches": zod.boolean()
+})),
+  "shareholderIds": zod.array(zod.string())
+})
+
+
 export const GetCurrentAuthUserResponse = zod.object({
   "user": zod.union([zod.object({
   "id": zod.string(),
@@ -55,8 +199,23 @@ export const ImportPilotDataResponse = zod.object({
 })
 
 
+/**
+ * Filter event creation timestamps before pagination. Date bounds are inclusive UTC calendar days; omit either bound for an open-ended range. Invalid dates or a from date after the to date return 400.
+ */
+export const listSettingsAuditQueryBeforeMax = 200;
+
+export const listSettingsAuditQuerySearchMax = 200;
+
+export const listSettingsAuditQueryFromRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+export const listSettingsAuditQueryToRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
+
+
 export const ListSettingsAuditQueryParams = zod.object({
-  "before": zod.coerce.string().uuid().optional()
+  "before": zod.coerce.string().max(listSettingsAuditQueryBeforeMax).optional(),
+  "category": zod.enum(['all', 'administration', 'shareholders', 'issuance', 'transfers', 'approvals', 'documents']).optional(),
+  "search": zod.coerce.string().max(listSettingsAuditQuerySearchMax).optional(),
+  "from": zod.coerce.string().regex(listSettingsAuditQueryFromRegExp).optional().describe('First included UTC day, YYYY-MM-DD (years 0001–9999), starting at 00:00:00 UTC.'),
+  "to": zod.coerce.string().regex(listSettingsAuditQueryToRegExp).optional().describe('Last included UTC day, YYYY-MM-DD (years 0001–9999). Includes all timestamps strictly before 00:00:00 UTC on the next day.')
 })
 
 export const ListSettingsAuditResponse = zod.object({
@@ -75,7 +234,12 @@ export const ListSettingsAuditResponse = zod.object({
 })),
   "detail": zod.string().nullable(),
   "createdAt": zod.string(),
-  "completedAt": zod.string().nullable()
+  "completedAt": zod.string().nullable(),
+  "source": zod.enum(['administration', 'shareholder']).optional(),
+  "category": zod.enum(['administration', 'shareholders', 'issuance', 'transfers', 'approvals', 'documents']).optional(),
+  "shareholderId": zod.string().nullish(),
+  "shareholderName": zod.string().nullish(),
+  "detailed": zod.boolean().optional()
 })),
   "nextCursor": zod.string().nullable()
 })
@@ -584,7 +748,9 @@ export const ListCertificatesParams = zod.object({
 
 export const listCertificatesResponseTransfersItemSourcesItemCertificateIdMax = 100;
 
+export const listCertificatesResponseTransfersItemSourcesItemQuantityMin = 0.01;
 export const listCertificatesResponseTransfersItemSourcesItemQuantityMax = 1000000000000;
+export const listCertificatesResponseTransfersItemSourcesItemQuantityMultipleOf = 0.01;
 
 export const listCertificatesResponseTransfersItemAttachmentsItemNameMax = 255;
 
@@ -597,9 +763,9 @@ export const ListCertificatesResponse = zod.object({
   "id": zod.string(),
   "shareholderId": zod.string(),
   "shareClass": zod.enum(['Common', 'Preferred']),
-  "quantity": zod.number().int(),
-  "remainingQuantity": zod.number().int(),
-  "transferredQuantity": zod.number().int(),
+  "quantity": zod.number(),
+  "remainingQuantity": zod.number(),
+  "transferredQuantity": zod.number(),
   "issueDate": zod.string().nullable(),
   "status": zod.enum(['Outstanding', 'Partially Transferred', 'Transferred', 'Cancelled']),
   "vestingSchedule": zod.string(),
@@ -610,7 +776,7 @@ export const ListCertificatesResponse = zod.object({
   "transfers": zod.array(zod.object({
   "sources": zod.array(zod.object({
   "certificateId": zod.string().min(1).max(listCertificatesResponseTransfersItemSourcesItemCertificateIdMax),
-  "quantity": zod.number().int().min(1).max(listCertificatesResponseTransfersItemSourcesItemQuantityMax)
+  "quantity": zod.number().min(listCertificatesResponseTransfersItemSourcesItemQuantityMin).max(listCertificatesResponseTransfersItemSourcesItemQuantityMax).multipleOf(listCertificatesResponseTransfersItemSourcesItemQuantityMultipleOf)
 })).nullish(),
   "id": zod.string(),
   "sourceCertificateId": zod.string(),
@@ -620,7 +786,7 @@ export const ListCertificatesResponse = zod.object({
   "recipientId": zod.string(),
   "recipientName": zod.string(),
   "shareClass": zod.enum(['Common', 'Preferred']),
-  "quantity": zod.number().int(),
+  "quantity": zod.number(),
   "transferDate": zod.string(),
   "reason": zod.string(),
   "pricePerShare": zod.string().nullable(),
@@ -641,7 +807,9 @@ export const IssueCertificateParams = zod.object({
   "id": zod.coerce.string()
 })
 
+export const issueCertificateBodyQuantityMin = 0.01;
 export const issueCertificateBodyQuantityMax = 1000000000000;
+export const issueCertificateBodyQuantityMultipleOf = 0.01;
 
 export const issueCertificateBodyIssueDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
 export const issueCertificateBodyVestingScheduleMax = 500;
@@ -650,7 +818,7 @@ export const issueCertificateBodyVestingScheduleMax = 500;
 
 export const IssueCertificateBody = zod.object({
   "shareClass": zod.enum(['Common', 'Preferred']),
-  "quantity": zod.number().int().min(1).max(issueCertificateBodyQuantityMax),
+  "quantity": zod.number().min(issueCertificateBodyQuantityMin).max(issueCertificateBodyQuantityMax).multipleOf(issueCertificateBodyQuantityMultipleOf),
   "issueDate": zod.string().regex(issueCertificateBodyIssueDateRegExp),
   "vestingSchedule": zod.string().min(1).max(issueCertificateBodyVestingScheduleMax),
   "requestId": zod.string().uuid()
@@ -670,7 +838,9 @@ export const issueCertificateResponseEmailNotificationSummarySkippedMin = 0;
 
 export const issueCertificateResponseInputSourcesItemCertificateIdMax = 100;
 
+export const issueCertificateResponseInputSourcesItemQuantityMin = 0.01;
 export const issueCertificateResponseInputSourcesItemQuantityMax = 1000000000000;
+export const issueCertificateResponseInputSourcesItemQuantityMultipleOf = 0.01;
 
 export const issueCertificateResponseInputSourcesMax = 100;
 
@@ -679,7 +849,9 @@ export const issueCertificateResponseInputNewRecipientNameMax = 200;
 
 export const issueCertificateResponseInputNewRecipientEmailMax = 254;
 
+export const issueCertificateResponseInputQuantityMin = 0.01;
 export const issueCertificateResponseInputQuantityMax = 1000000000000;
+export const issueCertificateResponseInputQuantityMultipleOf = 0.01;
 
 export const issueCertificateResponseInputTransferDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
 export const issueCertificateResponseInputReasonMax = 1000;
@@ -718,7 +890,7 @@ export const IssueCertificateResponse = zod.object({
   "issuance": zod.union([zod.object({
   "requestId": zod.string(),
   "shareClass": zod.enum(['Common', 'Preferred']),
-  "quantity": zod.number().int(),
+  "quantity": zod.number(),
   "issueDate": zod.string(),
   "vestingSchedule": zod.string()
 }),zod.null()]),
@@ -744,14 +916,14 @@ export const IssueCertificateResponse = zod.object({
   "input": zod.object({
   "sources": zod.array(zod.object({
   "certificateId": zod.string().min(1).max(issueCertificateResponseInputSourcesItemCertificateIdMax),
-  "quantity": zod.number().int().min(1).max(issueCertificateResponseInputSourcesItemQuantityMax)
+  "quantity": zod.number().min(issueCertificateResponseInputSourcesItemQuantityMin).max(issueCertificateResponseInputSourcesItemQuantityMax).multipleOf(issueCertificateResponseInputSourcesItemQuantityMultipleOf)
 })).min(1).max(issueCertificateResponseInputSourcesMax).optional(),
   "recipientId": zod.string().min(1).optional(),
   "newRecipient": zod.object({
   "name": zod.string().min(1).max(issueCertificateResponseInputNewRecipientNameMax),
   "email": zod.string().max(issueCertificateResponseInputNewRecipientEmailMax).optional()
 }).optional(),
-  "quantity": zod.number().int().min(1).max(issueCertificateResponseInputQuantityMax),
+  "quantity": zod.number().min(issueCertificateResponseInputQuantityMin).max(issueCertificateResponseInputQuantityMax).multipleOf(issueCertificateResponseInputQuantityMultipleOf),
   "transferDate": zod.string().regex(issueCertificateResponseInputTransferDateRegExp),
   "reason": zod.string().max(issueCertificateResponseInputReasonMax).optional(),
   "pricePerShare": zod.string().max(issueCertificateResponseInputPricePerShareMax).regex(issueCertificateResponseInputPricePerShareRegExp).optional(),
@@ -783,7 +955,9 @@ export const TransferSharesParams = zod.object({
 
 export const transferSharesBodySourcesItemCertificateIdMax = 100;
 
+export const transferSharesBodySourcesItemQuantityMin = 0.01;
 export const transferSharesBodySourcesItemQuantityMax = 1000000000000;
+export const transferSharesBodySourcesItemQuantityMultipleOf = 0.01;
 
 export const transferSharesBodySourcesMax = 100;
 
@@ -792,7 +966,9 @@ export const transferSharesBodyNewRecipientNameMax = 200;
 
 export const transferSharesBodyNewRecipientEmailMax = 254;
 
+export const transferSharesBodyQuantityMin = 0.01;
 export const transferSharesBodyQuantityMax = 1000000000000;
+export const transferSharesBodyQuantityMultipleOf = 0.01;
 
 export const transferSharesBodyTransferDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
 export const transferSharesBodyReasonMax = 1000;
@@ -812,14 +988,14 @@ export const transferSharesBodyAttachmentsMax = 20;
 export const TransferSharesBody = zod.object({
   "sources": zod.array(zod.object({
   "certificateId": zod.string().min(1).max(transferSharesBodySourcesItemCertificateIdMax),
-  "quantity": zod.number().int().min(1).max(transferSharesBodySourcesItemQuantityMax)
+  "quantity": zod.number().min(transferSharesBodySourcesItemQuantityMin).max(transferSharesBodySourcesItemQuantityMax).multipleOf(transferSharesBodySourcesItemQuantityMultipleOf)
 })).min(1).max(transferSharesBodySourcesMax).optional(),
   "recipientId": zod.string().min(1).optional(),
   "newRecipient": zod.object({
   "name": zod.string().min(1).max(transferSharesBodyNewRecipientNameMax),
   "email": zod.string().max(transferSharesBodyNewRecipientEmailMax).optional()
 }).optional(),
-  "quantity": zod.number().int().min(1).max(transferSharesBodyQuantityMax),
+  "quantity": zod.number().min(transferSharesBodyQuantityMin).max(transferSharesBodyQuantityMax).multipleOf(transferSharesBodyQuantityMultipleOf),
   "transferDate": zod.string().regex(transferSharesBodyTransferDateRegExp),
   "reason": zod.string().max(transferSharesBodyReasonMax).optional(),
   "pricePerShare": zod.string().max(transferSharesBodyPricePerShareMax).regex(transferSharesBodyPricePerShareRegExp).optional(),
@@ -845,7 +1021,9 @@ export const transferSharesResponseEmailNotificationSummarySkippedMin = 0;
 
 export const transferSharesResponseInputSourcesItemCertificateIdMax = 100;
 
+export const transferSharesResponseInputSourcesItemQuantityMin = 0.01;
 export const transferSharesResponseInputSourcesItemQuantityMax = 1000000000000;
+export const transferSharesResponseInputSourcesItemQuantityMultipleOf = 0.01;
 
 export const transferSharesResponseInputSourcesMax = 100;
 
@@ -854,7 +1032,9 @@ export const transferSharesResponseInputNewRecipientNameMax = 200;
 
 export const transferSharesResponseInputNewRecipientEmailMax = 254;
 
+export const transferSharesResponseInputQuantityMin = 0.01;
 export const transferSharesResponseInputQuantityMax = 1000000000000;
+export const transferSharesResponseInputQuantityMultipleOf = 0.01;
 
 export const transferSharesResponseInputTransferDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
 export const transferSharesResponseInputReasonMax = 1000;
@@ -893,7 +1073,7 @@ export const TransferSharesResponse = zod.object({
   "issuance": zod.union([zod.object({
   "requestId": zod.string(),
   "shareClass": zod.enum(['Common', 'Preferred']),
-  "quantity": zod.number().int(),
+  "quantity": zod.number(),
   "issueDate": zod.string(),
   "vestingSchedule": zod.string()
 }),zod.null()]),
@@ -919,14 +1099,14 @@ export const TransferSharesResponse = zod.object({
   "input": zod.object({
   "sources": zod.array(zod.object({
   "certificateId": zod.string().min(1).max(transferSharesResponseInputSourcesItemCertificateIdMax),
-  "quantity": zod.number().int().min(1).max(transferSharesResponseInputSourcesItemQuantityMax)
+  "quantity": zod.number().min(transferSharesResponseInputSourcesItemQuantityMin).max(transferSharesResponseInputSourcesItemQuantityMax).multipleOf(transferSharesResponseInputSourcesItemQuantityMultipleOf)
 })).min(1).max(transferSharesResponseInputSourcesMax).optional(),
   "recipientId": zod.string().min(1).optional(),
   "newRecipient": zod.object({
   "name": zod.string().min(1).max(transferSharesResponseInputNewRecipientNameMax),
   "email": zod.string().max(transferSharesResponseInputNewRecipientEmailMax).optional()
 }).optional(),
-  "quantity": zod.number().int().min(1).max(transferSharesResponseInputQuantityMax),
+  "quantity": zod.number().min(transferSharesResponseInputQuantityMin).max(transferSharesResponseInputQuantityMax).multipleOf(transferSharesResponseInputQuantityMultipleOf),
   "transferDate": zod.string().regex(transferSharesResponseInputTransferDateRegExp),
   "reason": zod.string().max(transferSharesResponseInputReasonMax).optional(),
   "pricePerShare": zod.string().max(transferSharesResponseInputPricePerShareMax).regex(transferSharesResponseInputPricePerShareRegExp).optional(),
@@ -953,7 +1133,9 @@ export const TransferSharesResponse = zod.object({
 
 export const listTransfersResponseSourcesItemCertificateIdMax = 100;
 
+export const listTransfersResponseSourcesItemQuantityMin = 0.01;
 export const listTransfersResponseSourcesItemQuantityMax = 1000000000000;
+export const listTransfersResponseSourcesItemQuantityMultipleOf = 0.01;
 
 export const listTransfersResponseAttachmentsItemNameMax = 255;
 
@@ -964,7 +1146,7 @@ export const listTransfersResponseAttachmentsItemSizeMin = 0;
 export const ListTransfersResponseItem = zod.object({
   "sources": zod.array(zod.object({
   "certificateId": zod.string().min(1).max(listTransfersResponseSourcesItemCertificateIdMax),
-  "quantity": zod.number().int().min(1).max(listTransfersResponseSourcesItemQuantityMax)
+  "quantity": zod.number().min(listTransfersResponseSourcesItemQuantityMin).max(listTransfersResponseSourcesItemQuantityMax).multipleOf(listTransfersResponseSourcesItemQuantityMultipleOf)
 })).nullish(),
   "id": zod.string(),
   "sourceCertificateId": zod.string(),
@@ -974,7 +1156,7 @@ export const ListTransfersResponseItem = zod.object({
   "recipientId": zod.string(),
   "recipientName": zod.string(),
   "shareClass": zod.enum(['Common', 'Preferred']),
-  "quantity": zod.number().int(),
+  "quantity": zod.number(),
   "transferDate": zod.string(),
   "reason": zod.string(),
   "pricePerShare": zod.string().nullable(),
@@ -994,7 +1176,9 @@ export const GetTransferParams = zod.object({
 
 export const getTransferResponseSourcesItemCertificateIdMax = 100;
 
+export const getTransferResponseSourcesItemQuantityMin = 0.01;
 export const getTransferResponseSourcesItemQuantityMax = 1000000000000;
+export const getTransferResponseSourcesItemQuantityMultipleOf = 0.01;
 
 export const getTransferResponseAttachmentsItemNameMax = 255;
 
@@ -1005,7 +1189,7 @@ export const getTransferResponseAttachmentsItemSizeMin = 0;
 export const GetTransferResponse = zod.object({
   "sources": zod.array(zod.object({
   "certificateId": zod.string().min(1).max(getTransferResponseSourcesItemCertificateIdMax),
-  "quantity": zod.number().int().min(1).max(getTransferResponseSourcesItemQuantityMax)
+  "quantity": zod.number().min(getTransferResponseSourcesItemQuantityMin).max(getTransferResponseSourcesItemQuantityMax).multipleOf(getTransferResponseSourcesItemQuantityMultipleOf)
 })).nullish(),
   "id": zod.string(),
   "sourceCertificateId": zod.string(),
@@ -1015,7 +1199,7 @@ export const GetTransferResponse = zod.object({
   "recipientId": zod.string(),
   "recipientName": zod.string(),
   "shareClass": zod.enum(['Common', 'Preferred']),
-  "quantity": zod.number().int(),
+  "quantity": zod.number(),
   "transferDate": zod.string(),
   "reason": zod.string(),
   "pricePerShare": zod.string().nullable(),
@@ -1050,7 +1234,9 @@ export const AttachTransferFilesBody = zod.object({
 
 export const attachTransferFilesResponseSourcesItemCertificateIdMax = 100;
 
+export const attachTransferFilesResponseSourcesItemQuantityMin = 0.01;
 export const attachTransferFilesResponseSourcesItemQuantityMax = 1000000000000;
+export const attachTransferFilesResponseSourcesItemQuantityMultipleOf = 0.01;
 
 export const attachTransferFilesResponseAttachmentsItemNameMax = 255;
 
@@ -1061,7 +1247,7 @@ export const attachTransferFilesResponseAttachmentsItemSizeMin = 0;
 export const AttachTransferFilesResponse = zod.object({
   "sources": zod.array(zod.object({
   "certificateId": zod.string().min(1).max(attachTransferFilesResponseSourcesItemCertificateIdMax),
-  "quantity": zod.number().int().min(1).max(attachTransferFilesResponseSourcesItemQuantityMax)
+  "quantity": zod.number().min(attachTransferFilesResponseSourcesItemQuantityMin).max(attachTransferFilesResponseSourcesItemQuantityMax).multipleOf(attachTransferFilesResponseSourcesItemQuantityMultipleOf)
 })).nullish(),
   "id": zod.string(),
   "sourceCertificateId": zod.string(),
@@ -1071,7 +1257,7 @@ export const AttachTransferFilesResponse = zod.object({
   "recipientId": zod.string(),
   "recipientName": zod.string(),
   "shareClass": zod.enum(['Common', 'Preferred']),
-  "quantity": zod.number().int(),
+  "quantity": zod.number(),
   "transferDate": zod.string(),
   "reason": zod.string(),
   "pricePerShare": zod.string().nullable(),
@@ -1118,7 +1304,9 @@ export const attachRequestFilesResponseEmailNotificationSummarySkippedMin = 0;
 
 export const attachRequestFilesResponseInputSourcesItemCertificateIdMax = 100;
 
+export const attachRequestFilesResponseInputSourcesItemQuantityMin = 0.01;
 export const attachRequestFilesResponseInputSourcesItemQuantityMax = 1000000000000;
+export const attachRequestFilesResponseInputSourcesItemQuantityMultipleOf = 0.01;
 
 export const attachRequestFilesResponseInputSourcesMax = 100;
 
@@ -1127,7 +1315,9 @@ export const attachRequestFilesResponseInputNewRecipientNameMax = 200;
 
 export const attachRequestFilesResponseInputNewRecipientEmailMax = 254;
 
+export const attachRequestFilesResponseInputQuantityMin = 0.01;
 export const attachRequestFilesResponseInputQuantityMax = 1000000000000;
+export const attachRequestFilesResponseInputQuantityMultipleOf = 0.01;
 
 export const attachRequestFilesResponseInputTransferDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
 export const attachRequestFilesResponseInputReasonMax = 1000;
@@ -1166,7 +1356,7 @@ export const AttachRequestFilesResponse = zod.object({
   "issuance": zod.union([zod.object({
   "requestId": zod.string(),
   "shareClass": zod.enum(['Common', 'Preferred']),
-  "quantity": zod.number().int(),
+  "quantity": zod.number(),
   "issueDate": zod.string(),
   "vestingSchedule": zod.string()
 }),zod.null()]),
@@ -1192,14 +1382,14 @@ export const AttachRequestFilesResponse = zod.object({
   "input": zod.object({
   "sources": zod.array(zod.object({
   "certificateId": zod.string().min(1).max(attachRequestFilesResponseInputSourcesItemCertificateIdMax),
-  "quantity": zod.number().int().min(1).max(attachRequestFilesResponseInputSourcesItemQuantityMax)
+  "quantity": zod.number().min(attachRequestFilesResponseInputSourcesItemQuantityMin).max(attachRequestFilesResponseInputSourcesItemQuantityMax).multipleOf(attachRequestFilesResponseInputSourcesItemQuantityMultipleOf)
 })).min(1).max(attachRequestFilesResponseInputSourcesMax).optional(),
   "recipientId": zod.string().min(1).optional(),
   "newRecipient": zod.object({
   "name": zod.string().min(1).max(attachRequestFilesResponseInputNewRecipientNameMax),
   "email": zod.string().max(attachRequestFilesResponseInputNewRecipientEmailMax).optional()
 }).optional(),
-  "quantity": zod.number().int().min(1).max(attachRequestFilesResponseInputQuantityMax),
+  "quantity": zod.number().min(attachRequestFilesResponseInputQuantityMin).max(attachRequestFilesResponseInputQuantityMax).multipleOf(attachRequestFilesResponseInputQuantityMultipleOf),
   "transferDate": zod.string().regex(attachRequestFilesResponseInputTransferDateRegExp),
   "reason": zod.string().max(attachRequestFilesResponseInputReasonMax).optional(),
   "pricePerShare": zod.string().max(attachRequestFilesResponseInputPricePerShareMax).regex(attachRequestFilesResponseInputPricePerShareRegExp).optional(),
@@ -1238,7 +1428,9 @@ export const listMySignoffRequestsResponseEmailNotificationSummarySkippedMin = 0
 
 export const listMySignoffRequestsResponseInputSourcesItemCertificateIdMax = 100;
 
+export const listMySignoffRequestsResponseInputSourcesItemQuantityMin = 0.01;
 export const listMySignoffRequestsResponseInputSourcesItemQuantityMax = 1000000000000;
+export const listMySignoffRequestsResponseInputSourcesItemQuantityMultipleOf = 0.01;
 
 export const listMySignoffRequestsResponseInputSourcesMax = 100;
 
@@ -1247,7 +1439,9 @@ export const listMySignoffRequestsResponseInputNewRecipientNameMax = 200;
 
 export const listMySignoffRequestsResponseInputNewRecipientEmailMax = 254;
 
+export const listMySignoffRequestsResponseInputQuantityMin = 0.01;
 export const listMySignoffRequestsResponseInputQuantityMax = 1000000000000;
+export const listMySignoffRequestsResponseInputQuantityMultipleOf = 0.01;
 
 export const listMySignoffRequestsResponseInputTransferDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
 export const listMySignoffRequestsResponseInputReasonMax = 1000;
@@ -1286,7 +1480,7 @@ export const ListMySignoffRequestsResponseItem = zod.object({
   "issuance": zod.union([zod.object({
   "requestId": zod.string(),
   "shareClass": zod.enum(['Common', 'Preferred']),
-  "quantity": zod.number().int(),
+  "quantity": zod.number(),
   "issueDate": zod.string(),
   "vestingSchedule": zod.string()
 }),zod.null()]),
@@ -1312,14 +1506,14 @@ export const ListMySignoffRequestsResponseItem = zod.object({
   "input": zod.object({
   "sources": zod.array(zod.object({
   "certificateId": zod.string().min(1).max(listMySignoffRequestsResponseInputSourcesItemCertificateIdMax),
-  "quantity": zod.number().int().min(1).max(listMySignoffRequestsResponseInputSourcesItemQuantityMax)
+  "quantity": zod.number().min(listMySignoffRequestsResponseInputSourcesItemQuantityMin).max(listMySignoffRequestsResponseInputSourcesItemQuantityMax).multipleOf(listMySignoffRequestsResponseInputSourcesItemQuantityMultipleOf)
 })).min(1).max(listMySignoffRequestsResponseInputSourcesMax).optional(),
   "recipientId": zod.string().min(1).optional(),
   "newRecipient": zod.object({
   "name": zod.string().min(1).max(listMySignoffRequestsResponseInputNewRecipientNameMax),
   "email": zod.string().max(listMySignoffRequestsResponseInputNewRecipientEmailMax).optional()
 }).optional(),
-  "quantity": zod.number().int().min(1).max(listMySignoffRequestsResponseInputQuantityMax),
+  "quantity": zod.number().min(listMySignoffRequestsResponseInputQuantityMin).max(listMySignoffRequestsResponseInputQuantityMax).multipleOf(listMySignoffRequestsResponseInputQuantityMultipleOf),
   "transferDate": zod.string().regex(listMySignoffRequestsResponseInputTransferDateRegExp),
   "reason": zod.string().max(listMySignoffRequestsResponseInputReasonMax).optional(),
   "pricePerShare": zod.string().max(listMySignoffRequestsResponseInputPricePerShareMax).regex(listMySignoffRequestsResponseInputPricePerShareRegExp).optional(),
@@ -1349,9 +1543,9 @@ export const ListAllCertificatesResponseItem = zod.object({
   "id": zod.string(),
   "shareholderId": zod.string(),
   "shareClass": zod.enum(['Common', 'Preferred']),
-  "quantity": zod.number().int(),
-  "remainingQuantity": zod.number().int(),
-  "transferredQuantity": zod.number().int(),
+  "quantity": zod.number(),
+  "remainingQuantity": zod.number(),
+  "transferredQuantity": zod.number(),
   "issueDate": zod.string().nullable(),
   "status": zod.enum(['Outstanding', 'Partially Transferred', 'Transferred', 'Cancelled']),
   "vestingSchedule": zod.string(),
@@ -1367,7 +1561,7 @@ export const ListAllCertificatesResponseItem = zod.object({
   "certificateId": zod.string(),
   "shareholderId": zod.string(),
   "shareholderName": zod.string(),
-  "quantity": zod.number().int()
+  "quantity": zod.number()
 }))
 }))
 export const ListAllCertificatesResponse = zod.array(ListAllCertificatesResponseItem)
@@ -1391,7 +1585,9 @@ export const listSignoffHistoryResponseEmailNotificationSummarySkippedMin = 0;
 
 export const listSignoffHistoryResponseInputSourcesItemCertificateIdMax = 100;
 
+export const listSignoffHistoryResponseInputSourcesItemQuantityMin = 0.01;
 export const listSignoffHistoryResponseInputSourcesItemQuantityMax = 1000000000000;
+export const listSignoffHistoryResponseInputSourcesItemQuantityMultipleOf = 0.01;
 
 export const listSignoffHistoryResponseInputSourcesMax = 100;
 
@@ -1400,7 +1596,9 @@ export const listSignoffHistoryResponseInputNewRecipientNameMax = 200;
 
 export const listSignoffHistoryResponseInputNewRecipientEmailMax = 254;
 
+export const listSignoffHistoryResponseInputQuantityMin = 0.01;
 export const listSignoffHistoryResponseInputQuantityMax = 1000000000000;
+export const listSignoffHistoryResponseInputQuantityMultipleOf = 0.01;
 
 export const listSignoffHistoryResponseInputTransferDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
 export const listSignoffHistoryResponseInputReasonMax = 1000;
@@ -1439,7 +1637,7 @@ export const ListSignoffHistoryResponseItem = zod.object({
   "issuance": zod.union([zod.object({
   "requestId": zod.string(),
   "shareClass": zod.enum(['Common', 'Preferred']),
-  "quantity": zod.number().int(),
+  "quantity": zod.number(),
   "issueDate": zod.string(),
   "vestingSchedule": zod.string()
 }),zod.null()]),
@@ -1465,14 +1663,14 @@ export const ListSignoffHistoryResponseItem = zod.object({
   "input": zod.object({
   "sources": zod.array(zod.object({
   "certificateId": zod.string().min(1).max(listSignoffHistoryResponseInputSourcesItemCertificateIdMax),
-  "quantity": zod.number().int().min(1).max(listSignoffHistoryResponseInputSourcesItemQuantityMax)
+  "quantity": zod.number().min(listSignoffHistoryResponseInputSourcesItemQuantityMin).max(listSignoffHistoryResponseInputSourcesItemQuantityMax).multipleOf(listSignoffHistoryResponseInputSourcesItemQuantityMultipleOf)
 })).min(1).max(listSignoffHistoryResponseInputSourcesMax).optional(),
   "recipientId": zod.string().min(1).optional(),
   "newRecipient": zod.object({
   "name": zod.string().min(1).max(listSignoffHistoryResponseInputNewRecipientNameMax),
   "email": zod.string().max(listSignoffHistoryResponseInputNewRecipientEmailMax).optional()
 }).optional(),
-  "quantity": zod.number().int().min(1).max(listSignoffHistoryResponseInputQuantityMax),
+  "quantity": zod.number().min(listSignoffHistoryResponseInputQuantityMin).max(listSignoffHistoryResponseInputQuantityMax).multipleOf(listSignoffHistoryResponseInputQuantityMultipleOf),
   "transferDate": zod.string().regex(listSignoffHistoryResponseInputTransferDateRegExp),
   "reason": zod.string().max(listSignoffHistoryResponseInputReasonMax).optional(),
   "pricePerShare": zod.string().max(listSignoffHistoryResponseInputPricePerShareMax).regex(listSignoffHistoryResponseInputPricePerShareRegExp).optional(),
@@ -1516,7 +1714,9 @@ export const listTransferRequestsResponseEmailNotificationSummarySkippedMin = 0;
 
 export const listTransferRequestsResponseInputSourcesItemCertificateIdMax = 100;
 
+export const listTransferRequestsResponseInputSourcesItemQuantityMin = 0.01;
 export const listTransferRequestsResponseInputSourcesItemQuantityMax = 1000000000000;
+export const listTransferRequestsResponseInputSourcesItemQuantityMultipleOf = 0.01;
 
 export const listTransferRequestsResponseInputSourcesMax = 100;
 
@@ -1525,7 +1725,9 @@ export const listTransferRequestsResponseInputNewRecipientNameMax = 200;
 
 export const listTransferRequestsResponseInputNewRecipientEmailMax = 254;
 
+export const listTransferRequestsResponseInputQuantityMin = 0.01;
 export const listTransferRequestsResponseInputQuantityMax = 1000000000000;
+export const listTransferRequestsResponseInputQuantityMultipleOf = 0.01;
 
 export const listTransferRequestsResponseInputTransferDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
 export const listTransferRequestsResponseInputReasonMax = 1000;
@@ -1564,7 +1766,7 @@ export const ListTransferRequestsResponseItem = zod.object({
   "issuance": zod.union([zod.object({
   "requestId": zod.string(),
   "shareClass": zod.enum(['Common', 'Preferred']),
-  "quantity": zod.number().int(),
+  "quantity": zod.number(),
   "issueDate": zod.string(),
   "vestingSchedule": zod.string()
 }),zod.null()]),
@@ -1590,14 +1792,14 @@ export const ListTransferRequestsResponseItem = zod.object({
   "input": zod.object({
   "sources": zod.array(zod.object({
   "certificateId": zod.string().min(1).max(listTransferRequestsResponseInputSourcesItemCertificateIdMax),
-  "quantity": zod.number().int().min(1).max(listTransferRequestsResponseInputSourcesItemQuantityMax)
+  "quantity": zod.number().min(listTransferRequestsResponseInputSourcesItemQuantityMin).max(listTransferRequestsResponseInputSourcesItemQuantityMax).multipleOf(listTransferRequestsResponseInputSourcesItemQuantityMultipleOf)
 })).min(1).max(listTransferRequestsResponseInputSourcesMax).optional(),
   "recipientId": zod.string().min(1).optional(),
   "newRecipient": zod.object({
   "name": zod.string().min(1).max(listTransferRequestsResponseInputNewRecipientNameMax),
   "email": zod.string().max(listTransferRequestsResponseInputNewRecipientEmailMax).optional()
 }).optional(),
-  "quantity": zod.number().int().min(1).max(listTransferRequestsResponseInputQuantityMax),
+  "quantity": zod.number().min(listTransferRequestsResponseInputQuantityMin).max(listTransferRequestsResponseInputQuantityMax).multipleOf(listTransferRequestsResponseInputQuantityMultipleOf),
   "transferDate": zod.string().regex(listTransferRequestsResponseInputTransferDateRegExp),
   "reason": zod.string().max(listTransferRequestsResponseInputReasonMax).optional(),
   "pricePerShare": zod.string().max(listTransferRequestsResponseInputPricePerShareMax).regex(listTransferRequestsResponseInputPricePerShareRegExp).optional(),
@@ -1641,7 +1843,9 @@ export const getTransferRequestResponseEmailNotificationSummarySkippedMin = 0;
 
 export const getTransferRequestResponseInputSourcesItemCertificateIdMax = 100;
 
+export const getTransferRequestResponseInputSourcesItemQuantityMin = 0.01;
 export const getTransferRequestResponseInputSourcesItemQuantityMax = 1000000000000;
+export const getTransferRequestResponseInputSourcesItemQuantityMultipleOf = 0.01;
 
 export const getTransferRequestResponseInputSourcesMax = 100;
 
@@ -1650,7 +1854,9 @@ export const getTransferRequestResponseInputNewRecipientNameMax = 200;
 
 export const getTransferRequestResponseInputNewRecipientEmailMax = 254;
 
+export const getTransferRequestResponseInputQuantityMin = 0.01;
 export const getTransferRequestResponseInputQuantityMax = 1000000000000;
+export const getTransferRequestResponseInputQuantityMultipleOf = 0.01;
 
 export const getTransferRequestResponseInputTransferDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
 export const getTransferRequestResponseInputReasonMax = 1000;
@@ -1689,7 +1895,7 @@ export const GetTransferRequestResponse = zod.object({
   "issuance": zod.union([zod.object({
   "requestId": zod.string(),
   "shareClass": zod.enum(['Common', 'Preferred']),
-  "quantity": zod.number().int(),
+  "quantity": zod.number(),
   "issueDate": zod.string(),
   "vestingSchedule": zod.string()
 }),zod.null()]),
@@ -1715,14 +1921,14 @@ export const GetTransferRequestResponse = zod.object({
   "input": zod.object({
   "sources": zod.array(zod.object({
   "certificateId": zod.string().min(1).max(getTransferRequestResponseInputSourcesItemCertificateIdMax),
-  "quantity": zod.number().int().min(1).max(getTransferRequestResponseInputSourcesItemQuantityMax)
+  "quantity": zod.number().min(getTransferRequestResponseInputSourcesItemQuantityMin).max(getTransferRequestResponseInputSourcesItemQuantityMax).multipleOf(getTransferRequestResponseInputSourcesItemQuantityMultipleOf)
 })).min(1).max(getTransferRequestResponseInputSourcesMax).optional(),
   "recipientId": zod.string().min(1).optional(),
   "newRecipient": zod.object({
   "name": zod.string().min(1).max(getTransferRequestResponseInputNewRecipientNameMax),
   "email": zod.string().max(getTransferRequestResponseInputNewRecipientEmailMax).optional()
 }).optional(),
-  "quantity": zod.number().int().min(1).max(getTransferRequestResponseInputQuantityMax),
+  "quantity": zod.number().min(getTransferRequestResponseInputQuantityMin).max(getTransferRequestResponseInputQuantityMax).multipleOf(getTransferRequestResponseInputQuantityMultipleOf),
   "transferDate": zod.string().regex(getTransferRequestResponseInputTransferDateRegExp),
   "reason": zod.string().max(getTransferRequestResponseInputReasonMax).optional(),
   "pricePerShare": zod.string().max(getTransferRequestResponseInputPricePerShareMax).regex(getTransferRequestResponseInputPricePerShareRegExp).optional(),
@@ -1769,7 +1975,9 @@ export const decideTransferRequestResponseEmailNotificationSummarySkippedMin = 0
 
 export const decideTransferRequestResponseInputSourcesItemCertificateIdMax = 100;
 
+export const decideTransferRequestResponseInputSourcesItemQuantityMin = 0.01;
 export const decideTransferRequestResponseInputSourcesItemQuantityMax = 1000000000000;
+export const decideTransferRequestResponseInputSourcesItemQuantityMultipleOf = 0.01;
 
 export const decideTransferRequestResponseInputSourcesMax = 100;
 
@@ -1778,7 +1986,9 @@ export const decideTransferRequestResponseInputNewRecipientNameMax = 200;
 
 export const decideTransferRequestResponseInputNewRecipientEmailMax = 254;
 
+export const decideTransferRequestResponseInputQuantityMin = 0.01;
 export const decideTransferRequestResponseInputQuantityMax = 1000000000000;
+export const decideTransferRequestResponseInputQuantityMultipleOf = 0.01;
 
 export const decideTransferRequestResponseInputTransferDateRegExp = new RegExp('^\\d{4}-\\d{2}-\\d{2}$');
 export const decideTransferRequestResponseInputReasonMax = 1000;
@@ -1817,7 +2027,7 @@ export const DecideTransferRequestResponse = zod.object({
   "issuance": zod.union([zod.object({
   "requestId": zod.string(),
   "shareClass": zod.enum(['Common', 'Preferred']),
-  "quantity": zod.number().int(),
+  "quantity": zod.number(),
   "issueDate": zod.string(),
   "vestingSchedule": zod.string()
 }),zod.null()]),
@@ -1843,14 +2053,14 @@ export const DecideTransferRequestResponse = zod.object({
   "input": zod.object({
   "sources": zod.array(zod.object({
   "certificateId": zod.string().min(1).max(decideTransferRequestResponseInputSourcesItemCertificateIdMax),
-  "quantity": zod.number().int().min(1).max(decideTransferRequestResponseInputSourcesItemQuantityMax)
+  "quantity": zod.number().min(decideTransferRequestResponseInputSourcesItemQuantityMin).max(decideTransferRequestResponseInputSourcesItemQuantityMax).multipleOf(decideTransferRequestResponseInputSourcesItemQuantityMultipleOf)
 })).min(1).max(decideTransferRequestResponseInputSourcesMax).optional(),
   "recipientId": zod.string().min(1).optional(),
   "newRecipient": zod.object({
   "name": zod.string().min(1).max(decideTransferRequestResponseInputNewRecipientNameMax),
   "email": zod.string().max(decideTransferRequestResponseInputNewRecipientEmailMax).optional()
 }).optional(),
-  "quantity": zod.number().int().min(1).max(decideTransferRequestResponseInputQuantityMax),
+  "quantity": zod.number().min(decideTransferRequestResponseInputQuantityMin).max(decideTransferRequestResponseInputQuantityMax).multipleOf(decideTransferRequestResponseInputQuantityMultipleOf),
   "transferDate": zod.string().regex(decideTransferRequestResponseInputTransferDateRegExp),
   "reason": zod.string().max(decideTransferRequestResponseInputReasonMax).optional(),
   "pricePerShare": zod.string().max(decideTransferRequestResponseInputPricePerShareMax).regex(decideTransferRequestResponseInputPricePerShareRegExp).optional(),
