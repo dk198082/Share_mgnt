@@ -43,7 +43,10 @@ export default function Certificates() {
     <div>
       <PageHeader eyebrow="Registry" title="Certificates" />
       <div className="space-y-4 px-4 py-6 md:px-10">
-        <p className="max-w-prose text-sm text-muted-foreground">Every Common (C-) and Preferred (P-) certificate ever issued, including transferred and cancelled ones. Fully transferred certificates have no remaining holder; follow the successor IDs to where the shares went.</p>
+        <ul className="w-full list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+          <li>Every Common (C-) and Preferred (P-) certificate ever issued, including transferred and cancelled ones.</li>
+          <li>Fully transferred certificates have no remaining holder; follow the successor IDs to where the shares went.</li>
+        </ul>
         <div className="grid gap-2 sm:grid-cols-[1fr_12rem_10rem]">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { sumShares } from '@workspace/share-quantities';
 import { Link, useLocation } from 'wouter';
 import { useListShareholders } from '@workspace/api-client-react';
 import { FileText, Plus, RefreshCw, Search, X } from 'lucide-react';
@@ -42,7 +43,7 @@ export default function Shareholders() {
     return true;
   });
   const active = q || line !== ALL || gen !== ALL || cls !== ALL || status !== ALL;
-  const filteredTotal = filtered.reduce((a, s) => a + totalShares(s.shares), 0);
+  const filteredTotal = sumShares(filtered.map(s => totalShares(s.shares)));
   const clear = () => { setQ(''); setLine(ALL); setGen(ALL); setCls(ALL); setStatus(ALL); };
 
   return (

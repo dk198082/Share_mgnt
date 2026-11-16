@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from 'react';
+import { parseShareQuantity, SHARE_QUANTITY_MESSAGE } from '@workspace/share-quantities';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link } from 'wouter';
 import {
@@ -274,8 +275,7 @@ function IssueDialog({ shareholderId, onClose }: { shareholderId: string; onClos
   function validate() {
     const e: Record<string, string> = {};
     const q = Number(quantity);
-    if (!/^\d+$/.test(quantity.trim()) || !Number.isSafeInteger(q) || q < 1) e.quantity = 'Enter a positive whole number.';
-    else if (q > 1e12) e.quantity = 'Too large.';
+    if (parseShareQuantity(quantity) === null) e.quantity = SHARE_QUANTITY_MESSAGE;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(issueDate)) e.issueDate = 'Enter a date.';
     else if (issueDate > todayISO()) e.issueDate = 'Issue date cannot be in the future.';
     if (!vesting.trim()) e.vesting = 'Vesting schedule is required.';
@@ -360,8 +360,9 @@ function IssueDialog({ shareholderId, onClose }: { shareholderId: string; onClos
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label className="text-xs font-medium text-muted-foreground">Quantity<span className="text-accent"> *</span></Label>
-                <Input inputMode="numeric" value={quantity} onChange={(e) => edit(setQuantity)(e.target.value)} placeholder="0"
+                <Input inputMode="decimal" value={quantity} onChange={(e) => edit(setQuantity)(e.target.value)} placeholder="0.00"
                   className={cn('text-right font-mono', errors.quantity && 'border-destructive')} data-testid="input-cert-quantity" />
+                <p className="text-xs text-muted-foreground">Up to 2 decimal places, including quantities below one share.</p>
                 {errors.quantity && <p className="text-xs text-destructive">{errors.quantity}</p>}
               </div>
               <div className="space-y-1.5">

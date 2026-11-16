@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { isShareQuantity, MAX_SHARE_QUANTITY, parseShareQuantity, SHARE_QUANTITY_MESSAGE, sharesFromUnits, shareUnits, subtractShares } from '@workspace/share-quantities';
 import { Link } from 'wouter';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -69,7 +70,8 @@ export function TransferDialog({ shareholderId, shareholderName, ledger, initial
 
   const src = ledger.certificates.find((c) => c.id === certId);
   const allocations = Object.entries(batchAmounts).map(([certificateId, value]) => ({ certificateId, quantity: Number(value) }));
-  const totalQuantity = batch ? allocations.reduce((sum, s) => sum + s.quantity, 0) : Number(qty);
+  const batchUnits = allocations.every(s => isShareQuantity(s.quantity)) ? allocations.reduce((units, s) => units + shareUnits(s.quantity), 0n) : null;
+  const totalQuantity = batch ? (batchUnits !== null && batchUnits <= shareUnits(MAX_SHARE_QUANTITY) ? sharesFromUnits(batchUnits) : NaN) : Number(qty);
   const sourceLabel = batch ? allocations.map(s => `${s.certificateId}: ${nf.format(s.quantity)}`).join('; ') : src?.id ?? '';
   const minimumDate = batch ? ledger.certificates.filter(c => c.id in batchAmounts).map(c => c.issueDate ?? '').sort().at(-1) : src?.issueDate;
   const currentHolder = useGetShareholder(src?.shareholderId ?? shareholderId);
@@ -115,12 +117,12 @@ export function TransferDialog({ shareholderId, shareholderName, ledger, initial
       else for (const allocation of allocations) {
         const c = transferable.find(c => c.id === allocation.certificateId);
         if (!c || c.shareClass !== src?.shareClass || c.vestingSchedule !== src?.vestingSchedule) e.qty = 'Select available certificates of the same share class and vesting schedule.';
-        else if (!/^\d+$/.test(batchAmounts[c.id].trim()) || !Number.isSafeInteger(allocation.quantity) || allocation.quantity < 1 || allocation.quantity > c.remainingQuantity)
-          e.qty = `Enter 1–${nf.format(c.remainingQuantity)} whole shares for ${c.id}.`;
+        else if (parseShareQuantity(batchAmounts[c.id]) === null || allocation.quantity > c.remainingQuantity)
+          e.qty = `Enter 0.01–${nf.format(c.remainingQuantity)} shares with up to 2 decimal places for ${c.id}.`;
       }
-    } else if (!/^\d+$/.test(qty.trim()) || !Number.isSafeInteger(q) || q < 1) e.qty = 'Enter a positive whole number.';
+    } else if (parseShareQuantity(qty) === null) e.qty = SHARE_QUANTITY_MESSAGE;
     else if (src && q > src.remainingQuantity) e.qty = `At most ${nf.format(src.remainingQuantity)} shares remain on ${src.id}.`;
-    if (!Number.isSafeInteger(q) || q < 1 || q > 1e12) e.qty = 'The total must be between 1 and 1,000,000,000,000 whole shares.';
+    if (!isShareQuantity(q)) e.qty = SHARE_QUANTITY_MESSAGE;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) e.date = 'Enter a date.';
     else if (date > todayISO()) e.date = 'Transfer date cannot be in the future.';
     else if (minimumDate && date < minimumDate.slice(0, 10)) e.date = `Must be on or after the latest source issue date (${fmtD(minimumDate)}).`;
@@ -202,7 +204,7 @@ export function TransferDialog({ shareholderId, shareholderName, ledger, initial
               {([
                 ['Current holder', holderName], ['From certificates', `${sourceLabel} (${src.shareClass})`], ['To', recipientName + (mode === 'new' ? ' (new shareholder)' : '')],
                 ['Shares on one new certificate', nf.format(totalQuantity)],
-                ['Source balances after transfer', batch ? allocations.map(s => `${s.certificateId}: ${nf.format((ledger.certificates.find(c => c.id === s.certificateId)?.remainingQuantity ?? 0) - s.quantity)}`).join('; ') : nf.format(src.remainingQuantity - totalQuantity)],
+                ['Source balances after transfer', batch ? allocations.map(s => `${s.certificateId}: ${nf.format(subtractShares(ledger.certificates.find(c => c.id === s.certificateId)?.remainingQuantity ?? 0, s.quantity))}`).join('; ') : nf.format(subtractShares(src.remainingQuantity, totalQuantity))],
                 ['Transfer date', fmtD(date)], ['Price per share', price.trim() || 'Not recorded'],
                 ['Reason', reason.trim() || 'Not recorded'], ['Vesting', src.vestingSchedule],
               ] as const).map(([k, v]) => (
@@ -260,13 +262,13 @@ export function TransferDialog({ shareholderId, shareholderName, ledger, initial
                           }} />
                         <span>{c.id} · {nf.format(c.remainingQuantity)} available{!compatible && ' · Different vesting schedule'}</span>
                       </label>
-                      <Input aria-label={`Shares from ${c.id}`} inputMode="numeric" value={batchAmounts[c.id] ?? ''}
+                      <Input aria-label={`Shares from ${c.id}`} inputMode="decimal" value={batchAmounts[c.id] ?? ''}
                         disabled={pending || !selected || !compatible} placeholder="Shares" data-testid={`batch-quantity-${c.id}`}
                         onChange={e => edit(setBatchAmounts)({ ...batchAmounts, [c.id]: e.target.value })} />
                     </div>;
                   })}
                 </div>
-                <p className="text-sm font-medium" data-testid="batch-transfer-total">Total: {nf.format(totalQuantity || 0)} {src?.shareClass} shares → one certificate</p>
+                <p className="text-sm font-medium" data-testid="batch-transfer-total">Total: {Number.isFinite(totalQuantity) ? nf.format(totalQuantity) : 'Invalid quantity or total exceeds the maximum'} {src?.shareClass} shares → one certificate</p>
                 {errors.qty && <p className="text-xs text-destructive">{errors.qty}</p>}
               </>}
             </div>
@@ -333,8 +335,9 @@ export function TransferDialog({ shareholderId, shareholderName, ledger, initial
               </div>
               {!batch && <div className="space-y-1.5">
                 <Label htmlFor="tr-qty" className={lbl}># of shares{src ? ` (max. ${nf.format(src.remainingQuantity)})` : ''}{req}</Label>
-                <Input id="tr-qty" inputMode="numeric" placeholder="0" value={qty} onChange={(e) => edit(setQty)(e.target.value)} disabled={pending}
+                <Input id="tr-qty" inputMode="decimal" placeholder="0.00" value={qty} onChange={(e) => edit(setQty)(e.target.value)} disabled={pending}
                   className={cn('text-right font-mono', errors.qty && 'border-destructive')} data-testid="input-transfer-quantity" />
+                <p className="text-xs text-muted-foreground">Up to 2 decimal places.</p>
                 {errors.qty && <p className="text-xs text-destructive">{errors.qty}</p>}
               </div>}
             </div>

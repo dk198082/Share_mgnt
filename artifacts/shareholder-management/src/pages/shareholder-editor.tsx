@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { sumShares } from '@workspace/share-quantities';
 import { Link, useLocation, useParams } from 'wouter';
 import { useQueryClient } from '@tanstack/react-query';
 import {
@@ -110,7 +111,7 @@ function EditorForm({ id, record }: { id: string; record?: Shareholder }) {
   const set = <K extends keyof FormState>(k: K, v: FormState[K]) => { setF((p) => ({ ...p, [k]: v })); setDirty(true); };
   // Form state is seeded once from the record; refetches below only feed share totals, never the form.
   const certs = useListCertificates(id, { query: { enabled: !isNew, queryKey: getListCertificatesQueryKey(id), staleTime: 30_000, refetchOnWindowFocus: true } });
-  const total = certs.data?.totalShares ?? (record ? record.shares.reduce((a, h) => a + h.quantity, 0) : 0);
+  const total = certs.data?.totalShares ?? (record ? sumShares(record.shares.map(h => h.quantity)) : 0);
   const saving = create.isPending || update.isPending;
   const busy = saving || photoBusy || docBusy.length > 0;
 

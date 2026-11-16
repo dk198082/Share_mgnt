@@ -131,9 +131,14 @@ export default function Reports() {
   return (
     <div className="pb-16">
       <PageHeader eyebrow="Registry exports" title="Reports" />
-      <div className="grid gap-8 px-6 pt-8 md:px-10 lg:grid-cols-[minmax(0,1fr)_380px]">
+      <div className="px-6 pt-8 md:px-10">
+        <ul className="w-full list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+          <li>Every workbook uses one consistent snapshot of the registry.</li>
+          <li>Each workbook records who generated it and when.</li>
+        </ul>
+      </div>
+      <div className="grid gap-8 px-6 pt-6 md:px-10 lg:grid-cols-[minmax(0,1fr)_380px]">
         <section aria-label="Report type" className="space-y-3" data-testid="list-reports">
-          <p className="max-w-xl text-sm text-muted-foreground">Each report is built from a single consistent snapshot of the registry and downloads as an Excel workbook stamped with who generated it and when.</p>
           {REPORTS.map((r) => {
             const on = r.id === selected;
             return (

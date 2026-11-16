@@ -1,9 +1,10 @@
 import type { Holding, Shareholder } from '@workspace/api-client-react';
+import { shareNumberFormat, sumShares } from '@workspace/share-quantities';
 
-export const nf = new Intl.NumberFormat('en-US');
+export const nf = shareNumberFormat;
 
 export function totalShares(shares: Holding[] | undefined) {
-  return (shares ?? []).reduce((a, h) => a + (Number(h.quantity) || 0), 0);
+  return sumShares((shares ?? []).map(h => h.quantity));
 }
 
 export function initials(name: string) {

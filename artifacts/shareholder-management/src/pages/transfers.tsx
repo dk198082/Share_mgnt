@@ -91,7 +91,11 @@ function TransferHistory() {
     <div>
       <PageHeader eyebrow="Registry" title="Transfer History" />
       <div className="space-y-4 px-4 py-6 md:px-10">
-        <p className="max-w-prose text-sm text-muted-foreground">Every transfer across the company, including requests still awaiting approval from every configured signer and those that were rejected. Only completed transfers moved shares. CEO and CFO signatures on older requests are kept as historical record.</p>
+        <ul className="w-full list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+          <li>Company-wide transfers, including requests awaiting all configured sign-offs.</li>
+          <li>Only completed transfers moved shares.</li>
+          <li>CEO and CFO signatures on older requests are kept as historical record.</li>
+        </ul>
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
           <div className="relative sm:col-span-2">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />

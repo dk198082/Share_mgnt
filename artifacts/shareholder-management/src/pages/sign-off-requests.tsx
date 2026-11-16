@@ -32,8 +32,12 @@ function MyQueue() {
   return (
     <div>
       <PageHeader eyebrow="Your queue" title="Sign off requests" />
-      <div className="mx-auto max-w-3xl space-y-4 px-4 py-6 md:px-10">
-        <p className="text-sm text-muted-foreground">Pending transfers and certificate issuances that list your verified sign-in email as a required signer and still need your approval. Requests you submitted are included when you are a listed signer. Refreshes every 15 seconds.</p>
+      <div className="space-y-4 px-4 py-6 md:px-10">
+        <ul className="w-full list-disc space-y-1 pl-5 text-sm text-muted-foreground">
+          <li>Pending transfers and certificate issuances appear here when your verified sign-in email is listed as a required signer.</li>
+          <li>Requests you submitted are included if you are a required signer.</li>
+          <li>The queue refreshes automatically every 15 seconds.</li>
+        </ul>
         {q.isLoading ? <div className="space-y-2">{[0, 1, 2].map((i) => <Skeleton key={i} className="h-16 w-full" />)}</div>
         : q.isError ? (
           <div className="flex flex-col items-center gap-2 rounded-md border border-destructive/30 bg-destructive/5 py-8 text-sm">
