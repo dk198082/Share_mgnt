@@ -9,6 +9,7 @@
   },
   "include": ["src"],
   "references": [
+    { "path": "../../lib/share-quantities" },
     {
       "path": "../../lib/db"
     },
