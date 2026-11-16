@@ -13,3 +13,4 @@
 - [Cross-database verification](cross-database-verification.md) — Default collations can reorder identical rows; verify copies with order-independent full-row equality.
 - [Legacy Azure uploads](azure-object-storage.md) — Legacy migration/rollback only; keep SAS credentials server-side.
 - [SharePoint storage policy](sharepoint-storage-policy.md) — SharePoint-only application files; preserve originals and account for Graph upload-session quirks.
+- [Legacy application import](legacy-import-scope.md) — Real legacy data should seed Azure Production, not pilot data; Settings utility remains a proposal, not deletion approval.

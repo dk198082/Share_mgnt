@@ -19,3 +19,9 @@ database appear to have drift, obscuring actual missing protections.
 supported PostgreSQL version. Keep equivalence rules conservative: a failed
 comparison is safer than removing meaningful expression differences to force
 a match.
+
+When changing a constrained column from integer to numeric, make the check's numeric literal casts explicit in the declared model and migration.
+
+**Why:** PostgreSQL inserts numeric casts into deparsed comparisons. An otherwise lossless type change can therefore disagree with a strictly compared declaration even when the bounds are equivalent.
+
+**How to apply:** Verify the actual widening migration against a disposable PostgreSQL catalog, not just a fresh numeric schema. Rebuild type-dependent checks transactionally if needed. Do not weaken general cast comparison to conceal the mismatch: casts can change arithmetic semantics.

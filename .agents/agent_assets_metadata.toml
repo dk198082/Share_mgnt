@@ -140,3 +140,143 @@ mtime_ms = 1794324472980
 storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/02383461-230f-4e8b-a5d1-f4e17b117e54/df140568-1743-4ae6-9ab5-abd57e0102b5"
 storage_version_token = "1794324571321092"
 content_type = "image/png"
+
+[[outputs]]
+id = "8Bi5mrqEThoXKTuZZR_HI"
+uri = "file://docs/legacy-data-import-plan.md"
+type = "text"
+title = "Legacy Data Import Plan — Azure-only execution"
+description = "Revised draft requiring Azure-hosted import execution, synthetic-only development in Replit, and real data confined to the approved Azure/SharePoint environment."
+logical_id = "b9f47cc7-8642-4bd7-930a-35dda9f829bf"
+content_hash = "sha256:b7eeabc7e9e029966cbc1f1a338c04c2c0410a6c5c26ac9a3dfac379d11cb596"
+size = 15873
+mtime_ms = 1794413856075
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/b9f47cc7-8642-4bd7-930a-35dda9f829bf/fd52b204-c4de-43ef-abc2-fc83b065a601"
+storage_version_token = "1794413862392202"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "ozjVpacHEAr7eegB1f-OU"
+uri = "file://docs/shareholder-application-overview.html"
+type = "html"
+title = "Shareholder Management — Application Overview"
+description = "Shareable business and technical reference covering key processes, features, integrations, data models, security, operations, and planned migration. Includes embedded model diagrams and print-friendly formatting."
+logical_id = "85405106-cdea-4114-bd90-53c86a7876d5"
+content_hash = "sha256:3fffde4124e5d4ea01dfc2a4a72f634924c16a1a230bd3c808e328884193ca0f"
+size = 87891
+mtime_ms = 1794501023325
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/85405106-cdea-4114-bd90-53c86a7876d5/244258ed-e4d0-4b99-8ea4-0176c718bda3"
+storage_version_token = "1794501032602397"
+content_type = "text/html"
+
+[[outputs]]
+id = "i1GzfwLuUqi0k0sQhHF_b"
+uri = "file://docs/shareholder-application-overview.md"
+type = "text"
+title = "Application Overview — Editable Source"
+description = "Editable Markdown source saved in the project docs folder for future revisions."
+logical_id = "4c3e4886-d18a-4ece-ae89-86f06ad2e486"
+content_hash = "sha256:04a3f7a543ffcf9676a60b2302fa4eb99df37bb7412c528231b82829a9873d8e"
+size = 27022
+mtime_ms = 1794501018353
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/4c3e4886-d18a-4ece-ae89-86f06ad2e486/741995d0-6281-4f2e-890b-01f3b9002ade"
+storage_version_token = "1794501033190243"
+content_type = "text/markdown"
+
+[[outputs]]
+id = "AWyh-5nycsBvwu8oCc89A"
+uri = "file://generated-artifacts/legacy-import-review/Legacy_Import_Design_Review.html"
+type = "html"
+title = "Legacy Import — Design Review"
+description = "Start here: source findings, proposed conversion rules, implementation boundaries, and ten decisions for review. Standalone, shareable document."
+logical_id = "62828aa4-0601-4148-a714-089d480277f1"
+content_hash = "sha256:0a7aee81ca06147a965fe7803e6415f67730c38366ebe9ad5c9362e16de36ab0"
+size = 29202
+mtime_ms = 1794585757901
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/62828aa4-0601-4148-a714-089d480277f1/212f28bd-1f66-4dc1-a9a1-c12b064edbff"
+storage_version_token = "1794585786395057"
+content_type = "text/html"
+
+[[outputs]]
+id = "6uvTHyJv8MaqvgV3thrHr"
+uri = "file://generated-artifacts/legacy-import-review/Legacy_Import_Mapping_Review.xlsx"
+type = "table"
+title = "Legacy Import — Mapping Review"
+description = "Proposed field mappings and dispositions for all 473 discovered headers across 20 sheets, plus rules, findings, and reviewer decision columns."
+logical_id = "3a4841a4-fd52-43f6-9b39-fd6b7fad9fbb"
+content_hash = "sha256:3d93ddf47081e63ee389d712127b168e4443545b4df19be901262063b10323ff"
+size = 50402
+mtime_ms = 1794585757897
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/3a4841a4-fd52-43f6-9b39-fd6b7fad9fbb/9ad65558-8603-494a-ae43-52d85076cf59"
+storage_version_token = "1794585787037673"
+content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+[[outputs]]
+id = "tipt19IzzfeoScYfSs-h6"
+uri = "file://generated-artifacts/legacy-import-review/Legacy_Import_Templates_DRAFT.xlsx"
+type = "table"
+title = "Legacy Import — Draft Blank Templates"
+description = "Blank proposed import sheets with field definitions, instructions, required-field highlighting, and supported-value dropdowns. Not approved for production use."
+logical_id = "94e47349-cd67-4c9b-870f-2d6bfd5e6dca"
+content_hash = "sha256:28227708850cff7b3fc0e5d8a4d74f449d78b50cd52ce59af19efba832dbd732"
+size = 216255
+mtime_ms = 1794585756861
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/94e47349-cd67-4c9b-870f-2d6bfd5e6dca/5dfc5ebf-c443-4dd7-80c8-cdf89391282c"
+storage_version_token = "1794585787617529"
+content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+[[outputs]]
+id = "DuOe04_ZDDn7rtAUFARlN"
+uri = "file://generated-artifacts/legacy-import-review/Legacy_Import_Synthetic_Example.xlsx"
+type = "table"
+title = "Legacy Import — Synthetic Example"
+description = "Entirely fictional linked example: three holders, seven certificates, both share classes, and two transfers including a batch. No real source records."
+logical_id = "6237b858-b9dd-4983-909a-9de9af36284d"
+content_hash = "sha256:34f2f928985996ca00182ae96f927ef9f6f8c72057b64ddd9a02833d7e407170"
+size = 217232
+mtime_ms = 1794585757705
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/6237b858-b9dd-4983-909a-9de9af36284d/68a22fbc-8cde-4f1e-b324-c3215c434ce6"
+storage_version_token = "1794585788257295"
+content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+[[outputs]]
+id = "Jq2UbcLkJCFnzCBwLZxn5"
+uri = "file://generated-artifacts/legacy-import-review/Shareholder_App_Table_Field_Mapping.xlsx"
+type = "table"
+title = "Simplified Legacy Import Mapping"
+description = "Three main mapping tabs: Shareholders, Certificates and Share_Transfers. Includes required/optional fields, proposed sources, review columns and a separate summary of supporting tables."
+logical_id = "cf843b39-b4a9-406a-a851-ed894580d200"
+content_hash = "sha256:d55d6a619451fdc82c0b3de08b7175803cd84de26daa9bd6b94fe1533b71ba64"
+size = 20216
+mtime_ms = 1794595884716
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/cf843b39-b4a9-406a-a851-ed894580d200/3054c93f-102b-4666-9e29-27a3755a52a5"
+storage_version_token = "1794595918234504"
+content_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+
+[[outputs]]
+id = "jGRlZvzj_62JJMk9HeEW8"
+uri = "file://generated-artifacts/legacy-import-review/Shareholder_App_Table_Field_Mapping.html"
+type = "html"
+title = "Shareholder App — Field Mapping Reference"
+description = "Standalone document listing every application table and field, proposed source mappings, blank-value rules, and which operational tables do not need legacy data."
+logical_id = "40cac45e-f18e-476d-a881-ac1b8d54a495"
+content_hash = "sha256:e24ac94ed65163b5daace806c55e1caa813a4d82b19583a9de8d6a803a92c757"
+size = 74629
+mtime_ms = 1794587173281
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/40cac45e-f18e-476d-a881-ac1b8d54a495/b538240c-f722-4b4a-9997-35ac16d7c9f5"
+storage_version_token = "1794587194986630"
+content_type = "text/html"
+
+[[outputs]]
+id = "3wssVKyinfIcYpau-Vt9b"
+uri = "file://docs/legacy-import/azure-import-setup.md"
+type = "text"
+title = "Simplified Azure Import Guide"
+description = "Normal app sign-in, Settings → Data import, review and confirm. No separate import role or permission setup."
+logical_id = "06ca6d7a-2d50-4ccb-8c08-9eb15166927b"
+content_hash = "sha256:9e8960540b942ca50a8a4a009782afdd9db0b8e88c992027d1246e7bf65c01c5"
+size = 4098
+mtime_ms = 1794602505392
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:ddbec4b0-9233-4bec-8895-3e9c80574028/06ca6d7a-2d50-4ccb-8c08-9eb15166927b/e0ef62ae-ceef-4c19-95a9-314c48f09686"
+storage_version_token = "1794602714922541"
+content_type = "text/markdown"

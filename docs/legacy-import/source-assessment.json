@@ -1,0 +1,2216 @@
+{
+  "purpose": "Design only: structures and aggregates, no personal row values",
+  "files": [
+    {
+      "file": "Cap_table_-_Share_class_capital_contribution_and_fully_dilute_1794585205173.xlsx",
+      "sha256": "00bd0fa852c27028083790b446eeeb82e754b27627d2f923a84365f21be4ef36",
+      "sheets": [
+        {
+          "sheet": "Custom Report",
+          "visibility": "visible",
+          "header_row": 2,
+          "columns": [
+            {
+              "column": 2,
+              "name": "Capital Contribution"
+            },
+            {
+              "column": 3,
+              "name": "Class Type"
+            },
+            {
+              "column": 4,
+              "name": "Conversion Ratio"
+            },
+            {
+              "column": 5,
+              "name": "Fully Diluted"
+            },
+            {
+              "column": 6,
+              "name": "Liquidation Multiple"
+            },
+            {
+              "column": 7,
+              "name": "Name"
+            }
+          ],
+          "populated_rows_below_header": 2,
+          "formula_cells": 0,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        }
+      ]
+    },
+    {
+      "file": "Stakeholder_mng_-_Capital_contribution_and_ownership_percenta_1794585205175.xlsx",
+      "sha256": "b1700bd959ace22640dc3c67c9eeaf6a26d5a9e4f03ddede9cd888b0f95f7778",
+      "sheets": [
+        {
+          "sheet": "Custom Report",
+          "visibility": "visible",
+          "header_row": 2,
+          "columns": [
+            {
+              "column": 2,
+              "name": "Stakeholder | Name"
+            },
+            {
+              "column": 3,
+              "name": "Stakeholder | Ownership"
+            },
+            {
+              "column": 4,
+              "name": "Stakeholder | Relationship"
+            },
+            {
+              "column": 5,
+              "name": "Security | Capital Contribution (Sum)"
+            }
+          ],
+          "populated_rows_below_header": 1,
+          "formula_cells": 0,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        }
+      ]
+    },
+    {
+      "file": "TiniusOlsenInternationalCompany_Stakeholder_report_11-12-2026_1794585205177.xlsx",
+      "sha256": "d2d594d62eeee57db74d88f5d89b205b058b83bf8726803be43d58ae4f80ee4b",
+      "sheets": [
+        {
+          "sheet": "Stakeholders",
+          "visibility": "visible",
+          "header_row": 4,
+          "columns": [
+            {
+              "column": 1,
+              "name": "Name"
+            },
+            {
+              "column": 2,
+              "name": "External ID"
+            },
+            {
+              "column": 3,
+              "name": "Email"
+            },
+            {
+              "column": 4,
+              "name": "Type"
+            },
+            {
+              "column": 5,
+              "name": "Relationship"
+            },
+            {
+              "column": 6,
+              "name": "Address"
+            },
+            {
+              "column": 7,
+              "name": "City"
+            },
+            {
+              "column": 8,
+              "name": "Zip Code"
+            },
+            {
+              "column": 9,
+              "name": "State"
+            },
+            {
+              "column": 10,
+              "name": "Country"
+            },
+            {
+              "column": 11,
+              "name": "Termination Date"
+            },
+            {
+              "column": 12,
+              "name": "SSN"
+            },
+            {
+              "column": 13,
+              "name": "Comments"
+            }
+          ],
+          "populated_rows_below_header": 2,
+          "formula_cells": 0,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        }
+      ]
+    },
+    {
+      "file": "TiniusOlsenInternationalCompany_Vesting_Report_All_Securities_1794585205178.xlsx",
+      "sha256": "dbf374e80ad9900e5703c4ec16f6b4eeb0b818111e0d0f731bba827a767e4015",
+      "sheets": [
+        {
+          "sheet": "Equity Subject to Vesting",
+          "visibility": "visible",
+          "header_row": 4,
+          "columns": [
+            {
+              "column": 1,
+              "name": "Security ID"
+            },
+            {
+              "column": 2,
+              "name": "Stakeholder"
+            },
+            {
+              "column": 3,
+              "name": "Grant Date"
+            },
+            {
+              "column": 4,
+              "name": "Early Exercise"
+            },
+            {
+              "column": 5,
+              "name": "Security Type"
+            },
+            {
+              "column": 6,
+              "name": "Grant Type"
+            },
+            {
+              "column": 7,
+              "name": "Vesting Schedule"
+            },
+            {
+              "column": 8,
+              "name": "Vesting Start Date"
+            },
+            {
+              "column": 9,
+              "name": "Granted"
+            },
+            {
+              "column": 10,
+              "name": "Fully Diluted"
+            },
+            {
+              "column": 11,
+              "name": "Total Vested During the Period"
+            },
+            {
+              "column": 12,
+              "name": "Grant Date Fair Market Value"
+            },
+            {
+              "column": 13,
+              "name": "$ Amount Vested During the  Period"
+            },
+            {
+              "column": 14,
+              "name": "Total Units Vested at the End of the Period"
+            },
+            {
+              "column": 15,
+              "name": "Percentage Vested at the End of the Period"
+            }
+          ],
+          "populated_rows_below_header": 5,
+          "formula_cells": 10,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        },
+        {
+          "sheet": "Vest Events",
+          "visibility": "visible",
+          "header_row": 4,
+          "columns": [
+            {
+              "column": 1,
+              "name": "Security ID"
+            },
+            {
+              "column": 2,
+              "name": "Stakeholder"
+            },
+            {
+              "column": 3,
+              "name": "Security Type"
+            },
+            {
+              "column": 4,
+              "name": "Grant Type"
+            },
+            {
+              "column": 5,
+              "name": "Grant Date"
+            },
+            {
+              "column": 6,
+              "name": "Vesting Date"
+            },
+            {
+              "column": 7,
+              "name": "Milestone"
+            },
+            {
+              "column": 8,
+              "name": "Quantity Vested"
+            },
+            {
+              "column": 9,
+              "name": "Termination Date"
+            },
+            {
+              "column": 10,
+              "name": "Expiration Date"
+            },
+            {
+              "column": 11,
+              "name": "Forfeited/Canceled Prior to Vesting?"
+            }
+          ],
+          "populated_rows_below_header": 0,
+          "formula_cells": 0,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        },
+        {
+          "sheet": "Milestone Vesting Schedule",
+          "visibility": "visible",
+          "header_row": 4,
+          "columns": [
+            {
+              "column": 1,
+              "name": "Security ID"
+            },
+            {
+              "column": 2,
+              "name": "Stakeholder"
+            },
+            {
+              "column": 3,
+              "name": "Milestone"
+            },
+            {
+              "column": 4,
+              "name": "Date"
+            },
+            {
+              "column": 5,
+              "name": "Quantity"
+            },
+            {
+              "column": 6,
+              "name": "Status"
+            }
+          ],
+          "populated_rows_below_header": 0,
+          "formula_cells": 0,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        }
+      ]
+    },
+    {
+      "file": "TiniusOlsenInternationalCompany_captable_11-12-2026_1794585205177.xlsx",
+      "sha256": "cf5cb6b38b9a56aedf475507775715ecffa5a44bd93230b47f10f16b01514594",
+      "sheets": [
+        {
+          "sheet": "Summary",
+          "visibility": "visible",
+          "header_row": 4,
+          "columns": [
+            {
+              "column": 6,
+              "name": "Authorized"
+            },
+            {
+              "column": 7,
+              "name": "Issued and Outstanding"
+            },
+            {
+              "column": 8,
+              "name": "Available Shares"
+            },
+            {
+              "column": 10,
+              "name": "Capital Contribution"
+            },
+            {
+              "column": 12,
+              "name": "Issued and Outstanding % Ownership"
+            },
+            {
+              "column": 14,
+              "name": "Stock Options"
+            },
+            {
+              "column": 15,
+              "name": "Fully Diluted"
+            },
+            {
+              "column": 16,
+              "name": "Fully Diluted % Ownership"
+            }
+          ],
+          "populated_rows_below_header": 12,
+          "formula_cells": 25,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        },
+        {
+          "sheet": "Ownership",
+          "visibility": "visible",
+          "header_row": 4,
+          "columns": [
+            {
+              "column": 1,
+              "name": "Stakeholder External ID"
+            },
+            {
+              "column": 2,
+              "name": "Stakeholder"
+            },
+            {
+              "column": 3,
+              "name": "Stakeholder Type"
+            },
+            {
+              "column": 4,
+              "name": "Common"
+            },
+            {
+              "column": 5,
+              "name": "Preferred"
+            },
+            {
+              "column": 6,
+              "name": "Issued and Outstanding"
+            },
+            {
+              "column": 7,
+              "name": "Issued and Outstanding % Ownership"
+            },
+            {
+              "column": 8,
+              "name": "Awards Issued Outside of a Plan"
+            },
+            {
+              "column": 9,
+              "name": "Fully Diluted"
+            },
+            {
+              "column": 10,
+              "name": "Fully Diluted % Ownership"
+            }
+          ],
+          "populated_rows_below_header": 2,
+          "formula_cells": 11,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        },
+        {
+          "sheet": "C-Common",
+          "visibility": "visible",
+          "header_row": 4,
+          "columns": [
+            {
+              "column": 1,
+              "name": "Certificate ID"
+            },
+            {
+              "column": 2,
+              "name": "Stakeholder Name"
+            },
+            {
+              "column": 3,
+              "name": "Stakeholder External ID"
+            },
+            {
+              "column": 4,
+              "name": "Issue Date"
+            },
+            {
+              "column": 5,
+              "name": "Shares Issued"
+            },
+            {
+              "column": 6,
+              "name": "Shares Outstanding"
+            },
+            {
+              "column": 7,
+              "name": "Ownership Percentage"
+            },
+            {
+              "column": 8,
+              "name": "Price Per Share"
+            },
+            {
+              "column": 9,
+              "name": "Vesting Start Date"
+            },
+            {
+              "column": 10,
+              "name": "Vesting Schedule"
+            },
+            {
+              "column": 11,
+              "name": "Shares Vested"
+            },
+            {
+              "column": 12,
+              "name": "Shares Unvested"
+            },
+            {
+              "column": 13,
+              "name": "Capital Contribution"
+            },
+            {
+              "column": 14,
+              "name": "Debt Cancelled"
+            },
+            {
+              "column": 15,
+              "name": "Value of IP Contribution"
+            },
+            {
+              "column": 16,
+              "name": "Last Repurchase Date"
+            },
+            {
+              "column": 17,
+              "name": "Shares Subject to Repurchase (Unvested)"
+            },
+            {
+              "column": 18,
+              "name": "Shares Repurchased"
+            },
+            {
+              "column": 19,
+              "name": "Repurchase Date"
+            },
+            {
+              "column": 20,
+              "name": "Amount Paid for Repurchase"
+            },
+            {
+              "column": 21,
+              "name": "Shares Transferred"
+            },
+            {
+              "column": 22,
+              "name": "Transfer Date"
+            },
+            {
+              "column": 23,
+              "name": "Transferred To"
+            },
+            {
+              "column": 24,
+              "name": "Amount Paid for Transfer"
+            },
+            {
+              "column": 25,
+              "name": "Transfer Reason"
+            },
+            {
+              "column": 26,
+              "name": "Shares Cancelled"
+            },
+            {
+              "column": 27,
+              "name": "Cancellation Date"
+            },
+            {
+              "column": 28,
+              "name": "Cancellation Reason"
+            },
+            {
+              "column": 29,
+              "name": "Converted From"
+            },
+            {
+              "column": 30,
+              "name": "Conversion Date"
+            },
+            {
+              "column": 31,
+              "name": "Source"
+            },
+            {
+              "column": 32,
+              "name": "Federal Exemption"
+            },
+            {
+              "column": 33,
+              "name": "State Exemption"
+            },
+            {
+              "column": 34,
+              "name": "Domicile - Region of Residence"
+            },
+            {
+              "column": 35,
+              "name": "Rule 144 Date"
+            },
+            {
+              "column": 36,
+              "name": "Board Approval Date"
+            },
+            {
+              "column": 37,
+              "name": "Equity Plan Name"
+            },
+            {
+              "column": 38,
+              "name": "Acceleration"
+            },
+            {
+              "column": 39,
+              "name": "Acceleration Provisions"
+            },
+            {
+              "column": 40,
+              "name": "Documents"
+            },
+            {
+              "column": 41,
+              "name": "Comments"
+            }
+          ],
+          "populated_rows_below_header": 6,
+          "formula_cells": 7,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        },
+        {
+          "sheet": "PS-Preferred",
+          "visibility": "visible",
+          "header_row": 4,
+          "columns": [
+            {
+              "column": 1,
+              "name": "Certificate ID"
+            },
+            {
+              "column": 2,
+              "name": "Stakeholder Name"
+            },
+            {
+              "column": 3,
+              "name": "Stakeholder External ID"
+            },
+            {
+              "column": 4,
+              "name": "Issue Date"
+            },
+            {
+              "column": 5,
+              "name": "Shares Issued"
+            },
+            {
+              "column": 6,
+              "name": "Shares Outstanding"
+            },
+            {
+              "column": 7,
+              "name": "Ownership Percentage"
+            },
+            {
+              "column": 8,
+              "name": "Price Per Share"
+            },
+            {
+              "column": 9,
+              "name": "Vesting Start Date"
+            },
+            {
+              "column": 10,
+              "name": "Vesting Schedule"
+            },
+            {
+              "column": 11,
+              "name": "Shares Vested"
+            },
+            {
+              "column": 12,
+              "name": "Shares Unvested"
+            },
+            {
+              "column": 13,
+              "name": "Capital Contribution"
+            },
+            {
+              "column": 14,
+              "name": "Debt Cancelled"
+            },
+            {
+              "column": 15,
+              "name": "Value of IP Contribution"
+            },
+            {
+              "column": 16,
+              "name": "Last Repurchase Date"
+            },
+            {
+              "column": 17,
+              "name": "Shares Subject to Repurchase (Unvested)"
+            },
+            {
+              "column": 18,
+              "name": "Shares Repurchased"
+            },
+            {
+              "column": 19,
+              "name": "Repurchase Date"
+            },
+            {
+              "column": 20,
+              "name": "Amount Paid for Repurchase"
+            },
+            {
+              "column": 21,
+              "name": "Shares Transferred"
+            },
+            {
+              "column": 22,
+              "name": "Transfer Date"
+            },
+            {
+              "column": 23,
+              "name": "Transferred To"
+            },
+            {
+              "column": 24,
+              "name": "Amount Paid for Transfer"
+            },
+            {
+              "column": 25,
+              "name": "Transfer Reason"
+            },
+            {
+              "column": 26,
+              "name": "Shares Cancelled"
+            },
+            {
+              "column": 27,
+              "name": "Cancellation Date"
+            },
+            {
+              "column": 28,
+              "name": "Cancellation Reason"
+            },
+            {
+              "column": 29,
+              "name": "Converted From"
+            },
+            {
+              "column": 30,
+              "name": "Conversion Date"
+            },
+            {
+              "column": 31,
+              "name": "Source"
+            },
+            {
+              "column": 32,
+              "name": "Federal Exemption"
+            },
+            {
+              "column": 33,
+              "name": "State Exemption"
+            },
+            {
+              "column": 34,
+              "name": "Domicile - Region of Residence"
+            },
+            {
+              "column": 35,
+              "name": "Rule 144 Date"
+            },
+            {
+              "column": 36,
+              "name": "Board Approval Date"
+            },
+            {
+              "column": 37,
+              "name": "Equity Plan Name"
+            },
+            {
+              "column": 38,
+              "name": "Acceleration"
+            },
+            {
+              "column": 39,
+              "name": "Acceleration Provisions"
+            },
+            {
+              "column": 40,
+              "name": "Documents"
+            },
+            {
+              "column": 41,
+              "name": "Comments"
+            }
+          ],
+          "populated_rows_below_header": 2,
+          "formula_cells": 3,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        },
+        {
+          "sheet": "Voting Ownership",
+          "visibility": "visible",
+          "header_row": 4,
+          "columns": [
+            {
+              "column": 1,
+              "name": "Stakeholder Name"
+            },
+            {
+              "column": 2,
+              "name": "Stakeholder External ID"
+            },
+            {
+              "column": 3,
+              "name": "Votes"
+            },
+            {
+              "column": 4,
+              "name": "Voting Ownership Percentage"
+            },
+            {
+              "column": 5,
+              "name": "-"
+            }
+          ],
+          "populated_rows_below_header": 2,
+          "formula_cells": 3,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        }
+      ]
+    },
+    {
+      "file": "Tinius_Olsen_International_Company_raw_cap_table_(3)_1794585205176.xlsx",
+      "sha256": "444bff1f581abcd4575da6577ed3f87b5adadd44b9ab75210eb891e74c2d2500",
+      "sheets": [
+        {
+          "sheet": "Company",
+          "visibility": "visible",
+          "header_row": 2,
+          "columns": [
+            {
+              "column": 2,
+              "name": "Name"
+            },
+            {
+              "column": 3,
+              "name": "FullyDiluted"
+            },
+            {
+              "column": 4,
+              "name": "Issued"
+            },
+            {
+              "column": 5,
+              "name": "Outstanding"
+            },
+            {
+              "column": 6,
+              "name": "RepurchaseableRSAsCount"
+            },
+            {
+              "column": 7,
+              "name": "RepurchaseableSharesCount"
+            },
+            {
+              "column": 8,
+              "name": "SAFEAndConvertiblesOutstanding"
+            },
+            {
+              "column": 9,
+              "name": "SAFEConvertibleCapitalContribution"
+            },
+            {
+              "column": 10,
+              "name": "SAFTCapitalContribution"
+            },
+            {
+              "column": 11,
+              "name": "SecuritiesCapitalContribution"
+            },
+            {
+              "column": 12,
+              "name": "TokenCapitalContribution"
+            },
+            {
+              "column": 13,
+              "name": "TokenFullyDiluted"
+            },
+            {
+              "column": 14,
+              "name": "TokenIssued"
+            },
+            {
+              "column": 15,
+              "name": "TokenOutstanding"
+            },
+            {
+              "column": 16,
+              "name": "TotalCapitalContribution"
+            },
+            {
+              "column": 17,
+              "name": "TotalTokenCapitalContribution"
+            },
+            {
+              "column": 18,
+              "name": "Voting"
+            }
+          ],
+          "populated_rows_below_header": 1,
+          "formula_cells": 0,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        },
+        {
+          "sheet": "Securities",
+          "visibility": "visible",
+          "header_row": 2,
+          "columns": [
+            {
+              "column": 2,
+              "name": "Id"
+            },
+            {
+              "column": 3,
+              "name": "CertificateId"
+            },
+            {
+              "column": 4,
+              "name": "AcceptanceStatus"
+            },
+            {
+              "column": 5,
+              "name": "AccruedDividends"
+            },
+            {
+              "column": 6,
+              "name": "AmountPaidForRepurchase"
+            },
+            {
+              "column": 7,
+              "name": "AmountPaidForTransfer"
+            },
+            {
+              "column": 8,
+              "name": "BoardApprovalDate"
+            },
+            {
+              "column": 9,
+              "name": "CalculatedIso"
+            },
+            {
+              "column": 10,
+              "name": "CalculatedNso"
+            },
+            {
+              "column": 11,
+              "name": "CancellationDate"
+            },
+            {
+              "column": 12,
+              "name": "CancellationReason"
+            },
+            {
+              "column": 13,
+              "name": "CancelledAmount"
+            },
+            {
+              "column": 14,
+              "name": "CapitalContribution"
+            },
+            {
+              "column": 15,
+              "name": "DebtCancelledAmount"
+            },
+            {
+              "column": 16,
+              "name": "EquityPlanId"
+            },
+            {
+              "column": 17,
+              "name": "EquityPlanType"
+            },
+            {
+              "column": 18,
+              "name": "ExercisableAmount"
+            },
+            {
+              "column": 19,
+              "name": "ExerciseDeadline"
+            },
+            {
+              "column": 20,
+              "name": "ExercisePrice"
+            },
+            {
+              "column": 21,
+              "name": "ExercisedAmount"
+            },
+            {
+              "column": 22,
+              "name": "ExpirationDate"
+            },
+            {
+              "column": 23,
+              "name": "ForfeitedAmount"
+            },
+            {
+              "column": 24,
+              "name": "FullyDilutedAmount"
+            },
+            {
+              "column": 25,
+              "name": "HasAcceleration"
+            },
+            {
+              "column": 26,
+              "name": "HasEarlyExercise"
+            },
+            {
+              "column": 27,
+              "name": "HasPromissoryNote"
+            },
+            {
+              "column": 28,
+              "name": "HurdleRate"
+            },
+            {
+              "column": 29,
+              "name": "IsExcludeFromFullyDiluted"
+            },
+            {
+              "column": 30,
+              "name": "IssueDate"
+            },
+            {
+              "column": 31,
+              "name": "IssuedAmount"
+            },
+            {
+              "column": 32,
+              "name": "LockedAmount"
+            },
+            {
+              "column": 33,
+              "name": "OptionGrantType"
+            },
+            {
+              "column": 34,
+              "name": "OutstandingAmount"
+            },
+            {
+              "column": 35,
+              "name": "PricePerShare"
+            },
+            {
+              "column": 36,
+              "name": "PromissoryNoteDayCountBasis"
+            },
+            {
+              "column": 37,
+              "name": "PromissoryNoteInterestAccrualPeriod"
+            },
+            {
+              "column": 38,
+              "name": "PromissoryNoteInterestAccrued"
+            },
+            {
+              "column": 39,
+              "name": "PromissoryNoteInterestRate"
+            },
+            {
+              "column": 40,
+              "name": "PromissoryNoteMaturityDate"
+            },
+            {
+              "column": 41,
+              "name": "PromissoryNotePercentSecured"
+            },
+            {
+              "column": 42,
+              "name": "PromissoryNotePrincipal"
+            },
+            {
+              "column": 43,
+              "name": "PromissoryNoteStartDate"
+            },
+            {
+              "column": 44,
+              "name": "PromissoryNoteTotalAmount"
+            },
+            {
+              "column": 45,
+              "name": "RepurchaseDate"
+            },
+            {
+              "column": 46,
+              "name": "RepurchaseableAmount"
+            },
+            {
+              "column": 47,
+              "name": "RepurchasedAmount"
+            },
+            {
+              "column": 48,
+              "name": "Rule144Date"
+            },
+            {
+              "column": 49,
+              "name": "SecurityClassId"
+            },
+            {
+              "column": 50,
+              "name": "SharesRepurchased"
+            },
+            {
+              "column": 51,
+              "name": "StakeholderId"
+            },
+            {
+              "column": 52,
+              "name": "Status"
+            },
+            {
+              "column": 53,
+              "name": "TimeVestedAmount"
+            },
+            {
+              "column": 54,
+              "name": "TokensSentInThePast"
+            },
+            {
+              "column": 55,
+              "name": "TokensTransferredAmount"
+            },
+            {
+              "column": 56,
+              "name": "TokensWithheldInThePast"
+            },
+            {
+              "column": 57,
+              "name": "TokensWithholdingAmount"
+            },
+            {
+              "column": 58,
+              "name": "TransferReason"
+            },
+            {
+              "column": 59,
+              "name": "TransferredFrom"
+            },
+            {
+              "column": 60,
+              "name": "UnlockedAmount"
+            },
+            {
+              "column": 61,
+              "name": "UnlockedPercentage"
+            },
+            {
+              "column": 62,
+              "name": "UnvestedAfterExerciseAmount"
+            },
+            {
+              "column": 63,
+              "name": "UnvestedAmount"
+            },
+            {
+              "column": 64,
+              "name": "UnvestedCancelledAmount"
+            },
+            {
+              "column": 65,
+              "name": "VestedAmount"
+            },
+            {
+              "column": 66,
+              "name": "VestedHistoricalAmount"
+            },
+            {
+              "column": 67,
+              "name": "VestedOutstandingAmount"
+            },
+            {
+              "column": 68,
+              "name": "VestedPercentage"
+            },
+            {
+              "column": 69,
+              "name": "VestingScheduleTotalAmount"
+            },
+            {
+              "column": 70,
+              "name": "VestingStartDate"
+            },
+            {
+              "column": 71,
+              "name": "VestingStopDate"
+            },
+            {
+              "column": 72,
+              "name": "VotingAmount"
+            }
+          ],
+          "populated_rows_below_header": 581,
+          "formula_cells": 0,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        },
+        {
+          "sheet": "Convertibles",
+          "visibility": "visible",
+          "header_row": 2,
+          "columns": [
+            {
+              "column": 2,
+              "name": "Id"
+            },
+            {
+              "column": 3,
+              "name": "AccrualEndDate"
+            },
+            {
+              "column": 4,
+              "name": "AccrualStartDate"
+            },
+            {
+              "column": 5,
+              "name": "CancellationDate"
+            },
+            {
+              "column": 6,
+              "name": "CancellationReason"
+            },
+            {
+              "column": 7,
+              "name": "CertificateId"
+            },
+            {
+              "column": 8,
+              "name": "ConversionDiscount"
+            },
+            {
+              "column": 9,
+              "name": "ConvertedAt"
+            },
+            {
+              "column": 10,
+              "name": "ConvertedDate"
+            },
+            {
+              "column": 11,
+              "name": "DayCountBasis"
+            },
+            {
+              "column": 12,
+              "name": "Interest"
+            },
+            {
+              "column": 13,
+              "name": "InterestAccrualPeriod"
+            },
+            {
+              "column": 14,
+              "name": "InterestAccrued"
+            },
+            {
+              "column": 15,
+              "name": "InterestCompounding"
+            },
+            {
+              "column": 16,
+              "name": "InterestOutstanding"
+            },
+            {
+              "column": 17,
+              "name": "InterestRate"
+            },
+            {
+              "column": 18,
+              "name": "IssueDate"
+            },
+            {
+              "column": 19,
+              "name": "LastAccruedDate"
+            },
+            {
+              "column": 20,
+              "name": "MaturityDate"
+            },
+            {
+              "column": 21,
+              "name": "Principal"
+            },
+            {
+              "column": 22,
+              "name": "PrincipalConverted"
+            },
+            {
+              "column": 23,
+              "name": "PrincipalIssued"
+            },
+            {
+              "column": 24,
+              "name": "PrincipalOutstanding"
+            },
+            {
+              "column": 25,
+              "name": "StakeholderCompanyId"
+            },
+            {
+              "column": 26,
+              "name": "Status"
+            },
+            {
+              "column": 27,
+              "name": "TotalAmount"
+            },
+            {
+              "column": 28,
+              "name": "Type"
+            },
+            {
+              "column": 29,
+              "name": "ValuationCap"
+            }
+          ],
+          "populated_rows_below_header": 0,
+          "formula_cells": 0,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        },
+        {
+          "sheet": "StakeholderCompanies",
+          "visibility": "visible",
+          "header_row": 2,
+          "columns": [
+            {
+              "column": 2,
+              "name": "Id"
+            },
+            {
+              "column": 3,
+              "name": "Name"
+            },
+            {
+              "column": 4,
+              "name": "City"
+            },
+            {
+              "column": 5,
+              "name": "ConversionExtras"
+            },
+            {
+              "column": 6,
+              "name": "CostCenter"
+            },
+            {
+              "column": 7,
+              "name": "Country"
+            },
+            {
+              "column": 8,
+              "name": "Email"
+            },
+            {
+              "column": 9,
+              "name": "ExternalId"
+            },
+            {
+              "column": 10,
+              "name": "FederalWithholdingRate"
+            },
+            {
+              "column": 11,
+              "name": "FicaWithholdingRate"
+            },
+            {
+              "column": 12,
+              "name": "FullyDiluted"
+            },
+            {
+              "column": 13,
+              "name": "FullyDilutedCommonShares"
+            },
+            {
+              "column": 14,
+              "name": "FullyDilutedForOwnershipAmount"
+            },
+            {
+              "column": 15,
+              "name": "FullyDilutedOwnership"
+            },
+            {
+              "column": 16,
+              "name": "FullyDilutedPreferredShares"
+            },
+            {
+              "column": 17,
+              "name": "GrossAnnualIncome"
+            },
+            {
+              "column": 18,
+              "name": "GrossSupplementalIncome"
+            },
+            {
+              "column": 19,
+              "name": "HireDate"
+            },
+            {
+              "column": 20,
+              "name": "HrisId"
+            },
+            {
+              "column": 21,
+              "name": "IsFallbackFederalWithholdingRate"
+            },
+            {
+              "column": 22,
+              "name": "IsFallbackFicaWithholdingRate"
+            },
+            {
+              "column": 23,
+              "name": "IsFallbackStateWithholdingRate"
+            },
+            {
+              "column": 24,
+              "name": "OptionsFullyDilutedForOwnershipAmount"
+            },
+            {
+              "column": 25,
+              "name": "OutstandingAmount"
+            },
+            {
+              "column": 26,
+              "name": "OutstandingForOwnershipAmount"
+            },
+            {
+              "column": 27,
+              "name": "ProfitInterestsFullyDilutedForOwnershipAmount"
+            },
+            {
+              "column": 28,
+              "name": "Relationship"
+            },
+            {
+              "column": 29,
+              "name": "RsaFullyDilutedForOwnershipAmount"
+            },
+            {
+              "column": 30,
+              "name": "RsaOutstandingForOwnershipAmount"
+            },
+            {
+              "column": 31,
+              "name": "RsuFullyDilutedForOwnershipAmount"
+            },
+            {
+              "column": 32,
+              "name": "RsuOutstandingForOwnershipAmount"
+            },
+            {
+              "column": 33,
+              "name": "SharesFullyDilutedForOwnershipAmount"
+            },
+            {
+              "column": 34,
+              "name": "SharesOutstandingForOwnershipAmount"
+            },
+            {
+              "column": 35,
+              "name": "SharesRsuRsaOutstandingForOwnershipAmount"
+            },
+            {
+              "column": 36,
+              "name": "StakeholderType"
+            },
+            {
+              "column": 37,
+              "name": "State"
+            },
+            {
+              "column": 38,
+              "name": "StateWithholdingRate"
+            },
+            {
+              "column": 39,
+              "name": "TaxFilingStatus"
+            },
+            {
+              "column": 40,
+              "name": "TerminationDate"
+            },
+            {
+              "column": 41,
+              "name": "Title"
+            },
+            {
+              "column": 42,
+              "name": "TokenFullyDilutedAmount"
+            },
+            {
+              "column": 43,
+              "name": "TokenOutstandingAmount"
+            },
+            {
+              "column": 44,
+              "name": "TokenUnvestedAmount"
+            },
+            {
+              "column": 45,
+              "name": "TokenVestedAmount"
+            },
+            {
+              "column": 46,
+              "name": "TotalWithholdingRate"
+            },
+            {
+              "column": 47,
+              "name": "VotingAmount"
+            },
+            {
+              "column": 48,
+              "name": "VotingSharesForOwnershipAmount"
+            },
+            {
+              "column": 49,
+              "name": "W4FederalWithholdingRate"
+            },
+            {
+              "column": 50,
+              "name": "WarrantsFullyDilutedForOwnershipAmount"
+            },
+            {
+              "column": 51,
+              "name": "WarrantsOutstandingForOwnershipAmount"
+            },
+            {
+              "column": 52,
+              "name": "YtdGrossSalary"
+            },
+            {
+              "column": 53,
+              "name": "YtdSupplementalIncome"
+            },
+            {
+              "column": 54,
+              "name": "YtdTokenIncome"
+            },
+            {
+              "column": 55,
+              "name": "ZipCode"
+            }
+          ],
+          "populated_rows_below_header": 1,
+          "formula_cells": 0,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        },
+        {
+          "sheet": "ShareClasses",
+          "visibility": "visible",
+          "header_row": 2,
+          "columns": [
+            {
+              "column": 2,
+              "name": "Id"
+            },
+            {
+              "column": 3,
+              "name": "AuthorizedNumberOfShares"
+            },
+            {
+              "column": 4,
+              "name": "AvailableAmount"
+            },
+            {
+              "column": 5,
+              "name": "BoardApprovalDate"
+            },
+            {
+              "column": 6,
+              "name": "CapitalContribution"
+            },
+            {
+              "column": 7,
+              "name": "ClassType"
+            },
+            {
+              "column": 8,
+              "name": "ConversionExtras"
+            },
+            {
+              "column": 9,
+              "name": "ConversionRatio"
+            },
+            {
+              "column": 10,
+              "name": "DeletedAt"
+            },
+            {
+              "column": 11,
+              "name": "DividendsCompoundingPeriod"
+            },
+            {
+              "column": 12,
+              "name": "DividendsDaycountConvention"
+            },
+            {
+              "column": 13,
+              "name": "DividendsInterestRate"
+            },
+            {
+              "column": 14,
+              "name": "DividendsInterestType"
+            },
+            {
+              "column": 15,
+              "name": "DividendsType"
+            },
+            {
+              "column": 16,
+              "name": "ExcludeFromFullyDiluted"
+            },
+            {
+              "column": 17,
+              "name": "ExercisedAmount"
+            },
+            {
+              "column": 18,
+              "name": "FullyDilutedAmount"
+            },
+            {
+              "column": 19,
+              "name": "HasVoting"
+            },
+            {
+              "column": 20,
+              "name": "IssuedAmount"
+            },
+            {
+              "column": 21,
+              "name": "LiquidationMultiple"
+            },
+            {
+              "column": 22,
+              "name": "LiquidationPreference"
+            },
+            {
+              "column": 23,
+              "name": "Name"
+            },
+            {
+              "column": 24,
+              "name": "OptionsFullyDilutedAmount"
+            },
+            {
+              "column": 25,
+              "name": "OptionsOutstandingAmount"
+            },
+            {
+              "column": 26,
+              "name": "OutstandingAmount"
+            },
+            {
+              "column": 27,
+              "name": "ParValue"
+            },
+            {
+              "column": 28,
+              "name": "PreferenceType"
+            },
+            {
+              "column": 29,
+              "name": "PricePerShare"
+            },
+            {
+              "column": 30,
+              "name": "ProfitInterestsFullyDilutedAmount"
+            },
+            {
+              "column": 31,
+              "name": "ProfitInterestsOutstandingAmount"
+            },
+            {
+              "column": 32,
+              "name": "RsaOutstandingAmount"
+            },
+            {
+              "column": 33,
+              "name": "RsuOutstandingAmount"
+            },
+            {
+              "column": 34,
+              "name": "RtaOutstandingAmount"
+            },
+            {
+              "column": 35,
+              "name": "RtuOutstandingAmount"
+            },
+            {
+              "column": 36,
+              "name": "Seniority"
+            },
+            {
+              "column": 37,
+              "name": "SharesFullyDilutedAmount"
+            },
+            {
+              "column": 38,
+              "name": "SharesOutstandingAmount"
+            },
+            {
+              "column": 39,
+              "name": "SharesRsuRsaCapitalContribution"
+            },
+            {
+              "column": 40,
+              "name": "StakeholderApprovalDate"
+            },
+            {
+              "column": 41,
+              "name": "TokenOptionsFullyDilutedAmount"
+            },
+            {
+              "column": 42,
+              "name": "TokenOptionsOutstandingAmount"
+            },
+            {
+              "column": 43,
+              "name": "TokenWarrantsFullyDilutedAmount"
+            },
+            {
+              "column": 44,
+              "name": "TokenWarrantsOutstandingAmount"
+            },
+            {
+              "column": 45,
+              "name": "TokensFullyDilutedAmount"
+            },
+            {
+              "column": 46,
+              "name": "TokensOutstandingAmount"
+            },
+            {
+              "column": 47,
+              "name": "TokensRtuRtaCapitalContribution"
+            },
+            {
+              "column": 48,
+              "name": "Valuation"
+            },
+            {
+              "column": 49,
+              "name": "VotingMultiplier"
+            },
+            {
+              "column": 50,
+              "name": "WarrantsFullyDilutedAmount"
+            },
+            {
+              "column": 51,
+              "name": "WarrantsOutstandingAmount"
+            }
+          ],
+          "populated_rows_below_header": 2,
+          "formula_cells": 0,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        },
+        {
+          "sheet": "EquityPlan",
+          "visibility": "visible",
+          "header_row": 2,
+          "columns": [
+            {
+              "column": 2,
+              "name": "Id"
+            },
+            {
+              "column": 3,
+              "name": "Name"
+            },
+            {
+              "column": 4,
+              "name": "AuthorizedAmount"
+            },
+            {
+              "column": 5,
+              "name": "AvailableAllocatedAmount"
+            },
+            {
+              "column": 6,
+              "name": "AvailableAmount"
+            },
+            {
+              "column": 7,
+              "name": "BoardApprovalDate"
+            },
+            {
+              "column": 8,
+              "name": "CancelledAmount"
+            },
+            {
+              "column": 9,
+              "name": "CapitalContribution"
+            },
+            {
+              "column": 10,
+              "name": "CreatedAt"
+            },
+            {
+              "column": 11,
+              "name": "DeletedAt"
+            },
+            {
+              "column": 12,
+              "name": "DraftFullyDilutedAmount"
+            },
+            {
+              "column": 13,
+              "name": "FullyDilutedAmount"
+            },
+            {
+              "column": 14,
+              "name": "InitialPoolSize"
+            },
+            {
+              "column": 15,
+              "name": "IsExcludeFromFullyDiluted"
+            },
+            {
+              "column": 16,
+              "name": "IsPhantom"
+            },
+            {
+              "column": 17,
+              "name": "IssuedAmount"
+            },
+            {
+              "column": 18,
+              "name": "IssuedAuthorizedPct"
+            },
+            {
+              "column": 19,
+              "name": "NonShareClassOutstandingAmount"
+            },
+            {
+              "column": 20,
+              "name": "NotionalPlanUnits"
+            },
+            {
+              "column": 21,
+              "name": "NotionalUnvestedUnits"
+            },
+            {
+              "column": 22,
+              "name": "NotionalVestedUnits"
+            },
+            {
+              "column": 23,
+              "name": "OptionsExercisedAmount"
+            },
+            {
+              "column": 24,
+              "name": "OptionsFullyDilutedAmount"
+            },
+            {
+              "column": 25,
+              "name": "OptionsOutstandingAmount"
+            },
+            {
+              "column": 26,
+              "name": "OutstandingAmount"
+            },
+            {
+              "column": 27,
+              "name": "OwnershipAllocatedAmount"
+            },
+            {
+              "column": 28,
+              "name": "OwnershipTotal"
+            },
+            {
+              "column": 29,
+              "name": "OwnershipUnallocatedAmount"
+            },
+            {
+              "column": 30,
+              "name": "PhantomFullyDilutedAmount"
+            },
+            {
+              "column": 31,
+              "name": "PhantomUnvestedAmount"
+            },
+            {
+              "column": 32,
+              "name": "PhantomVestedAmount"
+            },
+            {
+              "column": 33,
+              "name": "PlanType"
+            },
+            {
+              "column": 34,
+              "name": "ProfitInterestsFullyDilutedAmount"
+            },
+            {
+              "column": 35,
+              "name": "ProfitInterestsOutstandingAmount"
+            },
+            {
+              "column": 36,
+              "name": "RepurchasedAmount"
+            },
+            {
+              "column": 37,
+              "name": "RetiredAmount"
+            },
+            {
+              "column": 38,
+              "name": "RsaFullyDilutedAmount"
+            },
+            {
+              "column": 39,
+              "name": "RsaOutstandingAmount"
+            },
+            {
+              "column": 40,
+              "name": "RsasAmountNotExercisedFromOptions"
+            },
+            {
+              "column": 41,
+              "name": "RsuFullyDilutedAmount"
+            },
+            {
+              "column": 42,
+              "name": "RsuOutstandingAmount"
+            },
+            {
+              "column": 43,
+              "name": "RtaFullyDilutedAmount"
+            },
+            {
+              "column": 44,
+              "name": "RtaOutstandingAmount"
+            },
+            {
+              "column": 45,
+              "name": "RtuFullyDilutedAmount"
+            },
+            {
+              "column": 46,
+              "name": "RtuOutstandingAmount"
+            },
+            {
+              "column": 47,
+              "name": "SecurityClassId"
+            },
+            {
+              "column": 48,
+              "name": "StakeholderApprovalDate"
+            },
+            {
+              "column": 49,
+              "name": "TermOfPlan"
+            },
+            {
+              "column": 50,
+              "name": "TerminationDate"
+            },
+            {
+              "column": 51,
+              "name": "TokenOptionsFullyDilutedAmount"
+            },
+            {
+              "column": 52,
+              "name": "TokenOptionsOutstandingAmount"
+            },
+            {
+              "column": 53,
+              "name": "UnvestedAmount"
+            },
+            {
+              "column": 54,
+              "name": "VestingScheduleId"
+            },
+            {
+              "column": 55,
+              "name": "VestingStartDate"
+            }
+          ],
+          "populated_rows_below_header": 0,
+          "formula_cells": 0,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        }
+      ],
+      "raw_assessment": {
+        "security_rows": 581,
+        "shareholder_rows": 1,
+        "unique_owner_references": 144,
+        "unresolved_owner_rows": 575,
+        "duplicate_certificate_groups": 1,
+        "duplicate_certificate_extra_rows": 1,
+        "status_counts": {
+          "TRANSFERRED": 62,
+          "OUTSTANDING": 518,
+          "CANCELLED": 1
+        },
+        "acceptance_status_counts": {
+          "PENDING": 562,
+          "ACCEPTED": 19
+        },
+        "parent_link_rows": 105,
+        "unresolved_parent_rows": 0,
+        "quantity_assessment": {
+          "IssuedAmount": {
+            "sum": "90580.0",
+            "fractional_rows": 6
+          },
+          "OutstandingAmount": {
+            "sum": "78324.5",
+            "fractional_rows": 5
+          },
+          "CancelledAmount": {
+            "sum": "12255.5",
+            "fractional_rows": 1
+          }
+        },
+        "class_totals": [
+          {
+            "class": "Common",
+            "class_outstanding": "75200",
+            "security_outstanding_sum": "75200"
+          },
+          {
+            "class": "Preferred",
+            "class_outstanding": "3124.5",
+            "security_outstanding_sum": "3124.5"
+          }
+        ]
+      }
+    },
+    {
+      "file": "grants-outstanding-cancel-report-2026-11-12-10_29_1794585205174.xlsx",
+      "sha256": "4064980e6eb8274fb933aff0f9c99fad47fb5c5b03ead165be991a107c71a340",
+      "sheets": [
+        {
+          "sheet": "Grants Outstanding Canceled",
+          "visibility": "visible",
+          "header_row": 15,
+          "columns": [
+            {
+              "column": 2,
+              "name": "External ID"
+            },
+            {
+              "column": 3,
+              "name": "Stakeholder Name"
+            },
+            {
+              "column": 4,
+              "name": "Employee Type"
+            },
+            {
+              "column": 5,
+              "name": "Plan Name"
+            },
+            {
+              "column": 6,
+              "name": "Grant Date"
+            },
+            {
+              "column": 7,
+              "name": "Grant Type"
+            },
+            {
+              "column": 8,
+              "name": "Amount Granted"
+            },
+            {
+              "column": 9,
+              "name": "Share Class Name"
+            },
+            {
+              "column": 10,
+              "name": "Share Class"
+            },
+            {
+              "column": 11,
+              "name": "Exercise Price per Share"
+            },
+            {
+              "column": 12,
+              "name": "Certificate ID"
+            },
+            {
+              "column": 13,
+              "name": "Effective Date of Cancellation in Pulley"
+            },
+            {
+              "column": 14,
+              "name": "Reason For Cancellation"
+            },
+            {
+              "column": 15,
+              "name": "Unvested Quantity"
+            },
+            {
+              "column": 16,
+              "name": "Vested Quantity"
+            },
+            {
+              "column": 17,
+              "name": "Total Cancelled/ Expired Quantity"
+            },
+            {
+              "column": 18,
+              "name": "Total Price of Cancelled/ Expired Shares"
+            }
+          ],
+          "populated_rows_below_header": 2,
+          "formula_cells": 17,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        }
+      ]
+    },
+    {
+      "file": "securities-granted-report-2026-11-12-10_30_1794585205175.xlsx",
+      "sha256": "0e36dad6c19e7e0f692aef15a8c8b719aeb0853847a3dec4ecd8190e9636e5ca",
+      "sheets": [
+        {
+          "sheet": "Securities Granted",
+          "visibility": "visible",
+          "header_row": 14,
+          "columns": [
+            {
+              "column": 2,
+              "name": "External ID"
+            },
+            {
+              "column": 3,
+              "name": "Stakeholder Name"
+            },
+            {
+              "column": 4,
+              "name": "Plan Name"
+            },
+            {
+              "column": 5,
+              "name": "Grant Date"
+            },
+            {
+              "column": 6,
+              "name": "Vesting Start Date"
+            },
+            {
+              "column": 7,
+              "name": "Grant Type"
+            },
+            {
+              "column": 8,
+              "name": "Share Class Name"
+            },
+            {
+              "column": 9,
+              "name": "Share Class"
+            },
+            {
+              "column": 10,
+              "name": "Grant Price"
+            },
+            {
+              "column": 11,
+              "name": "FMV at Time of Grant"
+            },
+            {
+              "column": 12,
+              "name": "Certificate ID"
+            },
+            {
+              "column": 13,
+              "name": "Granted/ Original Target"
+            }
+          ],
+          "populated_rows_below_header": 5,
+          "formula_cells": 4,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        }
+      ]
+    },
+    {
+      "file": "stakeholder-ownership-report-2026-11-12-10_30_1794585205176.xlsx",
+      "sha256": "bbe2688d41cddebae82e6b1373015b51a78883512db5ffe54f5e9287d9e298d5",
+      "sheets": [
+        {
+          "sheet": "Ownership",
+          "visibility": "visible",
+          "header_row": 4,
+          "columns": [
+            {
+              "column": 1,
+              "name": "Stakeholder External ID"
+            },
+            {
+              "column": 2,
+              "name": "Stakeholder"
+            },
+            {
+              "column": 3,
+              "name": "Stakeholder Type"
+            },
+            {
+              "column": 4,
+              "name": "Common"
+            },
+            {
+              "column": 5,
+              "name": "Preferred"
+            },
+            {
+              "column": 6,
+              "name": "Issued and Outstanding"
+            },
+            {
+              "column": 7,
+              "name": "Issued and Outstanding % Ownership"
+            },
+            {
+              "column": 8,
+              "name": "Awards Issued Outside of a Plan"
+            },
+            {
+              "column": 9,
+              "name": "Fully Diluted"
+            },
+            {
+              "column": 10,
+              "name": "Fully Diluted % Ownership"
+            }
+          ],
+          "populated_rows_below_header": 2,
+          "formula_cells": 11,
+          "formula_cells_without_cache": 0,
+          "note": "Rows below header may include totals/subheadings; not necessarily entity counts."
+        }
+      ]
+    }
+  ]
+}

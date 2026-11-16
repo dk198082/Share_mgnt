@@ -2,6 +2,12 @@
 name: Certificate business rules
 description: User-required certificate identity rules and current limits of dilution calculations.
 ---
+Both Common and Preferred shares must support quantities with up to two decimal places, including positive quantities below one share. Fractional shares are a valid use case even though uncommon. Reject excess precision rather than silently rounding or truncating; certificate IDs/counters remain integer sequences.
+
+**Why:** The user confirmed fractions for both classes during legacy-conversion review, then explicitly requested two-decimal support in ongoing app functionality and forms.
+
+**How to apply:** Apply the same exact-decimal policy to issuance, full/partial/batch transfers, allocations, approvals, holdings, reports, certificate PDFs and imports. Treat this as a required application capability, not an import-only workaround. Preserve the mapping-review and production-execution approval gates.
+
 Certificates are integral to the shareholder Holdings - Shares section. Common IDs are C-1, C-2, etc.; Preferred IDs are P-1, P-2, etc. Each class has its own company-wide sequential counter, starting at 1 and increasing by 1 per new certificate. Numbers are not per shareholder.
 
 **Why:** The user explicitly required unique IDs with separate Common and Preferred counters, and supplied a table showing Certificate, Issue Date, Status, Vesting Schedule, Fully Diluted, and % Fully Diluted.

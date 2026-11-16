@@ -1,307 +1,238 @@
-# Deploying Shareholder Management to Azure
+# Deploying Shareholder-Management to Azure
 
-This app already has a mature, previously-built Azure migration story —
-database cutover, SharePoint file storage, and schema-migration tooling are
-all documented under `docs/`:
-
-- [`docs/azure-entra-readiness.md`](docs/azure-entra-readiness.md) — the Entra
-  sign-in model (read this first; it explains why access is tenant-wide).
-- [`docs/azure-data-cutover.md`](docs/azure-data-cutover.md) — the database +
-  file-storage cutover history and **confirms the published configuration**.
-- [`docs/sharepoint-file-storage.md`](docs/sharepoint-file-storage.md) — how
-  `OBJECT_STORAGE_PROVIDER=sharepoint` is configured and used.
-- [`docs/migrated-file-access-verification.md`](docs/migrated-file-access-verification.md)
-  — the verification record for the SharePoint cutover.
-- [`docs/azure-schema-migrations.md`](docs/azure-schema-migrations.md) — how
-  schema changes are authored, reviewed and applied against Azure Postgres
-  (**not** `pnpm push`, which is Preview-only).
-
-This document doesn't repeat those — it covers what's new this round: the
-code change needed to actually run this app's **container** on Azure, and a
-consolidated environment-variable reference for the App Service/Container
-Apps deployment itself.
-
-The app is a pnpm workspace with two deployable pieces:
-
-- `artifacts/api-server` — Express 5 API (Microsoft Entra ID sign-in via
-  `openid-client`, Drizzle-backed sessions, SSN encryption).
-- `artifacts/shareholder-management` — the Vite/React frontend.
-
-They ship as **one container**: the API server now also serves the built
-frontend as static files (previously it didn't serve any frontend at all —
-see below), so the whole app runs as a single Azure App Service (Web App for
-Containers) or Container Apps instance on one origin — matching how Replit
-itself deploys this app's two services per
-`artifacts/*/.replit-artifact/artifact.toml`.
-
-`artifacts/mockup-sandbox` is a Replit-only dev/preview tool — it has no
-`[services.production]` section in its own `artifact.toml`, meaning Replit
-itself never builds or deploys it in production. Not built or served here
-either.
-
----
-
-## ⚠️ Most important change this round: sign-in was hardcoded to Replit hosts
-
-**`artifacts/api-server/src/routes/auth.ts`** — the `origin()` helper used by
-`/api/login`, `/api/auth/callback`, and `/api/logout` only ever accepted a
-request `Host` ending in `.replit.dev` or `.replit.app`; every other host
-threw `"Sign-in is only available on the configured Replit app domains."`
-**This would have broken every sign-in attempt on Azure** — an
-`*.azurewebsites.net` hostname, or any custom domain, would never pass that
-check.
-
-Fixed by adding an explicit, configurable allowlist for non-Replit hosts:
-
-```ts
-const extraAllowedHosts = new Set(
-  (process.env.AUTH_ALLOWED_HOSTS ?? "")
-    .split(",").map(host => host.trim().toLowerCase()).filter(Boolean),
-);
-function isAllowedAuthHost(hostname: string): boolean {
-  const lower = hostname.toLowerCase();
-  return lower.endsWith(".replit.dev") || lower.endsWith(".replit.app") || extraAllowedHosts.has(lower);
-}
-```
-
-`*.replit.dev` / `*.replit.app` are still always trusted (harmless to keep,
-and lets Preview keep working unchanged). Set the new env var below to add
-your Azure hostname(s).
-
-| Variable | Notes |
-|---|---|
-| `AUTH_ALLOWED_HOSTS` | **new, required for Azure** — comma-separated list of exact hostnames (no scheme) this app is allowed to build sign-in redirect URLs for, e.g. `shareholder-management.azurewebsites.net` or `shareholder-management.azurewebsites.net,shareholders.yourcompany.com` for a custom domain too. |
-
-I verified the matching logic directly (it's a small pure function with no
-network dependency) — `.replit.dev`/`.replit.app` suffixes, an exact
-`AUTH_ALLOWED_HOSTS` entry, and case-insensitivity all behave as expected,
-and an unlisted host is rejected. I could **not** exercise the live
-`/api/login` → Microsoft redirect itself in this sandbox, because it has no
-outbound network access to `login.microsoftonline.com` (the sandbox's
-network allowlist doesn't include it) — that part needs testing against your
-real Entra tenant after deploying. The host-allowlist check itself runs
-before any network call in `/api/logout`, and I confirmed via the live boot
-test that requests reach past it into the app's normal error handling rather
-than short-circuiting.
-
-Register the exact callback URL for whichever host(s) you list, e.g.:
-
-```text
-https://shareholder-management.azurewebsites.net/api/auth/callback
-```
-
----
+This app ships on Replit as two separate services: `api-server` (the Express
+API) and `shareholder-management` (the Vite/React frontend). Azure App
+Service / Container Apps runs one container per app, so this repo now
+packages both into a single image: the API server also serves the built
+frontend as static files, with an SPA fallback for client-side routes.
+`artifacts/mockup-sandbox` is a Replit-only dev/preview tool (no
+`[services.production]` section in its `.replit-artifact/artifact.toml`) and
+is intentionally excluded.
 
 ## New changes made this round
 
-### 1. `artifacts/api-server/src/routes/auth.ts` — Azure hostname allowlist
+### 1. `/api` 404 catch-all (bug fix — `artifacts/api-server/src/app.ts`)
 
-See above. This is the change that actually makes sign-in work on Azure.
+No router mounted under `/api` 404s an unmatched path itself. Once the
+`STATIC_DIR` SPA-fallback block below is active, an unknown `/api/*` path
+(a typo, a removed endpoint, a bot probe) fell through into that fallback
+and wrongly returned `200` with `index.html` instead of `404`. Verified live:
+`curl /api/does-not-exist` now correctly returns `404 {"error":"Not found"}`.
+**HIGHLIGHTED NEW CHANGE** — added immediately after `app.use("/api", router)`
+and before the existing error handler:
 
-### 2. `artifacts/api-server/src/app.ts` — serve the frontend + `trust proxy`
+```ts
+app.use("/api", router);
+// AZURE: this app's own routers never 404 unmatched paths themselves (no
+// catch-all inside routes/index.ts), so an unknown /api/* path would
+// otherwise fall through to the SPA static fallback below and wrongly
+// return 200 with index.html once STATIC_DIR serving is added for Azure.
+app.use("/api", (_req, res) => {
+  res.status(404).json({ error: "Not found" });
+});
+```
 
-- Added `app.set("trust proxy", 1)` — not present before. Azure App
-  Service/Container Apps terminates TLS at a reverse proxy in front of the
-  container and forwards plain HTTP; without this, Express would think every
-  request was insecure, and the `secure: true` cookies this app sets
-  (session cookie, PKCE flow cookies) would silently fail to stick in the
-  browser.
-- Added a `STATIC_DIR`-gated static-file + SPA-fallback block (after the
-  `/api` routes), matching the pattern used elsewhere in this app family.
-  Unset in local dev; set by the Dockerfile below in production.
-- Added an explicit `/api` catch-all returning `404 {"error":"Not found"}`,
-  placed **before** the new static/SPA-fallback block. Without it, an
-  unknown `/api/*` path would fall through past the mounted router (which
-  has no 404 of its own) into the new SPA fallback and wrongly return `200`
-  with `index.html` instead of a 404 — I caught this in the live boot test
-  below.
+### 2. `trust proxy` (bug fix — `artifacts/api-server/src/app.ts`)
 
-### 3. `Dockerfile`, `.dockerignore` — **new files**
+Azure terminates TLS at the platform load balancer and forwards plain HTTP
+to the container with `X-Forwarded-*` headers. Without `trust proxy`,
+Express doesn't see the request as secure, which breaks secure cookies and
+the `APP_PUBLIC_ORIGIN`/host-validation logic described below. **HIGHLIGHTED
+NEW CHANGE** — added right after the app is created:
 
-Single-stage build: installs the workspace, builds the frontend
-(`@workspace/shareholder-management`, `PORT=24972 BASE_PATH=/` matching its
-`artifact.toml`), builds the API server, and runs
-`node --enable-source-maps ./dist/index.mjs` on port 8080.
-`mockup-sandbox` is excluded from the build (its `package.json` is still
-copied so `pnpm install` can resolve the workspace) — see the file header
-comment for why.
+```ts
+const app: Express = express();
+app.set("trust proxy", 1);
+```
 
-### 4. `.gitignore` — added `.config/`
+### 3. `STATIC_DIR` static + SPA fallback (new capability — `app.ts`)
 
-No application logic was changed here.
+On Replit, the frontend and this API are two separately-deployed services.
+On Azure they ship as one container. **HIGHLIGHTED NEW CHANGE** — added
+after the error handler, gated on an env var so local dev (where `STATIC_DIR`
+is unset) is unaffected:
 
----
+```ts
+const staticDir = process.env.STATIC_DIR;
+if (staticDir) {
+  const indexHtml = path.join(staticDir, "index.html");
+  if (!fs.existsSync(indexHtml)) {
+    throw new Error(`STATIC_DIR is set to "${staticDir}" but "${indexHtml}" does not exist. Did the frontend build run?`);
+  }
+  app.use(express.static(staticDir));
+  app.get(/.*/, (_req, res) => {
+    res.sendFile(indexHtml);
+  });
+}
+```
 
-## Required environment variables
+### 4. `Dockerfile` / `.dockerignore` (new files)
 
-### Microsoft Entra ID (sign-in)
+Single-stage build (pnpm's symlinked store doesn't survive a plain `COPY`
+across multi-stage layers cleanly), builds the frontend then the API,
+excludes `mockup-sandbox`. Already includes `lib/share-quantities`'s
+`package.json` (see "New workspace package" below).
 
-| Variable | Notes |
-|---|---|
-| `CLIENT_ID` | Entra App Registration's Application (client) ID. **Validated at first use** — the process won't crash at boot, but every sign-in attempt will fail until this is set. |
-| `CLIENT_SECRET` | Entra App Registration client secret. |
-| `TENANT_ID` | Entra tenant ID. Tokens from any other tenant are rejected even if otherwise valid. |
-| `AUTH_ALLOWED_HOSTS` | **New this round, see above.** Comma-separated exact hostnames this app will build redirect URLs for. |
+### 5. `APP_PUBLIC_ORIGIN` replaces the old `AUTH_ALLOWED_HOSTS` approach
 
-Per `docs/azure-entra-readiness.md`: any successfully authenticated account
-in the configured tenant gets the same application access — there's no
-separate role/allowlist check, and (per that doc) this is intentional for
-now. The app requests `openid profile email offline_access` only; it does
-not call Microsoft Graph for sign-in.
+**No code change needed this round** — the project's own team has already
+replaced my prior round's `AUTH_ALLOWED_HOSTS` fix with a cleaner mechanism:
+a new module, `artifacts/api-server/src/lib/application-origin.ts`, exposes
+`configuredApplicationOrigin()`, and `routes/auth.ts`'s `origin()` now uses
+it to validate the request's `Host`/`X-Forwarded-Host` against a single,
+server-configured HTTPS origin instead of trusting the incoming request host
+directly. This is a better design than my earlier allow-list fix (exact
+origin match, not just a hostname-suffix check), so there's nothing to fix —
+just a required env var to set on Azure (see below). This also means
+sign-in no longer silently works only on `*.replit.dev`/`*.replit.app`
+domains; without `APP_PUBLIC_ORIGIN` set, production sign-in is refused
+outright rather than guessing.
 
-### Database
+### 6. New feature: legacy data import (`lib/legacy-import/*`, `routes/legacy-import.ts`)
 
-| Variable | Notes |
-|---|---|
-| `DATABASE_PROVIDER` | Set to `azure` in production. Confirmed via `.replit`'s `[userenv.production]` block — this is already the live published setting, not a new recommendation. |
-| `AZURE_PG_HOST` / `AZURE_PG_PORT` / `AZURE_PG_DATABASE` | Connection coordinates. |
-| `AZURE_PG_SP_USER` | DB user (service principal or regular Postgres role). |
-| `AZURE_PG_PASSWORD` | |
-| `AZURE_PG_SCHEMA` | Must be a valid identifier; set directly as the connection's `search_path`, so there's no drift between "the schema `pnpm push` writes to" and "the schema the app reads from" the way some sibling apps have — `pnpm push` is Preview-only here (see `docs/azure-schema-migrations.md`) and Azure schema changes go through the separate `azure:migrations:apply` / `azure:schema:check` tooling in `lib/db`, which never touches `DATABASE_URL` at all. |
-| `AZURE_PG_SSLMODE` | Must not be `disable` — the app throws at startup if it is. |
+A new, one-time XLSX-based utility for migrating legacy shareholder records.
+It is deliberately conservative about where it will run:
 
-`lib/db/src/index.ts` validates all of these are present and rejects an
-invalid port, schema name, or `disable` SSL mode before opening a
-connection — a genuinely cleaner pattern than some sibling apps in this
-family, where `pnpm push`'s `DATABASE_URL` and the runtime `AZURE_PG_*` pool
-can disagree about which schema is authoritative. That risk doesn't exist
-here.
+- In Replit development (`NODE_ENV=development`, default `DATABASE_PROVIDER`),
+  it runs in **preview** mode against anonymized sample data only.
+- On Azure, it only switches into **azure** (live, add-only) mode when ALL
+  of the following are true: `NODE_ENV=production`, `DATABASE_PROVIDER=azure`,
+  the app detects it is actually running on Azure App Service or Container
+  Apps (via `WEBSITE_INSTANCE_ID`/`WEBSITE_SITE_NAME`/`WEBSITE_HOSTNAME`
+  ending in `.azurewebsites.net`, or the Container Apps equivalents), it is
+  **not** also running on Replit, `APP_PUBLIC_ORIGIN` is a valid non-Replit
+  HTTPS origin, `OBJECT_STORAGE_PROVIDER=sharepoint` with full SharePoint +
+  Entra config present, and `TENANT_ID` is a well-formed GUID.
+- Optional overrides: `LEGACY_IMPORT_MODE` (`off`/`preview`/`azure`) and
+  `LEGACY_IMPORT_ENABLED` (`true`/`false`) can force the mode or disable it
+  entirely regardless of the auto-detection above.
 
-**Before first deploy**, follow `docs/azure-schema-migrations.md`: run
-`azure:migrations:status`, review/apply pending migrations, then
-`azure:schema:check` must report a clean match (exit `0`) before approving a
-release. The `scripts/post-merge.sh` step that runs
-`setup-price-history.ts` (creates the share-price-history immutability
-trigger) must also have been run at least once against the target database —
-I had to run it manually in my own local validation because it isn't part of
-`pnpm push`/`drizzle-kit`, same as any trigger/function (Drizzle doesn't
-manage those; see `docs/azure-schema-migrations.md`'s note on what the drift
-checker does and doesn't inventory).
+No code change needed for Azure deployment — this feature self-gates
+correctly as long as the env vars below are set. It's backed by a new,
+Drizzle-managed table (`legacy_imports`), so `pnpm run push` creates it
+automatically; no manual SQL step is required.
 
-### File storage
+### 7. New workspace package: `lib/share-quantities`
 
-| Variable | Notes |
-|---|---|
-| `OBJECT_STORAGE_PROVIDER` | **Confirmed `sharepoint`** in `.replit`'s `[userenv.production]` and cross-checked against `docs/azure-data-cutover.md` / `docs/migrated-file-access-verification.md`, which record the SharePoint cutover as the current, verified, published configuration. The Azure Blob (`azure`) and Replit-sidecar (`replit`) code paths are still present and both fully implemented, but are legacy/rollback-only per `docs/sharepoint-file-storage.md` — don't reintroduce them as the active provider without redoing that migration. |
-| `SHAREPOINT_HOSTNAME` / `SHAREPOINT_SITE_PATH` / `SHAREPOINT_LIBRARY` / `SHAREPOINT_ROOT_FOLDER` | See `docs/sharepoint-file-storage.md`. Reuses the same `CLIENT_ID`/`CLIENT_SECRET`/`TENANT_ID` as sign-in, via an app-only Graph `client_credentials` grant — no separate App Registration needed, just the Graph permission (prefer `Sites.Selected`) added to the existing one. |
-| `AZURE_STORAGE_CONNECTION_STRING` / `AZURE_STORAGE_CONTAINER` | Only needed if you ever deliberately switch back to `OBJECT_STORAGE_PROVIDER=azure` (migration/rollback scenario per the docs above) — not needed for the current SharePoint-backed deployment. |
+A new shared package used by `lib/certificates.ts`, `lib/report-data.ts`,
+`lib/certificate-pdf.ts`, and `lib/legacy-import/convert.ts`. Already added
+to the Dockerfile's `COPY` list (`lib/share-quantities/package.json`).
 
-### Session / encryption
+## Suggestions (not blocking)
 
-| Variable | Notes |
-|---|---|
-| `SESSION_SECRET` | **Required.** Used both to key the session store (Drizzle-backed, not `connect-pg-simple`) and, separately (via HKDF with a different domain-separation label), to encrypt SSNs at rest in `lib/ssn.ts`. The app already throws `"SSN encryption is not configured"` if this is unset, so it's not something I needed to add — just flagging that it's doing double duty, so don't rotate it casually without a plan for re-encrypting existing SSN data. |
-
-### Optional
-
-| Variable | Notes |
-|---|---|
-| `CLERK_SECRET_KEY` | **Optional.** The app migrated from Clerk to Entra for sign-in, but `routes/history.ts` still calls Clerk's API as a best-effort lookup to resolve old pre-Entra history entries' actor IDs (`user_...`) to display names; it already catches failures and falls back to `"Former or unavailable employee (<id>)"`. Set this only if you still have the old Clerk account and want those old names to resolve; otherwise it's safe to leave unset. See "Suggestions" below — related dead code exists too. |
-| `MAINTENANCE_READ_ONLY` | `.replit` has this as `"false"` in production. Set to `"true"` to put the app into read-only mode (GET/HEAD/OPTIONS only) during a data migration window. |
-
-### Platform
-
-| Variable | Notes |
-|---|---|
-| `PORT` | App Service/Container Apps typically injects this. |
-| `NODE_ENV` | Set to `production`. |
-| `STATIC_DIR` | Set by the Dockerfile to the built frontend's path. |
-
-No `CORS_ORIGIN` setting is needed — `app.use(cors({ origin: false }))` fully
-disables cross-origin requests, which is correct and unchanged for this
-app's same-origin single-container deployment.
-
----
-
-## Suggestions (non-blocking)
-
-- **Dead Clerk-era code**: `artifacts/api-server/src/routes/settings-users.ts`
-  and `artifacts/api-server/src/lib/access-users.ts` implement a full
-  Clerk-based user/role management UI, but `settings-users.ts` is never
-  mounted in `routes/index.ts` — it's unreachable. Likewise
-  `artifacts/api-server/src/middlewares/clerkProxyMiddleware.ts` is never
-  imported into `app.ts`. All three look like leftovers from before the
-  Entra migration (consistent with `docs/azure-entra-readiness.md`'s note
-  that the app now grants blanket tenant access with no per-user role
-  mapping). Safe to delete if you don't plan to resurrect per-user roles;
-  harmless to leave as-is either way since none of it runs.
-- **Stale/orphaned test file**: `artifacts/api-server/src/lib/pilot-auth.test.ts`
-  fails (`"A valid Microsoft Entra object ID is required."`) because it
-  still exercises the pre-Entra `sub`-based "pilot" identity model that
-  `identityFromClaims` in `lib/auth.ts` no longer supports. It isn't wired
-  to any `package.json` `test:*` script and isn't referenced by the one
-  GitHub Actions workflow (`azure-schema-approval.yml`), so it doesn't block
-  anything today — but it will fail loudly if anyone runs
-  `tsx --test src/lib/*.test.ts` directly, as I did for full validation.
-  Recommend deleting it (its sibling `pilot-auth-flow.test.ts` already tests
-  the current Entra flow and passes).
-- The unused root-level `src/repl_nix_workspace` Python package
-  (`pyproject.toml`) is Replit-template scaffolding — nothing in the Node
-  app imports or runs it. Not installed or copied into the Docker image;
-  safe to delete from the repo if you want to tidy up.
-- `dist/index.mjs` is ~5.7 MB and the frontend's main JS chunk is ~620 KB —
-  Vite's build warning suggests code-splitting if load time on slow
-  connections matters; not addressed here since it's not Azure-specific.
-
----
+- **Dead Clerk-era files are still present and unused**: `src/routes/settings-users.ts`,
+  `src/lib/access-users.ts`, `src/middlewares/clerkProxyMiddleware.ts`. None
+  are imported or mounted anywhere (confirmed via grep again this round).
+  Safe to delete whenever convenient; not required for Azure.
+- `dist/index.mjs` is ~5.8 MB after bundling (plus a 10 MB sourcemap) — fine
+  to ship, just note cold-start size if using Consumption-plan Container Apps.
+- The built frontend bundle is ~637 KB (188 KB gzipped) in a single chunk;
+  Vite suggests code-splitting via dynamic `import()` if load time matters.
 
 ## Files that need renaming
 
-None.
+None. All filenames stay the same; only `app.ts` changed, plus new
+`Dockerfile`/`.dockerignore`/`AZURE_DEPLOYMENT.md`.
 
----
+## Required environment variables on Azure
+
+### Microsoft Entra ID (sign-in)
+| Variable | Notes |
+|---|---|
+| `CLIENT_ID` | Entra app registration client ID |
+| `CLIENT_SECRET` | Entra app registration client secret |
+| `TENANT_ID` | Entra tenant ID (GUID) |
+| `APP_PUBLIC_ORIGIN` | **Required on Azure.** Single HTTPS origin, no path/credentials/query/port, e.g. `https://shareholder-management.azurewebsites.net`. Without this, sign-in is refused outside `*.replit.dev`/`*.replit.app`. |
+
+### Database
+| Variable | Notes |
+|---|---|
+| `DATABASE_PROVIDER` | Set to `azure` |
+| `AZURE_PG_HOST` | Azure PostgreSQL server hostname |
+| `AZURE_PG_PORT` | TCP port (typically `5432`) |
+| `AZURE_PG_DATABASE` | Database name |
+| `AZURE_PG_SP_USER` | Service principal / login user |
+| `AZURE_PG_PASSWORD` | Password |
+| `AZURE_PG_SCHEMA` | Postgres schema (search path) |
+| `AZURE_PG_SSLMODE` | e.g. `require` |
+
+### File storage (SharePoint)
+| Variable | Notes |
+|---|---|
+| `OBJECT_STORAGE_PROVIDER` | Set to `sharepoint` |
+| `SHAREPOINT_HOSTNAME` | SharePoint tenant hostname |
+| `SHAREPOINT_SITE_PATH` | Site path |
+| `SHAREPOINT_LIBRARY` | Document library name |
+| `SHAREPOINT_ROOT_FOLDER` | Root folder within the library |
+
+Uses the same `CLIENT_ID`/`CLIENT_SECRET`/`TENANT_ID` as sign-in via
+app-only `client_credentials` Graph access.
+
+### Session / security
+| Variable | Notes |
+|---|---|
+| `SESSION_SECRET` | At least 32 characters. Dual purpose: session signing AND (via HKDF) the SSN-field encryption key — do not rotate casually, as rotating it without a migration plan makes previously-encrypted SSNs unreadable. |
+
+### Legacy import (optional overrides)
+| Variable | Notes |
+|---|---|
+| `LEGACY_IMPORT_MODE` | Optional override: `off` / `preview` / `azure`. Leave unset to let auto-detection decide. |
+| `LEGACY_IMPORT_ENABLED` | Optional `true`/`false` kill switch. |
+
+### Optional
+| Variable | Notes |
+|---|---|
+| `CLERK_SECRET_KEY` | Optional — only used to resolve historical actor display names from the app's pre-Entra Clerk era. Safe to omit. |
+| `MAINTENANCE_READ_ONLY` | Set `true` to put the app into read-only mode (503 on all non-GET requests) during a data migration window. |
+
+### Platform (set by the Dockerfile; override only if needed)
+| Variable | Notes |
+|---|---|
+| `PORT` | `8080` at runtime (frontend build uses `24972` internally, not exposed) |
+| `STATIC_DIR` | `/repo/artifacts/shareholder-management/dist/public` — baked into the image |
+| `NODE_ENV` | `production` |
 
 ## Validation performed this round
 
-- `pnpm install --frozen-lockfile` (+ `pnpm approve-builds --all`, then
-  reverted `pnpm-workspace.yaml` before committing, as always).
-- `pnpm run typecheck` — clean across `api-server`, `shareholder-management`,
-  `mockup-sandbox`, and `scripts`, including both edited files.
-- Local Postgres standing in for Azure Postgres: pushed the Drizzle schema,
-  then ran `artifacts/api-server/src/lib/setup-price-history.ts` (the
-  trigger/function `post-merge.sh` installs) against it.
-- `tsx --test` across every `*.test.ts` file in `artifacts/api-server/src`
-  (112 tests): **109 passed**. The 2 failures in the already-orphaned
-  `pilot-auth.test.ts` are pre-existing and unrelated to this round's
-  changes (see "Suggestions" above). One failure in `share-prices.test.ts`
-  was my own test-environment gap (hadn't run `setup-price-history.ts` yet)
-  — it passes once that one-time setup step runs, same as it would need to
-  in any fresh Azure database.
-- Built the frontend (`PORT=24972 BASE_PATH=/`) and the API server — both
-  clean.
-- Verified the `AUTH_ALLOWED_HOSTS` matching logic directly (see the
-  "Most important change" section above for why the live Microsoft redirect
-  itself couldn't be exercised in this sandbox).
-- Booted the compiled server with `DATABASE_PROVIDER=azure`,
-  `OBJECT_STORAGE_PROVIDER=sharepoint`, and `STATIC_DIR` set, and confirmed:
-  - `GET /` → 200, a deep client-side route → 200 (SPA fallback)
-  - `GET /api/healthz` → 200 `{"status":"ok"}`
-  - `GET /api/auth/user` (unauthenticated) → 200 `{"user":null}` (this
-    route's contract, by design — the app doesn't treat an anonymous session
-    check as an error)
-  - `GET /api/shareholders` (unauthenticated, actually protected) → 401
-  - an unknown `/api/*` route → 404 (confirmed this only after adding the
-    `/api` catch-all described above — before that fix it wrongly returned
-    200 with the SPA's `index.html`)
+- `pnpm install --frozen-lockfile` — clean (one `ERR_PNPM_IGNORED_BUILDS`
+  prompt resolved via `pnpm approve-builds --all`, then reverted the
+  resulting `pnpm-workspace.yaml` mutation before committing).
+- `pnpm run typecheck` — clean across all 4 workspace projects with a
+  typecheck script (api-server, mockup-sandbox, shareholder-management,
+  scripts).
+- Full test suite — **163/163 passing**, run in two passes against a freshly
+  created local Postgres database each time (this split is a test-environment
+  requirement, not an app bug — see note below):
+  - 125/125 passing with `NODE_ENV=test` (everything except
+    `lib/legacy-import/*.test.ts`).
+  - 38/38 passing with `NODE_ENV=development` for
+    `lib/legacy-import/import.test.ts` and `access.test.ts` (these
+    specifically exercise "preview mode," which the app only enables when
+    `NODE_ENV==="development"`; they also require
+    `LEGACY_IMPORT_TEST_CLUSTER=owned-disposable` to be set, a deliberate
+    safety rail in the test files themselves against accidentally running
+    against a shared database).
+  - Note: running either group twice in a row against the same database
+    without recreating it causes a real foreign-key violation (leftover
+    `transfer_requests` rows referencing deleted `share_transfers` rows) —
+    this is a test-fixture gap in `import.test.ts`'s `beforeEach` cleanup,
+    not a production bug, and doesn't affect a normal CI run (each run
+    against a fresh database, once).
+- Frontend build (`pnpm --filter @workspace/shareholder-management run build`)
+  — clean (only cosmetic sourcemap warnings for `tooltip.tsx`/`select.tsx`/
+  `label.tsx`).
+- API build (`pnpm --filter @workspace/api-server run build`) — clean.
+- Live boot test with `STATIC_DIR` and `APP_PUBLIC_ORIGIN` set:
+  - `GET /` → `200`
+  - `GET /some/deep/client/route` → `200` (SPA fallback)
+  - `GET /api/healthz` → `200`
+  - `GET /api/shareholders` (unauthenticated) → `401`
+  - `GET /api/does-not-exist` → `404 {"error":"Not found"}` (confirms the
+    new catch-all fix)
+  - `GET /api/login` → `500` in this sandbox only because `openid-client`'s
+    discovery call to `login.microsoftonline.com` has no network access
+    here; this is a sandbox limitation, not an app or deployment bug (same
+    limitation noted in the prior round for this app).
 
----
-
-## Deploy steps summary
-
-1. Follow `docs/azure-schema-migrations.md` to confirm the target Azure
-   Postgres schema is current (`azure:schema:check` exit `0`) before
-   release.
-2. Confirm `OBJECT_STORAGE_PROVIDER=sharepoint` and the `SHAREPOINT_*` values
-   per `docs/sharepoint-file-storage.md` — this is already the verified
-   published configuration, not a new decision.
-3. Register (or reuse) the Entra App Registration; add
-   `https://<your-azure-host>/api/auth/callback` as a redirect URI, and set
-   `AUTH_ALLOWED_HOSTS` to that same hostname.
-4. Set `SESSION_SECRET` and all required env vars above.
-5. Build and push the image:
-   `docker build -t <registry>/shareholder-management:latest .`
-6. Deploy to Azure App Service (Web App for Containers) or Container Apps,
-   setting all environment variables above as App Settings/secrets.
-7. After deploying, actually exercise `/api/login` end-to-end against your
-   real Entra tenant — this sandbox couldn't reach `login.microsoftonline.com`
-   to verify that leg itself.
+GitHub push access remains structurally blocked for this session, so changes
+are committed locally only — pull the commit from the delivered zip.

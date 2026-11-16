@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Business and technical overview of Shareholder Management: processes, features, integrations, data models, security, operations, and planned migration.">
+<title>Shareholder Management — Application Overview</title>
+<style>
+:root{color-scheme:light;--ink:#20332b;--green:#173d2d;--muted:#5e6b64;--line:#d9e1db}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:#edf0ec;color:var(--ink);font:16px/1.65 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:1120px;margin:32px auto;padding:56px 64px;background:#fffefa;border:1px solid var(--line)}
+header{border-bottom:2px solid var(--green);padding-bottom:14px;color:var(--green);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+h1{font:500 52px/1.12 Georgia,serif;color:var(--green);letter-spacing:-.025em;margin:36px 0 12px}
+h2{font:500 31px/1.25 Georgia,serif;color:var(--green);margin:44px 0 18px;border-top:1px solid var(--line);padding-top:25px;scroll-margin-top:20px}
+h3{font-size:19px;color:var(--green);margin:27px 0 12px}p{margin:12px 0}li{margin:7px 0}a{color:#225a42}
+table{width:100%;border-collapse:collapse;font-size:14px;margin:18px 0 26px;overflow-wrap:anywhere}th,td{text-align:left;vertical-align:top;padding:11px 13px;border:1px solid var(--line)}
+th{background:#e8f0e9;font-weight:650}tr:nth-child(even) td{background:#f7f9f5}td:first-child{min-width:145px}
+code{font: .87em ui-monospace,monospace;background:#edf1eb;padding:2px 4px;border-radius:3px;overflow-wrap:anywhere}
+figure{margin:30px 0;padding:12px;border:1px solid var(--line);background:#fffefa}figure img{display:block;width:100%;height:auto}figcaption{font-size:12px;color:var(--muted);margin-top:10px}
+nav{margin:28px 0;padding:20px 24px;background:#edf3ee;border:1px solid var(--line)}nav strong{display:block;margin-bottom:10px}nav div{columns:2;column-gap:25px}nav a{display:block;font-size:14px;margin:4px 0;break-inside:avoid;text-decoration:none}
+footer{border-top:1px solid var(--line);margin-top:40px;padding-top:18px;font-size:12px;color:var(--muted)}
+@media(max-width:760px){main{margin:0;padding:24px 18px;border:0}h1{font-size:38px}h2{font-size:26px}table{font-size:12px}td,th{padding:7px}td:first-child{min-width:0}nav div{columns:1}}
+@media print{@page{size:A4;margin:16mm}body{background:white;font-size:10pt}main{border:0;margin:0;padding:0;max-width:none}h1{font-size:32pt}h2{font-size:20pt;break-after:avoid}h3{break-after:avoid}table{font-size:8pt}thead{display:table-header-group}tr{break-inside:avoid}figure{break-inside:avoid}nav{break-inside:avoid}a{color:inherit;text-decoration:none}footer{font-size:8pt}}
+</style></head><body><main><header>Tinius Olsen · Internal business &amp; technical reference</header>
+<nav aria-label="Contents"><strong>Document contents</strong><div><a href="#section-1">Application Overview</a><a href="#section-2">How to use this document</a><a href="#section-3">1. Purpose and scope</a><a href="#section-4">2. Navigation and key features</a><a href="#section-5">3. Key business processes</a><a href="#section-6">4. Reports and activity review</a><a href="#section-7">5. Business controls and important limitations</a><a href="#section-8">6. Technical architecture</a><a href="#section-9">7. Integrations and dependencies</a><a href="#section-10">8. Data model</a><a href="#section-11">9. Identity, privacy, and access</a><a href="#section-12">10. Operations, maintenance, and support</a><a href="#section-13">11. Planned legacy import and Azure-only boundary</a><a href="#section-14">12. Ownership and document maintenance</a></div></nav>
+<h1>Shareholder Management</h1>
+<h2 id="section-1">Application Overview</h2>
+<p><strong>Business and technical reference · Phase 1 · Prepared 12 November 2026</strong></p>
+<p>This overview describes the application in the current project source, its principal business rules, and its intended operating boundaries. It is not a certification of the currently published build or a live environment audit. Configuration and deployment status should be verified before a production cutover.</p>
+<h2 id="section-2">How to use this document</h2>
+<ul>
+<li><strong>Business users and process owners:</strong> start with sections 1–5 for scope, navigation, day-to-day processes, reports, and controls.</li>
+<li><strong>Technical leads and support teams:</strong> use sections 6–10 for architecture, integrations, data models, security, operations, and known boundaries.</li>
+<li><strong>Migration owners:</strong> read section 11 before supplying legacy data or scheduling a reset.</li>
+</ul>
+<h2 id="section-3">1. Purpose and scope</h2>
+<p>Shareholder Management is an internal application for company employees, principally HR and Finance, to maintain shareholder information, administer Common and Preferred shares, issue certificates, process transfers, retain supporting documents, and review activity.</p>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Position</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phase 1 — employee operations</td>
+<td>Current focus: registry, certificate holdings, issuance, transfers, sign-offs, documents, reporting, and audit history.</td>
+</tr>
+<tr>
+<td>Phase 2 — shareholder engagement</td>
+<td>Not started. Shareholder login, self-service profile editing, and personal history access are outside the current scope until explicitly authorized.</td>
+</tr>
+<tr>
+<td>Pilot information</td>
+<td>Fictional pilot data is not the authoritative source for the future real-data migration.</td>
+</tr>
+<tr>
+<td>Future production import</td>
+<td>Planned Azure-hosted utility, subject to mapping review, implementation, and execution approval.</td>
+</tr>
+</tbody>
+</table>
+<h3>Key concepts</h3>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning in this application</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shareholder</td>
+<td>Person whose profile and certificate holdings are recorded. This is distinct from an employee who signs into the application.</td>
+</tr>
+<tr>
+<td>Certificate</td>
+<td>Numbered ledger record representing issued shares of one class held by one shareholder.</td>
+</tr>
+<tr>
+<td>Holdings</td>
+<td>Available shares derived from certificate records and their transferred quantities, not manually entered totals on the profile.</td>
+</tr>
+<tr>
+<td>Request</td>
+<td>Proposed issuance or transfer awaiting the captured set of named signers. A request is not a completed transaction.</td>
+</tr>
+<tr>
+<td>Sign-off</td>
+<td>An authenticated, recorded decision by a configured signer. Uploading a signature image alone is not approval.</td>
+</tr>
+<tr>
+<td>Transfer</td>
+<td>Completed movement of shares from one shareholder to another, with a newly numbered recipient certificate.</td>
+</tr>
+<tr>
+<td>Audit activity</td>
+<td>Recorded evidence of an application event. “Recorded” does not necessarily mean a pending transaction completed.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="section-4">2. Navigation and key features</h2>
+<table>
+<thead>
+<tr>
+<th>Application area</th>
+<th>What users can do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Home</td>
+<td>Open the employee dashboard and navigate to registry operations.</td>
+</tr>
+<tr>
+<td>Shareholders</td>
+<td>Search/filter existing shareholders, create records, and open or edit a shareholder’s details and history.</td>
+</tr>
+<tr>
+<td>Certificates</td>
+<td>Search certificates across shareholders and identify their holder, share class, balance, and status.</td>
+</tr>
+<tr>
+<td>Transfer History</td>
+<td>Look up completed transfers centrally without opening individual shareholders first.</td>
+</tr>
+<tr>
+<td>Reports</td>
+<td>Generate downloadable Excel workbooks for the three supported reports.</td>
+</tr>
+<tr>
+<td>Pending Sign Off Requests</td>
+<td>Review issuance and transfer requests, open request details, and record eligible decisions.</td>
+</tr>
+<tr>
+<td>Settings</td>
+<td>Maintain share prices, named signers, certificate templates, and the centralized Audit log; manage the available pilot-data function.</td>
+</tr>
+</tbody>
+</table>
+<p>Settings sits near the bottom of the left navigation above the signed-in employee. Share prices belong within Settings rather than a separate primary menu item.</p>
+<h3>Shareholder record</h3>
+<p>The record is organized into six sections:</p>
+<ol>
+<li><strong>Picture:</strong> shareholder photograph.</li>
+<li><strong>Shareholder information:</strong> name, email, date of birth, date of passing, protected SSN, address, and phone.</li>
+<li><strong>Family line information:</strong> family line and generation/external identifier.</li>
+<li><strong>Shareholder Information:</strong> the renamed fourth section, retaining the current notes-oriented content rather than assuming new financial fields or rights.</li>
+<li><strong>Holdings – Shares:</strong> Common and Preferred certificate breakdown, quantities, dates, statuses, and issuance/transfer actions.</li>
+<li><strong>Documents:</strong> supporting file attachments, including drag-and-drop upload.</li>
+</ol>
+<p>A separate <strong>History</strong> tab shows recorded changes and relevant transaction activity for that shareholder. Sensitive SSN values are not exposed as before/after audit content.</p>
+<h2 id="section-5">3. Key business processes</h2>
+<h3>3.1 Create or update a shareholder</h3>
+<ol>
+<li>Find the person in Shareholders before creating a duplicate.</li>
+<li>Create a new record or open an existing one.</li>
+<li>Enter or amend personal, contact, family-line, and notes information; add a photograph or documents as needed.</li>
+<li>Save the record.</li>
+<li>Use History to review the recorded actor, time, and available field changes. Older summary-only events remain summaries; missing historical details are not reconstructed.</li>
+</ol>
+<h3>3.2 Issue shares and retain a certificate</h3>
+<ol>
+<li>Ensure the applicable Common or Preferred PDF template is available in Settings.</li>
+<li>Configure the named signers and their signature images.</li>
+<li>Open the shareholder’s holdings and submit an issuance request for the selected class, quantity, issue date, and vesting information.</li>
+<li>Eligible signers review the request in Pending Sign Off Requests.</li>
+<li>On final approval, the system executes the issuance and allocates the next certificate number for that share class.</li>
+<li>The completed certificate PDF includes recorded approval signatures and is retained with the associated records and history.</li>
+</ol>
+<p>Common certificates use <strong>C-1, C-2, …</strong> and Preferred certificates use <strong>P-1, P-2, …</strong>. The two classes have independent counters; a Common issuance does not consume a Preferred number.</p>
+<h3>3.3 Transfer shares</h3>
+<ol>
+<li>Open the source shareholder and select the certificate or certificates to transfer from.</li>
+<li>Confirm the current holder, displayed first on the form.</li>
+<li>Choose an existing recipient or provide a new recipient for creation on successful execution.</li>
+<li>Specify allocations, transfer date, reason, and supporting attachments. The new form defaults Price per Share from Settings for the selected class; review any edited price before submitting.</li>
+<li>If the transfer crosses family lines, the form displays a notice. This is informational, not a block.</li>
+<li>Submit the request for sign-off.</li>
+<li>At final approval, available balances are rechecked and the transfer is committed with a new recipient certificate.</li>
+<li>Review the result in Transfer History and in both shareholders’ histories.</li>
+</ol>
+<p><strong>Batch transfers</strong> consolidate allocations from multiple certificates belonging to <strong>one source shareholder and one share class</strong> into <strong>one new recipient certificate</strong>. Common and Preferred shares are not combined into a mixed-class certificate.</p>
+<p>Transfer reasons include Death, Divorce, Donation, Gift, Secondary Sale, Transfer to Affiliate, and Other.</p>
+<h3>3.4 Review and decide a request</h3>
+<ul>
+<li>Sign-off rights come from <strong>Settings → Sign-offs</strong>, not CEO/CFO roles.</li>
+<li>A request captures its required signers. All required eligible signers must approve, in any order.</li>
+<li>The authenticated sign-in address must match the captured signer address. A request link alone grants no approval rights.</li>
+<li>A submitter who is also an eligible signer may approve their own request.</li>
+<li>Approve opens an explicit confirmation popup; it does not immediately execute a decision.</li>
+<li>To change request details, reject and resubmit rather than altering the approved payload.</li>
+<li>Pending requests do <strong>not</strong> reserve shares, allocate certificate numbers, or create proposed recipients.</li>
+<li>Final approval checks current availability under lock. A competing transaction can make a previously submitted request no longer executable.</li>
+</ul>
+<p><strong>Request states:</strong> Pending → Completed, or Pending → Rejected. Partial approvals leave the request pending.</p>
+<h3>3.5 Manage templates, signatures, and files</h3>
+<p>Settings retains class-specific editable blank certificate PDFs. Completed PDFs are separate transaction evidence, not replacements for the blank templates. Historical completed PDFs and recorded signatures should remain intact when settings change.</p>
+<p>SharePoint is the required destination for normal application files: photographs, shareholder documents, transfer attachments, signer images, certificate templates, and generated PDFs. File references and business metadata remain in PostgreSQL. Application access to files goes through authenticated API operations.</p>
+<h2 id="section-6">4. Reports and activity review</h2>
+<h3>Excel reports</h3>
+<table>
+<thead>
+<tr>
+<th>Report</th>
+<th>Business purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Detailed Cap Table</td>
+<td>Review ownership as of a selected date, including Summary, Ownership, Common, Preferred, Voting Ownership, and Notes sheets.</td>
+</tr>
+<tr>
+<td>Shareholder Information Report</td>
+<td>Export current profile and contact information; this is not a historical profile reconstruction.</td>
+</tr>
+<tr>
+<td>Shareholder Transaction Report</td>
+<td>Review issued certificates and completed transfers with running balances through the selected as-of date, for all shareholders or one shareholder. Pending/rejected requests are excluded.</td>
+</tr>
+</tbody>
+</table>
+<p>Reports are generated as <strong>.xlsx</strong> workbooks. SSNs are masked; exports should still be handled as confidential because other shareholder information may be present. Example spreadsheets defined the intended formats, not authority to invent data or financial rights.</p>
+<p>Cap-table fully diluted figures count recorded shares one for one; the application does not assume options or conversions. Untracked authorized limits, voting rights, options, and capital contributions remain blank with explanatory notes rather than fabricated values.</p>
+<h3>Three complementary history views</h3>
+<table>
+<thead>
+<tr>
+<th>View</th>
+<th>Intended use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Settings → Audit log</td>
+<td>Company-wide review combining administrative and shareholder activity.</td>
+</tr>
+<tr>
+<td>Shareholder → History</td>
+<td>Review one shareholder’s changes and associated activity.</td>
+</tr>
+<tr>
+<td>Transfer History</td>
+<td>Find completed transfers and their related evidence across the registry.</td>
+</tr>
+</tbody>
+</table>
+<p>The centralized Audit log is an additional read view over existing event sources. It does not replace or remove the record-level histories.</p>
+<p>Audit entries are collapsed by default with a readable summary and expandable detail. Users can search, filter by category, select a <strong>UTC recorded-date range</strong>, and page to older entries. Both selected boundary days are included; an omitted boundary is unbounded. Recorded dates differ from a transaction’s business-effective date.</p>
+<p>Categories cover administration, shareholder changes, issuance, transfers, approvals, and documents. Administrative outcomes can show pending, failed, or completed operations. Shareholder activity labeled “Recorded” confirms an event was logged, not that an underlying request is complete. Both sides of a transfer can produce related shareholder events.</p>
+<h2 id="section-7">5. Business controls and important limitations</h2>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Certificate-backed holdings</td>
+<td>Balances reflect certificate activity rather than unrelated manually maintained totals.</td>
+</tr>
+<tr>
+<td>Independent class numbering</td>
+<td>Common and Preferred maintain distinct, sequential identities.</td>
+</tr>
+<tr>
+<td>Transactional ledger execution</td>
+<td>Final approval and the ledger mutation succeed together or roll back together.</td>
+</tr>
+<tr>
+<td>Retry protection</td>
+<td>Repeating an operation with the same request identity does not intentionally issue a second certificate or repeat the transfer.</td>
+</tr>
+<tr>
+<td>Captured signers and decisions</td>
+<td>Approval evidence records the specific person and time rather than inferring approval from an uploaded image.</td>
+</tr>
+<tr>
+<td>Preserved original quantities</td>
+<td>Full and partial transfers retain the original issued quantity and track what moved.</td>
+</tr>
+<tr>
+<td>Retained evidence</td>
+<td>Completed certificate PDFs and supporting documents remain associated with the relevant transaction/history.</td>
+</tr>
+<tr>
+<td>Historical honesty</td>
+<td>Unknown actors, missing issue dates, and old summary-only events are not filled with invented detail.</td>
+</tr>
+</tbody>
+</table>
+<p>This overview does not assert that the application is a general accounting system, a legal share-register certification service, or a compliant electronic-signature service. Legal requirements, retention periods, and formal financial controls need separate business approval.</p>
+<h2 id="section-8">6. Technical architecture</h2>
+<p><strong>Logical flow:</strong> Employee browser → React web application → authenticated Express API → PostgreSQL business records and SharePoint files.</p>
+<p>Microsoft Entra provides employee identity. Outlook sends optional workflow notifications through the connected mailbox. These integrations have different authentication and operational responsibilities.</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Current implementation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Web client</td>
+<td>React, Vite, TypeScript; registry, settings, reports, history, and workflow screens.</td>
+</tr>
+<tr>
+<td>API</td>
+<td>Node.js / Express 5 with server-side authentication and business-rule enforcement.</td>
+</tr>
+<tr>
+<td>API contract</td>
+<td>OpenAPI specification, generated client hooks/types, and Zod validation.</td>
+</tr>
+<tr>
+<td>Persistence</td>
+<td>PostgreSQL with Drizzle ORM; provider selected by configuration.</td>
+</tr>
+<tr>
+<td>Production database target</td>
+<td>Azure PostgreSQL, database <code>d365crm</code>, application schema <code>Shareholdermanagement</code>, subject to the configured target.</td>
+</tr>
+<tr>
+<td>Development/pilot data</td>
+<td>Replit PostgreSQL can be used for synthetic Preview data; it is not the source for the future real-data import.</td>
+</tr>
+<tr>
+<td>File storage</td>
+<td>SharePoint via Microsoft Graph for the approved normal upload/download path.</td>
+</tr>
+<tr>
+<td>Notifications</td>
+<td>Microsoft Outlook connector, with database-tracked notification attempts and outcomes.</td>
+</tr>
+<tr>
+<td>Repository</td>
+<td>pnpm workspace with separate web/API artifacts and shared contract/database packages.</td>
+</tr>
+</tbody>
+</table>
+<p>Database location is not the same as application hosting location. A Replit-hosted API connected to Azure still processes data in Replit. The approved future real-data boundary therefore requires Azure-hosted application/import processing, not only an Azure database connection.</p>
+<h2 id="section-9">7. Integrations and dependencies</h2>
+<table>
+<thead>
+<tr>
+<th>Integration</th>
+<th>Purpose</th>
+<th>Operational considerations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Microsoft Entra ID</td>
+<td>Tenant-specific employee sign-in through OpenID Connect.</td>
+<td>Uses <code>CLIENT_ID</code>, <code>CLIENT_SECRET</code>, and <code>TENANT_ID</code>; exact callback registration and tenant configuration must match the environment. No separate Admin Console authorization or app-role mapping is used.</td>
+</tr>
+<tr>
+<td>Azure PostgreSQL</td>
+<td>Structured shareholder, certificate, request, transfer, configuration, and audit records.</td>
+<td>Uses <code>DATABASE_PROVIDER=azure</code> and the <code>AZURE_PG_*</code> configuration family. Preserve the configured schema and TLS requirements.</td>
+</tr>
+<tr>
+<td>SharePoint / Microsoft Graph</td>
+<td>Application file storage in the configured site, library, and root folder.</td>
+<td>Uses <code>OBJECT_STORAGE_PROVIDER=sharepoint</code>, <code>SHAREPOINT_*</code> settings, and application credentials. Site/library permissions are separate from employee OIDC sign-in. Normal operations must not depend on Azure Blob fallback.</td>
+</tr>
+<tr>
+<td>Microsoft Outlook</td>
+<td>Private request and result notifications.</td>
+<td>Current implementation uses the connected Outlook mailbox through the Replit connector. An Azure-only deployment needs an approved replacement or verified connector availability there.</td>
+</tr>
+</tbody>
+</table>
+<p>Each captured signer has an email-notification preference. Request notifications contain minimal information and an authenticated link rather than shareholder details or other signers’ addresses. Result notifications go to the captured requester. Sending happens after the business transaction commits.</p>
+<p>Mailbox acceptance is <strong>not proof of delivery</strong>. Failed/uncertain sends are tracked; an uncertain outcome must not be blindly retried because the message may already have been sent. The in-app queue remains the primary place to find pending work. Teams notifications are not described as an implemented channel.</p>
+<h2 id="section-10">8. Data model</h2>
+<h3>Business relationships</h3>
+<ul>
+<li>One shareholder can hold many certificates.</li>
+<li>A certificate belongs to one shareholder and one share class.</li>
+<li>A transfer connects an originator, a recipient, source certificate allocations, and a newly issued recipient certificate.</li>
+<li>The request entity handles <strong>both issuance and transfer</strong>, despite its physical table name <code>transfer_requests</code>.</li>
+<li>Requests capture signer requirements and decisions; completed documents link the request, certificate, and template.</li>
+<li>Shareholder activity and administrative audit records provide complementary event history.</li>
+<li>Document metadata points to file content in SharePoint; PostgreSQL does not serve as the primary file-byte store.</li>
+</ul>
+<figure><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNjAwIiBoZWlnaHQ9Ijk2MCIgdmlld0JveD0iMCAwIDE2MDAgOTYwIiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkNvbmNlcHR1YWwgRGF0YSBNb2RlbCI+Cjx0aXRsZT5Db25jZXB0dWFsIERhdGEgTW9kZWw8L3RpdGxlPjxkZXNjPkJ1c2luZXNzIGVudGl0aWVzIGFuZCBpbnRlcmFjdGlvbnMuIExhYmVscyB1c2UgbGFyZ2UgZGFyayB0ZXh0IG9uIHdoaXRlIGJhY2tncm91bmRzLjwvZGVzYz4KPGRlZnM+PG1hcmtlciBpZD0iY29uY2VwdC1tb2RlbC1hcnJvdyIgbWFya2VyV2lkdGg9IjkiIG1hcmtlckhlaWdodD0iOSIgcmVmWD0iOCIgcmVmWT0iNC41IiBvcmllbnQ9ImF1dG8iPjxwYXRoIGQ9Ik0wIDAgTDkgNC41IEwwIDkgWiIgZmlsbD0iIzRmNzQ1ZCIvPjwvbWFya2VyPjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjE2MDAiIGhlaWdodD0iOTYwIiBmaWxsPSIjZmZmZWZhIi8+Cjx0ZXh0IHg9IjUwIiB5PSI0OSIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCI+U0hBUkVIT0xERVIgTUFOQUdFTUVOVCAgLyAgUEhBU0UgMTwvdGV4dD4KPHRleHQgeD0iNTAiIHk9Ijk1IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjM0IiBmb250LXdlaWdodD0iNzAwIj5Db25jZXB0dWFsIERhdGEgTW9kZWw8L3RleHQ+CjxwYXRoIGQ9Ik00MDAgMjM1IEg2MjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzRmNzQ1ZCIgc3Ryb2tlLXdpZHRoPSIzIiBtYXJrZXItZW5kPSJ1cmwoI2NvbmNlcHQtbW9kZWwtYXJyb3cpIi8+CjxwYXRoIGQ9Ik05ODAgMjM1IEgxMTgwIiBmaWxsPSJub25lIiBzdHJva2U9IiM0Zjc0NWQiIHN0cm9rZS13aWR0aD0iMyIgbWFya2VyLWVuZD0idXJsKCNjb25jZXB0LW1vZGVsLWFycm93KSIvPgo8cGF0aCBkPSJNODAwIDQ5MCBWMzIwIiBmaWxsPSJub25lIiBzdHJva2U9IiM0Zjc0NWQiIHN0cm9rZS13aWR0aD0iMyIgbWFya2VyLWVuZD0idXJsKCNjb25jZXB0LW1vZGVsLWFycm93KSIvPgo8cGF0aCBkPSJNNDAwIDQ2NyBINTEwIFY1MzUgSDYyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGY3NDVkIiBzdHJva2Utd2lkdGg9IjMiIG1hcmtlci1lbmQ9InVybCgjY29uY2VwdC1tb2RlbC1hcnJvdykiLz4KPHBhdGggZD0iTTQwMCA3MDUgSDQ4NSBWNjAwIEg2MjAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzRmNzQ1ZCIgc3Ryb2tlLXdpZHRoPSIzIiBtYXJrZXItZW5kPSJ1cmwoI2NvbmNlcHQtbW9kZWwtYXJyb3cpIi8+CjxwYXRoIGQ9Ik05ODAgNTM1IEgxMDYwIFYzNjUgSDEzNjUgVjMyMCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGY3NDVkIiBzdHJva2Utd2lkdGg9IjMiIG1hcmtlci1lbmQ9InVybCgjY29uY2VwdC1tb2RlbC1hcnJvdykiLz4KPHBhdGggZD0iTTk4MCA2MTAgSDExODAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzRmNzQ1ZCIgc3Ryb2tlLXdpZHRoPSIzIiBtYXJrZXItZW5kPSJ1cmwoI2NvbmNlcHQtbW9kZWwtYXJyb3cpIi8+CjxwYXRoIGQ9Ik0xMzY1IDMyMCBWNDkwIiBmaWxsPSJub25lIiBzdHJva2U9IiM0Zjc0NWQiIHN0cm9rZS13aWR0aD0iMyIgbWFya2VyLWVuZD0idXJsKCNjb25jZXB0LW1vZGVsLWFycm93KSIvPgo8cGF0aCBkPSJNMjI1IDc5MCBWODUwIEgxMTgwIiBmaWxsPSJub25lIiBzdHJva2U9IiM0Zjc0NWQiIHN0cm9rZS13aWR0aD0iMyIgbWFya2VyLWVuZD0idXJsKCNjb25jZXB0LW1vZGVsLWFycm93KSIvPgo8cmVjdCB4PSI1MCIgeT0iMTUwIiB3aWR0aD0iMzUwIiBoZWlnaHQ9IjE3MCIgcng9IjE0IiBmaWxsPSIjMTczZDJkIiBzdHJva2U9IiMxNzNkMmQiIHN0cm9rZS13aWR0aD0iMiIvPgo8dGV4dCB4PSI3MiIgeT0iMTg2IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNmZmZmZmYiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjIzIiBmb250LXdlaWdodD0iNzAwIj5TaGFyZWhvbGRlcjwvdGV4dD4KPHRleHQgeD0iNzIiIHk9IjIyMCIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjZWRmNGVmIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjQwMCI+UGVyc29uYWwgJmFtcDsgY29udGFjdCBkZXRhaWxzPC90ZXh0Pgo8dGV4dCB4PSI3MiIgeT0iMjQ5IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNlZGY0ZWYiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNDAwIj5GYW1pbHkgbGluZSAvIGdlbmVyYXRpb248L3RleHQ+Cjx0ZXh0IHg9IjcyIiB5PSIyNzgiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2VkZjRlZiIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI0MDAiPlByb3RlY3RlZCBTU048L3RleHQ+CjxyZWN0IHg9IjYyMCIgeT0iMTUwIiB3aWR0aD0iMzYwIiBoZWlnaHQ9IjE3MCIgcng9IjE0IiBmaWxsPSIjZWFmMWVjIiBzdHJva2U9IiNhZWJmYjQiIHN0cm9rZS13aWR0aD0iMiIvPgo8dGV4dCB4PSI2NDIiIHk9IjE4NiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMyIgZm9udC13ZWlnaHQ9IjcwMCI+U2hhcmUgQ2VydGlmaWNhdGU8L3RleHQ+Cjx0ZXh0IHg9IjY0MiIgeT0iMjIwIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNDAwIj5Db21tb24gb3IgUHJlZmVycmVkPC90ZXh0Pgo8dGV4dCB4PSI2NDIiIHk9IjI0OSIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTcyMjFkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjQwMCI+Q2xhc3Mtc3BlY2lmaWMgdW5pcXVlIG51bWJlcjwvdGV4dD4KPHRleHQgeD0iNjQyIiB5PSIyNzgiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3MjIxZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI0MDAiPklzc3VlZCBhbmQgcmVtYWluaW5nIHNoYXJlczwvdGV4dD4KPHJlY3QgeD0iMTE4MCIgeT0iMTUwIiB3aWR0aD0iMzcwIiBoZWlnaHQ9IjE3MCIgcng9IjE0IiBmaWxsPSIjZWFmMWVjIiBzdHJva2U9IiNhZWJmYjQiIHN0cm9rZS13aWR0aD0iMiIvPgo8dGV4dCB4PSIxMjAyIiB5PSIxODYiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3M2QyZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjMiIGZvbnQtd2VpZ2h0PSI3MDAiPkNvbXBsZXRlZCBUcmFuc2ZlcjwvdGV4dD4KPHRleHQgeD0iMTIwMiIgeT0iMjIwIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNDAwIj5PcmlnaW5hdG9yIOKGkiByZWNpcGllbnQ8L3RleHQ+Cjx0ZXh0IHg9IjEyMDIiIHk9IjI0OSIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTcyMjFkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjQwMCI+T25lIG9yIG11bHRpcGxlIHNvdXJjZSBjZXJ0aWZpY2F0ZXM8L3RleHQ+Cjx0ZXh0IHg9IjEyMDIiIHk9IjI3OCIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTcyMjFkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjQwMCI+T25lIG5ldyByZWNpcGllbnQgY2VydGlmaWNhdGU8L3RleHQ+CjxyZWN0IHg9IjUwIiB5PSIzOTAiIHdpZHRoPSIzNTAiIGhlaWdodD0iMTU1IiByeD0iMTQiIGZpbGw9IiNlYWYxZWMiIHN0cm9rZT0iI2FlYmZiNCIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjx0ZXh0IHg9IjcyIiB5PSI0MjYiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3M2QyZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjMiIGZvbnQtd2VpZ2h0PSI3MDAiPkFwcGxpY2F0aW9uIFNldHRpbmdzPC90ZXh0Pgo8dGV4dCB4PSI3MiIgeT0iNDYwIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNDAwIj5OYW1lZCBzaWduZXJzIGFuZCBzaWduYXR1cmVzPC90ZXh0Pgo8dGV4dCB4PSI3MiIgeT0iNDg5IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNDAwIj5TaGFyZSBwcmljZXMgYW5kIFBERiB0ZW1wbGF0ZXM8L3RleHQ+CjxyZWN0IHg9IjYyMCIgeT0iNDkwIiB3aWR0aD0iMzYwIiBoZWlnaHQ9IjE4MCIgcng9IjE0IiBmaWxsPSIjMTczZDJkIiBzdHJva2U9IiMxNzNkMmQiIHN0cm9rZS13aWR0aD0iMiIvPgo8dGV4dCB4PSI2NDIiIHk9IjUyNiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjZmZmZmZmIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjcwMCI+SXNzdWFuY2UgLyBUcmFuc2ZlciBSZXF1ZXN0PC90ZXh0Pgo8dGV4dCB4PSI2NDIiIHk9IjU2MCIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjZWRmNGVmIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjQwMCI+UmVxdWVzdGVkIHRyYW5zYWN0aW9uIGRldGFpbHM8L3RleHQ+Cjx0ZXh0IHg9IjY0MiIgeT0iNTg5IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNlZGY0ZWYiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNDAwIj5SZXF1aXJlZCBzaWduZXIgc25hcHNob3RzPC90ZXh0Pgo8dGV4dCB4PSI2NDIiIHk9IjYxOCIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjZWRmNGVmIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjQwMCI+Vm90ZXMsIGFjdG9yIElEcyBhbmQgdGltZXN0YW1wczwvdGV4dD4KPHJlY3QgeD0iMTE4MCIgeT0iNDkwIiB3aWR0aD0iMzcwIiBoZWlnaHQ9IjE4MCIgcng9IjE0IiBmaWxsPSIjZWFmMWVjIiBzdHJva2U9IiNhZWJmYjQiIHN0cm9rZS13aWR0aD0iMiIvPgo8dGV4dCB4PSIxMjAyIiB5PSI1MjYiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3M2QyZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjMiIGZvbnQtd2VpZ2h0PSI3MDAiPkRvY3VtZW50czwvdGV4dD4KPHRleHQgeD0iMTIwMiIgeT0iNTYwIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNDAwIj5DZXJ0aWZpY2F0ZSBQREZzPC90ZXh0Pgo8dGV4dCB4PSIxMjAyIiB5PSI1ODkiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3MjIxZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI0MDAiPlBob3Rvcywgc2lnbmF0dXJlcywgYXR0YWNobWVudHM8L3RleHQ+Cjx0ZXh0IHg9IjEyMDIiIHk9IjYxOCIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTcyMjFkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjQwMCI+T2JqZWN0IHJlZmVyZW5jZXMgYW5kIG1ldGFkYXRhPC90ZXh0Pgo8cmVjdCB4PSI1MCIgeT0iNjIwIiB3aWR0aD0iMzUwIiBoZWlnaHQ9IjE3MCIgcng9IjE0IiBmaWxsPSIjZWFmMWVjIiBzdHJva2U9IiNhZWJmYjQiIHN0cm9rZS13aWR0aD0iMiIvPgo8dGV4dCB4PSI3MiIgeT0iNjU2IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjIzIiBmb250LXdlaWdodD0iNzAwIj5FbXBsb3llZSBJZGVudGl0eTwvdGV4dD4KPHRleHQgeD0iNzIiIHk9IjY5MCIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTcyMjFkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjQwMCI+TWljcm9zb2Z0IEVudHJhIHNpZ24taW48L3RleHQ+Cjx0ZXh0IHg9IjcyIiB5PSI3MTkiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3MjIxZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI0MDAiPkRpc3RpbmN0IGZyb20gYSBTaGFyZWhvbGRlcjwvdGV4dD4KPHRleHQgeD0iNzIiIHk9Ijc0OCIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTcyMjFkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjQwMCI+VmVyaWZpZWQgZW1haWwgbWF0Y2hlcyBzaWduZXI8L3RleHQ+CjxyZWN0IHg9IjExODAiIHk9Ijc4MCIgd2lkdGg9IjM3MCIgaGVpZ2h0PSIxMjUiIHJ4PSIxNCIgZmlsbD0iI2VhZjFlYyIgc3Ryb2tlPSIjYWViZmI0IiBzdHJva2Utd2lkdGg9IjIiLz4KPHRleHQgeD0iMTIwMiIgeT0iODE2IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iNzAwIj5BY3Rpdml0eSAmYW1wOyBBdWRpdCBIaXN0b3J5PC90ZXh0Pgo8dGV4dCB4PSIxMjAyIiB5PSI4NTAiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3MjIxZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI0MDAiPlNoYXJlaG9sZGVyIGFuZCBTZXR0aW5ncyBjaGFuZ2VzPC90ZXh0Pgo8dGV4dCB4PSIxMjAyIiB5PSI4NzkiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3MjIxZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI0MDAiPkluZGl2aWR1YWwgYWN0b3IgYW5kIGV2ZW50IHRpbWU8L3RleHQ+CjxyZWN0IHg9IjQ2My41NSIgeT0iMTkzIiB3aWR0aD0iOTIuODk5OTk5OTk5OTk5OTkiIGhlaWdodD0iNDAiIHJ4PSIxMCIgZmlsbD0iI2ZmZmVmYSIgc3Ryb2tlPSIjY2JkNmNlIi8+PHRleHQgeD0iNTEwIiB5PSIyMjEiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iNzAwIj5ob2xkczwvdGV4dD4KPHJlY3QgeD0iOTg4LjEyIiB5PSIxOTMiIHdpZHRoPSIxODMuNzYiIGhlaWdodD0iNDAiIHJ4PSIxMCIgZmlsbD0iI2ZmZmVmYSIgc3Ryb2tlPSIjY2JkNmNlIi8+PHRleHQgeD0iMTA4MCIgeT0iMjIxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZm9udC13ZWlnaHQ9IjcwMCI+bW92ZXMgc2hhcmVzPC90ZXh0Pgo8cmVjdCB4PSI2NjkuMTgwMDAwMDAwMDAwMSIgeT0iMzgwIiB3aWR0aD0iMjYxLjY0IiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiNmZmZlZmEiIHN0cm9rZT0iI2NiZDZjZSIvPjx0ZXh0IHg9IjgwMCIgeT0iNDA4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZm9udC13ZWlnaHQ9IjcwMCI+aXNzdWVzIGNlcnRpZmljYXRlPC90ZXh0Pgo8cmVjdCB4PSI0MDAuMTIiIHk9IjQyNSIgd2lkdGg9IjE4My43NiIgaGVpZ2h0PSI0MCIgcng9IjEwIiBmaWxsPSIjZmZmZWZhIiBzdHJva2U9IiNjYmQ2Y2UiLz48dGV4dCB4PSI0OTIiIHk9IjQ1MyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzE3M2QyZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZvbnQtd2VpZ2h0PSI3MDAiPnNldHMgc2lnbmVyczwvdGV4dD4KPHJlY3QgeD0iMzM5LjE4IiB5PSI1NjAiIHdpZHRoPSIyNjEuNjQiIGhlaWdodD0iNDAiIHJ4PSIxMCIgZmlsbD0iI2ZmZmVmYSIgc3Ryb2tlPSIjY2JkNmNlIi8+PHRleHQgeD0iNDcwIiB5PSI1ODgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iNzAwIj5zdWJtaXRzIC8gYXBwcm92ZXM8L3RleHQ+CjxyZWN0IHg9IjEwMzkuNzEiIHk9IjM0MSIgd2lkdGg9IjMwMC41OCIgaGVpZ2h0PSI0MCIgcng9IjEwIiBmaWxsPSIjZmZmZWZhIiBzdHJva2U9IiNjYmQ2Y2UiLz48dGV4dCB4PSIxMTkwIiB5PSIzNjkiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iNzAwIj5jb21wbGV0ZXMgb24gYXBwcm92YWw8L3RleHQ+CjxyZWN0IHg9Ijk5NC42MSIgeT0iNjI1IiB3aWR0aD0iMTcwLjc4IiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiNmZmZlZmEiIHN0cm9rZT0iI2NiZDZjZSIvPjx0ZXh0IHg9IjEwODAiIHk9IjY1MyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzE3M2QyZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZvbnQtd2VpZ2h0PSI3MDAiPnJldGFpbnMgUERGPC90ZXh0Pgo8cmVjdCB4PSIxMjUzLjY1IiB5PSI0MjAiIHdpZHRoPSIyMjIuNyIgaGVpZ2h0PSI0MCIgcng9IjEwIiBmaWxsPSIjZmZmZWZhIiBzdHJva2U9IiNjYmQ2Y2UiLz48dGV4dCB4PSIxMzY1IiB5PSI0NDgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iNzAwIj5saW5rcyBkb2N1bWVudHM8L3RleHQ+CjxyZWN0IHg9IjU2Ni44MyIgeT0iODI1IiB3aWR0aD0iNDU2LjM0IiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiNmZmZlZmEiIHN0cm9rZT0iI2NiZDZjZSIvPjx0ZXh0IHg9Ijc5NSIgeT0iODUzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZm9udC13ZWlnaHQ9IjcwMCI+cmVjb3JkcyB3aG8gY2hhbmdlZCB3aGF0IGFuZCB3aGVuPC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iOTM1IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiM1MjY0NWEiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNDAwIj5CdXNpbmVzcyB2aWV3IOKAoiBGYW1pbHkgbGluZSBpcyBhIHByb2ZpbGUgYXR0cmlidXRlIOKAoiBGaWxlcyBhcmUgZXh0ZXJuYWwgdG8gUG9zdGdyZVNRTCDigKIgUGhhc2UgMiBzZWxmLXNlcnZpY2UgaXMgb3V0IG9mIHNjb3BlPC90ZXh0Pgo8L3N2Zz4=" alt="Conceptual Data Model — business entities and interactions"><figcaption>Conceptual Data Model — business entities and interactions. Zoom the document to inspect labels.</figcaption></figure>
+<h3>Physical table groups</h3>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Tables</th>
+<th>Main responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Registry and record history</td>
+<td><code>shareholders</code>, <code>shareholder_activity</code>, <code>shareholder_uploads</code></td>
+<td>Profile data, protected SSN storage, change history, and upload ownership/metadata.</td>
+</tr>
+<tr>
+<td>Certificate ledger</td>
+<td><code>certificates</code>, <code>certificate_counters</code></td>
+<td>Ownership, original and transferred quantities, statuses, and independent class counters.</td>
+</tr>
+<tr>
+<td>Workflow and transfers</td>
+<td><code>transfer_requests</code>, <code>share_transfers</code></td>
+<td>Proposals, captured approvals, issuance payloads, transfer allocations, attachments, and completed transaction links.</td>
+</tr>
+<tr>
+<td>Certificate evidence</td>
+<td><code>certificate_templates</code>, <code>certificate_request_templates</code>, <code>certificate_documents</code></td>
+<td>Class templates, request/template linkage, and retained generated PDF metadata.</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td><code>company_settings</code>, <code>signoffs</code>, <code>share_price_history</code></td>
+<td>Current prices, named signers, and dated price reference history.</td>
+</tr>
+<tr>
+<td>Administration history</td>
+<td><code>settings_audit</code></td>
+<td>Administrative actions, actor snapshots, outcomes, and available changes.</td>
+</tr>
+<tr>
+<td>Notification tracking</td>
+<td><code>signoff_email_notifications</code>, <code>signoff_result_email_notifications</code></td>
+<td>Request and requester-result delivery state, attempts, and failure/uncertain outcomes.</td>
+</tr>
+<tr>
+<td>Authentication support</td>
+<td><code>sessions</code>, <code>users</code></td>
+<td>Server-side sessions and legacy identity records; the legacy user table is not the current tenant authorization list.</td>
+</tr>
+</tbody>
+</table>
+<p>The schema combines relational tables with JSONB payloads. For example, shareholder profile attributes live in <code>shareholders.data</code>; captured signers, approvals, and batch allocations are not all separate normalized child tables. A business relationship is not necessarily a database-enforced foreign key.</p>
+<figure><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyODAwIiBoZWlnaHQ9IjE5MDAiIHZpZXdCb3g9IjAgMCAyODAwIDE5MDAiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iTG9naWNhbCBEYXRhIE1vZGVsIFN1bW1hcnkiPgo8dGl0bGU+TG9naWNhbCBEYXRhIE1vZGVsIFN1bW1hcnk8L3RpdGxlPjxkZXNjPkFsbCAxOCBhcHBsaWNhdGlvbiB0YWJsZXMsIHByaW1hcnkga2V5cywgZW5mb3JjZWQgZm9yZWlnbiBrZXlzLCBhbmQgcmVsYXRpb25zaGlwcy4gTm9uLWtleSBjb2x1bW5zIGFyZSBvbWl0dGVkLjwvZGVzYz4KPGRlZnM+PG1hcmtlciBpZD0ic3VtbWFyeS1tb2RlbC1hcnJvdyIgbWFya2VyV2lkdGg9IjkiIG1hcmtlckhlaWdodD0iOSIgcmVmWD0iOCIgcmVmWT0iNC41IiBvcmllbnQ9ImF1dG8iPjxwYXRoIGQ9Ik0wIDAgTDkgNC41IEwwIDkgWiIgZmlsbD0iIzRmNzQ1ZCIvPjwvbWFya2VyPjwvZGVmcz4KPHJlY3Qgd2lkdGg9IjI4MDAiIGhlaWdodD0iMTkwMCIgZmlsbD0iI2ZmZmVmYSIvPgo8dGV4dCB4PSI1MCIgeT0iNDkiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3M2QyZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPlNIQVJFSE9MREVSIE1BTkFHRU1FTlQgIC8gIFBIQVNFIDE8L3RleHQ+Cjx0ZXh0IHg9IjUwIiB5PSI5NSIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIzNCIgZm9udC13ZWlnaHQ9IjcwMCI+TG9naWNhbCBEYXRhIE1vZGVsIFN1bW1hcnk8L3RleHQ+Cjx0ZXh0IHg9IjUwIiB5PSIxMzUiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzUyNjQ1YSIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjIiIGZvbnQtd2VpZ2h0PSI0MDAiPlBLIHByaW1hcnkga2V5ICDigKIgIEZLIGVuZm9yY2VkIGZvcmVpZ24ga2V5ICDigKIgIGFycm93cyBydW4gZnJvbSBwYXJlbnQgdG8gZGVwZW5kZW50ICDigKIgIFIgbGFiZWxzIG1hcCB0byB0aGUgcmVsYXRpb25zaGlwIGluZGV4PC90ZXh0Pgo8cGF0aCBkPSJNNTEwIDMzMCBINjAwIiBmaWxsPSJub25lIiBzdHJva2U9IiM0Zjc0NWQiIHN0cm9rZS13aWR0aD0iMyIgbWFya2VyLWVuZD0idXJsKCNzdW1tYXJ5LW1vZGVsLWFycm93KSIvPgo8cGF0aCBkPSJNMjgwIDI3MCBWMjE1IEgxMzgwIFYyNzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzRmNzQ1ZCIgc3Ryb2tlLXdpZHRoPSIzIiBtYXJrZXItZW5kPSJ1cmwoI3N1bW1hcnktbW9kZWwtYXJyb3cpIi8+CjxwYXRoIGQ9Ik0yNjAgMjcwIFYxNzUgSDE5MzAgVjI3MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGY3NDVkIiBzdHJva2Utd2lkdGg9IjMiIG1hcmtlci1lbmQ9InVybCgjc3VtbWFyeS1tb2RlbC1hcnJvdykiLz4KPHBhdGggZD0iTTEwNjAgMzU1IEgxMTUwIiBmaWxsPSJub25lIiBzdHJva2U9IiM0Zjc0NWQiIHN0cm9rZS13aWR0aD0iMyIgbWFya2VyLWVuZD0idXJsKCNzdW1tYXJ5LW1vZGVsLWFycm93KSIvPgo8cGF0aCBkPSJNODMwIDQwNSBWNjMwIEgxOTMwIFY1NDUiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzRmNzQ1ZCIgc3Ryb2tlLXdpZHRoPSIzIiBtYXJrZXItZW5kPSJ1cmwoI3N1bW1hcnktbW9kZWwtYXJyb3cpIi8+CjxwYXRoIGQ9Ik04MDAgNDA1IFY3MDAgSDI0ODAgVjQ3NSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGY3NDVkIiBzdHJva2Utd2lkdGg9IjMiIG1hcmtlci1lbmQ9InVybCgjc3VtbWFyeS1tb2RlbC1hcnJvdykiLz4KPHBhdGggZD0iTTE2MTAgMzk1IEgxNzAwIiBmaWxsPSJub25lIiBzdHJva2U9IiM0Zjc0NWQiIHN0cm9rZS13aWR0aD0iMyIgbWFya2VyLWVuZD0idXJsKCNzdW1tYXJ5LW1vZGVsLWFycm93KSIvPgo8cGF0aCBkPSJNMjE2MCA0MTUgSDIyNTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzRmNzQ1ZCIgc3Ryb2tlLXdpZHRoPSIzIiBtYXJrZXItZW5kPSJ1cmwoI3N1bW1hcnktbW9kZWwtYXJyb3cpIi8+CjxwYXRoIGQ9Ik01MTAgOTI1IEg1NjAgVjc3MCBIMjc2MCBWMzY1IEgyNzEwIiBmaWxsPSJub25lIiBzdHJva2U9IiM0Zjc0NWQiIHN0cm9rZS13aWR0aD0iMyIgbWFya2VyLWVuZD0idXJsKCNzdW1tYXJ5LW1vZGVsLWFycm93KSIvPgo8cGF0aCBkPSJNNTEwIDk0NSBIMTE1MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGY3NDVkIiBzdHJva2Utd2lkdGg9IjMiIG1hcmtlci1lbmQ9InVybCgjc3VtbWFyeS1tb2RlbC1hcnJvdykiLz4KPHBhdGggZD0iTTE4NzAgNTQ1IFY3NDAgSDEzODAgVjg1MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjNGY3NDVkIiBzdHJva2Utd2lkdGg9IjMiIG1hcmtlci1lbmQ9InVybCgjc3VtbWFyeS1tb2RlbC1hcnJvdykiLz4KPHBhdGggZD0iTTIwMTAgNTQ1IFY4NTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzRmNzQ1ZCIgc3Ryb2tlLXdpZHRoPSIzIiBtYXJrZXItZW5kPSJ1cmwoI3N1bW1hcnktbW9kZWwtYXJyb3cpIi8+CjxwYXRoIGQ9Ik0yMTYwIDUxMCBIMjIwMCBWODEwIEgyNDgwIFY4NTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzRmNzQ1ZCIgc3Ryb2tlLXdpZHRoPSIzIiBtYXJrZXItZW5kPSJ1cmwoI3N1bW1hcnktbW9kZWwtYXJyb3cpIi8+CjxyZWN0IHg9IjUwIiB5PSIyNzAiIHdpZHRoPSI0NjAiIGhlaWdodD0iMTAwIiByeD0iOSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYWViZmI0IiBzdHJva2Utd2lkdGg9IjIiLz4KPHJlY3QgeD0iNTAiIHk9IjI3MCIgd2lkdGg9IjQ2MCIgaGVpZ2h0PSI0OSIgcng9IjkiIGZpbGw9IiMxNzNkMmQiLz4KPHRleHQgeD0iNjUiIHk9IjMwMiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjZmZmIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPnNoYXJlaG9sZGVyczwvdGV4dD4KPHRleHQgeD0iNjUiIHk9IjM0NyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjYTE0ZjJjIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCI+UEs8L3RleHQ+Cjx0ZXh0IHg9IjEzMiIgeT0iMzQ3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+aWQ8L3RleHQ+CjxyZWN0IHg9IjYwMCIgeT0iMjcwIiB3aWR0aD0iNDYwIiBoZWlnaHQ9IjEzNSIgcng9IjkiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2FlYmZiNCIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxyZWN0IHg9IjYwMCIgeT0iMjcwIiB3aWR0aD0iNDYwIiBoZWlnaHQ9IjQ5IiByeD0iOSIgZmlsbD0iIzE3M2QyZCIvPgo8dGV4dCB4PSI2MTUiIHk9IjMwMiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjZmZmIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPmNlcnRpZmljYXRlczwvdGV4dD4KPHRleHQgeD0iNjE1IiB5PSIzNDciIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiPlBLPC90ZXh0Pgo8dGV4dCB4PSI2ODIiIHk9IjM0NyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTcyMjFkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI0MDAiPmlkPC90ZXh0Pgo8dGV4dCB4PSI2MTUiIHk9IjM4MiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjYTE0ZjJjIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCI+Rks8L3RleHQ+Cjx0ZXh0IHg9IjY4MiIgeT0iMzgyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+c2hhcmVob2xkZXJfaWQ8L3RleHQ+CjxyZWN0IHg9IjExNTAiIHk9IjI3MCIgd2lkdGg9IjQ2MCIgaGVpZ2h0PSIyNDAiIHJ4PSI5IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNhZWJmYjQiIHN0cm9rZS13aWR0aD0iMiIvPgo8cmVjdCB4PSIxMTUwIiB5PSIyNzAiIHdpZHRoPSI0NjAiIGhlaWdodD0iNDkiIHJ4PSI5IiBmaWxsPSIjMTczZDJkIi8+Cjx0ZXh0IHg9IjExNjUiIHk9IjMwMiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjZmZmIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPnNoYXJlX3RyYW5zZmVyczwvdGV4dD4KPHRleHQgeD0iMTE2NSIgeT0iMzQ3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNhMTRmMmMiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIj5QSzwvdGV4dD4KPHRleHQgeD0iMTIzMiIgeT0iMzQ3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+aWQ8L3RleHQ+Cjx0ZXh0IHg9IjExNjUiIHk9IjM4MiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjYTE0ZjJjIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCI+Rks8L3RleHQ+Cjx0ZXh0IHg9IjEyMzIiIHk9IjM4MiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTcyMjFkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI0MDAiPnNvdXJjZV9jZXJ0aWZpY2F0ZV9pZDwvdGV4dD4KPHRleHQgeD0iMTE2NSIgeT0iNDE3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNhMTRmMmMiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIj5GSzwvdGV4dD4KPHRleHQgeD0iMTIzMiIgeT0iNDE3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+cmVjaXBpZW50X2NlcnRpZmljYXRlX2lkPC90ZXh0Pgo8dGV4dCB4PSIxMTY1IiB5PSI0NTIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiPkZLPC90ZXh0Pgo8dGV4dCB4PSIxMjMyIiB5PSI0NTIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3MjIxZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iNDAwIj5vcmlnaW5hdG9yX2lkPC90ZXh0Pgo8dGV4dCB4PSIxMTY1IiB5PSI0ODciIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiPkZLPC90ZXh0Pgo8dGV4dCB4PSIxMjMyIiB5PSI0ODciIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3MjIxZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iNDAwIj5yZWNpcGllbnRfaWQ8L3RleHQ+CjxyZWN0IHg9IjE3MDAiIHk9IjI3MCIgd2lkdGg9IjQ2MCIgaGVpZ2h0PSIyNzUiIHJ4PSI5IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNhZWJmYjQiIHN0cm9rZS13aWR0aD0iMiIvPgo8cmVjdCB4PSIxNzAwIiB5PSIyNzAiIHdpZHRoPSI0NjAiIGhlaWdodD0iNDkiIHJ4PSI5IiBmaWxsPSIjMTczZDJkIi8+Cjx0ZXh0IHg9IjE3MTUiIHk9IjMwMiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjZmZmIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPnRyYW5zZmVyX3JlcXVlc3RzPC90ZXh0Pgo8dGV4dCB4PSIxNzE1IiB5PSIzNDciIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiPlBLPC90ZXh0Pgo8dGV4dCB4PSIxNzgyIiB5PSIzNDciIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3MjIxZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iNDAwIj5pZDwvdGV4dD4KPHRleHQgeD0iMTcxNSIgeT0iMzgyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNhMTRmMmMiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIj5GSzwvdGV4dD4KPHRleHQgeD0iMTc4MiIgeT0iMzgyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+b3JpZ2luYXRvcl9pZDwvdGV4dD4KPHRleHQgeD0iMTcxNSIgeT0iNDE3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNhMTRmMmMiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIj5GSzwvdGV4dD4KPHRleHQgeD0iMTc4MiIgeT0iNDE3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+cmVjaXBpZW50X2lkPC90ZXh0Pgo8dGV4dCB4PSIxNzE1IiB5PSI0NTIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiPkZLPC90ZXh0Pgo8dGV4dCB4PSIxNzgyIiB5PSI0NTIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3MjIxZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iNDAwIj5zb3VyY2VfY2VydGlmaWNhdGVfaWQ8L3RleHQ+Cjx0ZXh0IHg9IjE3MTUiIHk9IjQ4NyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjYTE0ZjJjIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCI+Rks8L3RleHQ+Cjx0ZXh0IHg9IjE3ODIiIHk9IjQ4NyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTcyMjFkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI0MDAiPmNvbXBsZXRlZF90cmFuc2Zlcl9pZDwvdGV4dD4KPHRleHQgeD0iMTcxNSIgeT0iNTIyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNhMTRmMmMiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIj5GSzwvdGV4dD4KPHRleHQgeD0iMTc4MiIgeT0iNTIyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+cmVjaXBpZW50X2NlcnRpZmljYXRlX2lkPC90ZXh0Pgo8cmVjdCB4PSIyMjUwIiB5PSIyNzAiIHdpZHRoPSI0NjAiIGhlaWdodD0iMjA1IiByeD0iOSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYWViZmI0IiBzdHJva2Utd2lkdGg9IjIiLz4KPHJlY3QgeD0iMjI1MCIgeT0iMjcwIiB3aWR0aD0iNDYwIiBoZWlnaHQ9IjQ5IiByeD0iOSIgZmlsbD0iIzE3M2QyZCIvPgo8dGV4dCB4PSIyMjY1IiB5PSIzMDIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ZmZiIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIj5jZXJ0aWZpY2F0ZV9kb2N1bWVudHM8L3RleHQ+Cjx0ZXh0IHg9IjIyNjUiIHk9IjM0NyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjYTE0ZjJjIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCI+UEs8L3RleHQ+Cjx0ZXh0IHg9IjIzMzIiIHk9IjM0NyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTcyMjFkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI0MDAiPmlkPC90ZXh0Pgo8dGV4dCB4PSIyMjY1IiB5PSIzODIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiPkZLPC90ZXh0Pgo8dGV4dCB4PSIyMzMyIiB5PSIzODIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3MjIxZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iNDAwIj5jZXJ0aWZpY2F0ZV9pZDwvdGV4dD4KPHRleHQgeD0iMjI2NSIgeT0iNDE3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNhMTRmMmMiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIj5GSzwvdGV4dD4KPHRleHQgeD0iMjMzMiIgeT0iNDE3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+cmVxdWVzdF9pZDwvdGV4dD4KPHRleHQgeD0iMjI2NSIgeT0iNDUyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNhMTRmMmMiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIj5GSzwvdGV4dD4KPHRleHQgeD0iMjMzMiIgeT0iNDUyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+dGVtcGxhdGVfaWQ8L3RleHQ+CjxyZWN0IHg9IjUwIiB5PSI4NTAiIHdpZHRoPSI0NjAiIGhlaWdodD0iMTAwIiByeD0iOSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYWViZmI0IiBzdHJva2Utd2lkdGg9IjIiLz4KPHJlY3QgeD0iNTAiIHk9Ijg1MCIgd2lkdGg9IjQ2MCIgaGVpZ2h0PSI0OSIgcng9IjkiIGZpbGw9IiMxNzNkMmQiLz4KPHRleHQgeD0iNjUiIHk9Ijg4MiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjZmZmIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPmNlcnRpZmljYXRlX3RlbXBsYXRlczwvdGV4dD4KPHRleHQgeD0iNjUiIHk9IjkyNyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjYTE0ZjJjIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCI+UEs8L3RleHQ+Cjx0ZXh0IHg9IjEzMiIgeT0iOTI3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+aWQ8L3RleHQ+CjxyZWN0IHg9IjExNTAiIHk9Ijg1MCIgd2lkdGg9IjQ2MCIgaGVpZ2h0PSIxMzUiIHJ4PSI5IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNhZWJmYjQiIHN0cm9rZS13aWR0aD0iMiIvPgo8cmVjdCB4PSIxMTUwIiB5PSI4NTAiIHdpZHRoPSI0NjAiIGhlaWdodD0iNDkiIHJ4PSI5IiBmaWxsPSIjMTczZDJkIi8+Cjx0ZXh0IHg9IjExNjUiIHk9Ijg4MiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjZmZmIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPmNlcnRpZmljYXRlX3JlcXVlc3RfdGVtcGxhdGVzPC90ZXh0Pgo8dGV4dCB4PSIxMTY1IiB5PSI5MjciIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiPlBLL0ZLPC90ZXh0Pgo8dGV4dCB4PSIxMjMyIiB5PSI5MjciIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3MjIxZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iNDAwIj5yZXF1ZXN0X2lkPC90ZXh0Pgo8dGV4dCB4PSIxMTY1IiB5PSI5NjIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiPkZLPC90ZXh0Pgo8dGV4dCB4PSIxMjMyIiB5PSI5NjIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3MjIxZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iNDAwIj50ZW1wbGF0ZV9pZDwvdGV4dD4KPHJlY3QgeD0iMTcwMCIgeT0iODUwIiB3aWR0aD0iNDYwIiBoZWlnaHQ9IjEzNSIgcng9IjkiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2FlYmZiNCIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxyZWN0IHg9IjE3MDAiIHk9Ijg1MCIgd2lkdGg9IjQ2MCIgaGVpZ2h0PSI0OSIgcng9IjkiIGZpbGw9IiMxNzNkMmQiLz4KPHRleHQgeD0iMTcxNSIgeT0iODgyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNmZmYiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCI+c2lnbm9mZl9lbWFpbF9ub3RpZmljYXRpb25zPC90ZXh0Pgo8dGV4dCB4PSIxNzE1IiB5PSI5MjciIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiPlBLPC90ZXh0Pgo8dGV4dCB4PSIxNzgyIiB5PSI5MjciIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3MjIxZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iNDAwIj5pZDwvdGV4dD4KPHRleHQgeD0iMTcxNSIgeT0iOTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNhMTRmMmMiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIj5GSzwvdGV4dD4KPHRleHQgeD0iMTc4MiIgeT0iOTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+cmVxdWVzdF9pZDwvdGV4dD4KPHJlY3QgeD0iMjI1MCIgeT0iODUwIiB3aWR0aD0iNDYwIiBoZWlnaHQ9IjEzNSIgcng9IjkiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2FlYmZiNCIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxyZWN0IHg9IjIyNTAiIHk9Ijg1MCIgd2lkdGg9IjQ2MCIgaGVpZ2h0PSI0OSIgcng9IjkiIGZpbGw9IiMxNzNkMmQiLz4KPHRleHQgeD0iMjI2NSIgeT0iODgyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNmZmYiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCI+c2lnbm9mZl9yZXN1bHRfZW1haWxfbm90aWZpY2F0aW9uczwvdGV4dD4KPHRleHQgeD0iMjI2NSIgeT0iOTI3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNhMTRmMmMiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0IiBmb250LXdlaWdodD0iNzAwIj5QSzwvdGV4dD4KPHRleHQgeD0iMjMzMiIgeT0iOTI3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+aWQ8L3RleHQ+Cjx0ZXh0IHg9IjIyNjUiIHk9Ijk2MiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjYTE0ZjJjIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCI+Rks8L3RleHQ+Cjx0ZXh0IHg9IjIzMzIiIHk9Ijk2MiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTcyMjFkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI0MDAiPnJlcXVlc3RfaWQ8L3RleHQ+CjxyZWN0IHg9IjUzMC4zOCIgeT0iMjg1IiB3aWR0aD0iNDkuMjM5OTk5OTk5OTk5OTk1IiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiNmZmZlZmEiIHN0cm9rZT0iI2NiZDZjZSIvPjx0ZXh0IHg9IjU1NSIgeT0iMzEzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCI+UjE8L3RleHQ+CjxyZWN0IHg9IjEwMzUuMzgiIHk9IjE4NSIgd2lkdGg9IjQ5LjIzOTk5OTk5OTk5OTk5NSIgaGVpZ2h0PSI0MCIgcng9IjEwIiBmaWxsPSIjZmZmZWZhIiBzdHJva2U9IiNjYmQ2Y2UiLz48dGV4dCB4PSIxMDYwIiB5PSIyMTMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIj5SMjwvdGV4dD4KPHJlY3QgeD0iMTU5NS4zOCIgeT0iMTUwIiB3aWR0aD0iNDkuMjM5OTk5OTk5OTk5OTk1IiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiNmZmZlZmEiIHN0cm9rZT0iI2NiZDZjZSIvPjx0ZXh0IHg9IjE2MjAiIHk9IjE3OCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzE3M2QyZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPlIzPC90ZXh0Pgo8cmVjdCB4PSIxMDgwLjM4IiB5PSIzMTAiIHdpZHRoPSI0OS4yMzk5OTk5OTk5OTk5OTUiIGhlaWdodD0iNDAiIHJ4PSIxMCIgZmlsbD0iI2ZmZmVmYSIgc3Ryb2tlPSIjY2JkNmNlIi8+PHRleHQgeD0iMTEwNSIgeT0iMzM4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCI+UjQ8L3RleHQ+CjxyZWN0IHg9IjE0MjUuMzgiIHk9IjYwNSIgd2lkdGg9IjQ5LjIzOTk5OTk5OTk5OTk5NSIgaGVpZ2h0PSI0MCIgcng9IjEwIiBmaWxsPSIjZmZmZWZhIiBzdHJva2U9IiNjYmQ2Y2UiLz48dGV4dCB4PSIxNDUwIiB5PSI2MzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIj5SNTwvdGV4dD4KPHJlY3QgeD0iMjA4NS4zOCIgeT0iNjc1IiB3aWR0aD0iNDkuMjM5OTk5OTk5OTk5OTk1IiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiNmZmZlZmEiIHN0cm9rZT0iI2NiZDZjZSIvPjx0ZXh0IHg9IjIxMTAiIHk9IjcwMyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzE3M2QyZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPlI2PC90ZXh0Pgo8cmVjdCB4PSIxNjMwLjM4IiB5PSIzNTAiIHdpZHRoPSI0OS4yMzk5OTk5OTk5OTk5OTUiIGhlaWdodD0iNDAiIHJ4PSIxMCIgZmlsbD0iI2ZmZmVmYSIgc3Ryb2tlPSIjY2JkNmNlIi8+PHRleHQgeD0iMTY1NSIgeT0iMzc4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCI+Ujc8L3RleHQ+CjxyZWN0IHg9IjIxODAuMzgiIHk9IjM3MCIgd2lkdGg9IjQ5LjIzOTk5OTk5OTk5OTk5NSIgaGVpZ2h0PSI0MCIgcng9IjEwIiBmaWxsPSIjZmZmZWZhIiBzdHJva2U9IiNjYmQ2Y2UiLz48dGV4dCB4PSIyMjA1IiB5PSIzOTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIj5SODwvdGV4dD4KPHJlY3QgeD0iMjU4NS4zOCIgeT0iNzQ1IiB3aWR0aD0iNDkuMjM5OTk5OTk5OTk5OTk1IiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiNmZmZlZmEiIHN0cm9rZT0iI2NiZDZjZSIvPjx0ZXh0IHg9IjI2MTAiIHk9Ijc3MyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzE3M2QyZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPlI5PC90ZXh0Pgo8cmVjdCB4PSI4MDAuMDciIHk9IjkwMCIgd2lkdGg9IjU5Ljg2IiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiNmZmZlZmEiIHN0cm9rZT0iI2NiZDZjZSIvPjx0ZXh0IHg9IjgzMCIgeT0iOTI4IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCI+UjEwPC90ZXh0Pgo8cmVjdCB4PSIxNTAwLjA3IiB5PSI3MTUiIHdpZHRoPSI1OS44NiIgaGVpZ2h0PSI0MCIgcng9IjEwIiBmaWxsPSIjZmZmZWZhIiBzdHJva2U9IiNjYmQ2Y2UiLz48dGV4dCB4PSIxNTMwIiB5PSI3NDMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIj5SMTE8L3RleHQ+CjxyZWN0IHg9IjE5ODAuMDciIHk9Ijc4MCIgd2lkdGg9IjU5Ljg2IiBoZWlnaHQ9IjQwIiByeD0iMTAiIGZpbGw9IiNmZmZlZmEiIHN0cm9rZT0iI2NiZDZjZSIvPjx0ZXh0IHg9IjIwMTAiIHk9IjgwOCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzE3M2QyZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPlIxMjwvdGV4dD4KPHJlY3QgeD0iMjMyMC4wNyIgeT0iNzg1IiB3aWR0aD0iNTkuODYiIGhlaWdodD0iNDAiIHJ4PSIxMCIgZmlsbD0iI2ZmZmVmYSIgc3Ryb2tlPSIjY2JkNmNlIi8+PHRleHQgeD0iMjM1MCIgeT0iODEzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCI+UjEzPC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iMTA5MCIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIyMiIgZm9udC13ZWlnaHQ9IjcwMCI+UkVMQVRJT05TSElQIElOREVYIOKAlCBGSyBDT0xVTU5TIElOIFRIRSBERVBFTkRFTlQgVEFCTEU8L3RleHQ+Cjx0ZXh0IHg9IjUwIiB5PSIxMTM1IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNhMTRmMmMiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE5IiBmb250LXdlaWdodD0iNzAwIj5SMTwvdGV4dD4KPHRleHQgeD0iMTEwIiB5PSIxMTM1IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjcwMCI+c2hhcmVob2xkZXJzIOKGkiBjZXJ0aWZpY2F0ZXM8L3RleHQ+Cjx0ZXh0IHg9IjExMCIgeT0iMTE1MiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjNTI2NDVhIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtd2VpZ2h0PSI0MDAiPkZLOiBzaGFyZWhvbGRlcl9pZDwvdGV4dD4KPHRleHQgeD0iNTAiIHk9IjExNzIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTkiIGZvbnQtd2VpZ2h0PSI3MDAiPlIyPC90ZXh0Pgo8dGV4dCB4PSIxMTAiIHk9IjExNzIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3M2QyZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNzAwIj5zaGFyZWhvbGRlcnMg4oaSIHNoYXJlX3RyYW5zZmVyczwvdGV4dD4KPHRleHQgeD0iMTEwIiB5PSIxMTg5IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiM1MjY0NWEiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIxMyIgZm9udC13ZWlnaHQ9IjQwMCI+Rks6IG9yaWdpbmF0b3JfaWQsIHJlY2lwaWVudF9pZDwvdGV4dD4KPHRleHQgeD0iNTAiIHk9IjEyMDkiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTkiIGZvbnQtd2VpZ2h0PSI3MDAiPlIzPC90ZXh0Pgo8dGV4dCB4PSIxMTAiIHk9IjEyMDkiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3M2QyZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNzAwIj5zaGFyZWhvbGRlcnMg4oaSIHRyYW5zZmVyX3JlcXVlc3RzPC90ZXh0Pgo8dGV4dCB4PSIxMTAiIHk9IjEyMjYiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzUyNjQ1YSIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iNDAwIj5GSzogb3JpZ2luYXRvcl9pZCwgcmVjaXBpZW50X2lkPC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iMTI0NiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjYTE0ZjJjIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOSIgZm9udC13ZWlnaHQ9IjcwMCI+UjQ8L3RleHQ+Cjx0ZXh0IHg9IjExMCIgeT0iMTI0NiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTciIGZvbnQtd2VpZ2h0PSI3MDAiPmNlcnRpZmljYXRlcyDihpIgc2hhcmVfdHJhbnNmZXJzPC90ZXh0Pgo8dGV4dCB4PSIxMTAiIHk9IjEyNjMiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzUyNjQ1YSIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iNDAwIj5GSzogc291cmNlX2NlcnRpZmljYXRlX2lkLCByZWNpcGllbnRfY2VydGlmaWNhdGVfaWQ8L3RleHQ+Cjx0ZXh0IHg9IjUwIiB5PSIxMjgzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNhMTRmMmMiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE5IiBmb250LXdlaWdodD0iNzAwIj5SNTwvdGV4dD4KPHRleHQgeD0iMTEwIiB5PSIxMjgzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjcwMCI+Y2VydGlmaWNhdGVzIOKGkiB0cmFuc2Zlcl9yZXF1ZXN0czwvdGV4dD4KPHRleHQgeD0iMTEwIiB5PSIxMzAwIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiM1MjY0NWEiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIxMyIgZm9udC13ZWlnaHQ9IjQwMCI+Rks6IHNvdXJjZV9jZXJ0aWZpY2F0ZV9pZCwgcmVjaXBpZW50X2NlcnRpZmljYXRlX2lkPC90ZXh0Pgo8dGV4dCB4PSI1MCIgeT0iMTMyMCIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjYTE0ZjJjIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOSIgZm9udC13ZWlnaHQ9IjcwMCI+UjY8L3RleHQ+Cjx0ZXh0IHg9IjExMCIgeT0iMTMyMCIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTciIGZvbnQtd2VpZ2h0PSI3MDAiPmNlcnRpZmljYXRlcyDihpIgY2VydGlmaWNhdGVfZG9jdW1lbnRzPC90ZXh0Pgo8dGV4dCB4PSIxMTAiIHk9IjEzMzciIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzUyNjQ1YSIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iNDAwIj5GSzogY2VydGlmaWNhdGVfaWQ8L3RleHQ+Cjx0ZXh0IHg9IjUwIiB5PSIxMzU3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNhMTRmMmMiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE5IiBmb250LXdlaWdodD0iNzAwIj5SNzwvdGV4dD4KPHRleHQgeD0iMTEwIiB5PSIxMzU3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjcwMCI+c2hhcmVfdHJhbnNmZXJzIOKGkiB0cmFuc2Zlcl9yZXF1ZXN0czwvdGV4dD4KPHRleHQgeD0iMTEwIiB5PSIxMzc0IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiM1MjY0NWEiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIxMyIgZm9udC13ZWlnaHQ9IjQwMCI+Rks6IGNvbXBsZXRlZF90cmFuc2Zlcl9pZDwvdGV4dD4KPHRleHQgeD0iMTQ1MCIgeT0iMTEzNSIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjYTE0ZjJjIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxOSIgZm9udC13ZWlnaHQ9IjcwMCI+Ujg8L3RleHQ+Cjx0ZXh0IHg9IjE1MTAiIHk9IjExMzUiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3M2QyZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNzAwIj50cmFuc2Zlcl9yZXF1ZXN0cyDihpIgY2VydGlmaWNhdGVfZG9jdW1lbnRzPC90ZXh0Pgo8dGV4dCB4PSIxNTEwIiB5PSIxMTUyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiM1MjY0NWEiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIxMyIgZm9udC13ZWlnaHQ9IjQwMCI+Rks6IHJlcXVlc3RfaWQ8L3RleHQ+Cjx0ZXh0IHg9IjE0NTAiIHk9IjExNzIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTkiIGZvbnQtd2VpZ2h0PSI3MDAiPlI5PC90ZXh0Pgo8dGV4dCB4PSIxNTEwIiB5PSIxMTcyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIxNyIgZm9udC13ZWlnaHQ9IjcwMCI+Y2VydGlmaWNhdGVfdGVtcGxhdGVzIOKGkiBjZXJ0aWZpY2F0ZV9kb2N1bWVudHM8L3RleHQ+Cjx0ZXh0IHg9IjE1MTAiIHk9IjExODkiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzUyNjQ1YSIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iNDAwIj5GSzogdGVtcGxhdGVfaWQ8L3RleHQ+Cjx0ZXh0IHg9IjE0NTAiIHk9IjEyMDkiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTkiIGZvbnQtd2VpZ2h0PSI3MDAiPlIxMDwvdGV4dD4KPHRleHQgeD0iMTUxMCIgeT0iMTIwOSIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTciIGZvbnQtd2VpZ2h0PSI3MDAiPmNlcnRpZmljYXRlX3RlbXBsYXRlcyDihpIgY2VydGlmaWNhdGVfcmVxdWVzdF90ZW1wbGF0ZXM8L3RleHQ+Cjx0ZXh0IHg9IjE1MTAiIHk9IjEyMjYiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzUyNjQ1YSIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjEzIiBmb250LXdlaWdodD0iNDAwIj5GSzogdGVtcGxhdGVfaWQ8L3RleHQ+Cjx0ZXh0IHg9IjE0NTAiIHk9IjEyNDYiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTkiIGZvbnQtd2VpZ2h0PSI3MDAiPlIxMTwvdGV4dD4KPHRleHQgeD0iMTUxMCIgeT0iMTI0NiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTciIGZvbnQtd2VpZ2h0PSI3MDAiPnRyYW5zZmVyX3JlcXVlc3RzIOKGkiBjZXJ0aWZpY2F0ZV9yZXF1ZXN0X3RlbXBsYXRlczwvdGV4dD4KPHRleHQgeD0iMTUxMCIgeT0iMTI2MyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjNTI2NDVhIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTMiIGZvbnQtd2VpZ2h0PSI0MDAiPkZLOiByZXF1ZXN0X2lkPC90ZXh0Pgo8dGV4dCB4PSIxNDUwIiB5PSIxMjgzIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNhMTRmMmMiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjE5IiBmb250LXdlaWdodD0iNzAwIj5SMTI8L3RleHQ+Cjx0ZXh0IHg9IjE1MTAiIHk9IjEyODMiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3M2QyZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjE3IiBmb250LXdlaWdodD0iNzAwIj50cmFuc2Zlcl9yZXF1ZXN0cyDihpIgc2lnbm9mZl9lbWFpbF9ub3RpZmljYXRpb25zPC90ZXh0Pgo8dGV4dCB4PSIxNTEwIiB5PSIxMzAwIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiM1MjY0NWEiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIxMyIgZm9udC13ZWlnaHQ9IjQwMCI+Rks6IHJlcXVlc3RfaWQ8L3RleHQ+Cjx0ZXh0IHg9IjE0NTAiIHk9IjEzMjAiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTkiIGZvbnQtd2VpZ2h0PSI3MDAiPlIxMzwvdGV4dD4KPHRleHQgeD0iMTUxMCIgeT0iMTMyMCIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTczZDJkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTciIGZvbnQtd2VpZ2h0PSI3MDAiPnRyYW5zZmVyX3JlcXVlc3RzIOKGkiBzaWdub2ZmX3Jlc3VsdF9lbWFpbF9ub3RpZmljYXRpb25zPC90ZXh0Pgo8dGV4dCB4PSIxNTEwIiB5PSIxMzM3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiM1MjY0NWEiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIxMyIgZm9udC13ZWlnaHQ9IjQwMCI+Rks6IHJlcXVlc3RfaWQ8L3RleHQ+Cjx0ZXh0IHg9IjUwIiB5PSIxNDQwIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzNkMmQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjIyIiBmb250LXdlaWdodD0iNzAwIj5UQUJMRVMgV0lUSCBOTyBFTkZPUkNFRCBGT1JFSUdOIEtFWSBJTiBUSEUgQ1VSUkVOVCBTQ0hFTUE8L3RleHQ+CjxyZWN0IHg9IjUwIiB5PSIxNDg1IiB3aWR0aD0iNDYwIiBoZWlnaHQ9IjEwMCIgcng9IjkiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2FlYmZiNCIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxyZWN0IHg9IjUwIiB5PSIxNDg1IiB3aWR0aD0iNDYwIiBoZWlnaHQ9IjQ5IiByeD0iOSIgZmlsbD0iIzE3M2QyZCIvPgo8dGV4dCB4PSI2NSIgeT0iMTUxNyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjZmZmIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPnNlc3Npb25zPC90ZXh0Pgo8dGV4dCB4PSI2NSIgeT0iMTU2MiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjYTE0ZjJjIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCI+UEs8L3RleHQ+Cjx0ZXh0IHg9IjEzMiIgeT0iMTU2MiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTcyMjFkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI0MDAiPnNpZDwvdGV4dD4KPHJlY3QgeD0iNjAwIiB5PSIxNDg1IiB3aWR0aD0iNDYwIiBoZWlnaHQ9IjEwMCIgcng9IjkiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2FlYmZiNCIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxyZWN0IHg9IjYwMCIgeT0iMTQ4NSIgd2lkdGg9IjQ2MCIgaGVpZ2h0PSI0OSIgcng9IjkiIGZpbGw9IiMxNzNkMmQiLz4KPHRleHQgeD0iNjE1IiB5PSIxNTE3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNmZmYiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCI+dXNlcnM8L3RleHQ+Cjx0ZXh0IHg9IjYxNSIgeT0iMTU2MiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjYTE0ZjJjIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCI+UEs8L3RleHQ+Cjx0ZXh0IHg9IjY4MiIgeT0iMTU2MiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTcyMjFkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI0MDAiPmlkPC90ZXh0Pgo8cmVjdCB4PSIxMTUwIiB5PSIxNDg1IiB3aWR0aD0iNDYwIiBoZWlnaHQ9IjEwMCIgcng9IjkiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2FlYmZiNCIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxyZWN0IHg9IjExNTAiIHk9IjE0ODUiIHdpZHRoPSI0NjAiIGhlaWdodD0iNDkiIHJ4PSI5IiBmaWxsPSIjMTczZDJkIi8+Cjx0ZXh0IHg9IjExNjUiIHk9IjE1MTciIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ZmZiIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIj5jZXJ0aWZpY2F0ZV9jb3VudGVyczwvdGV4dD4KPHRleHQgeD0iMTE2NSIgeT0iMTU2MiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjYTE0ZjJjIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCI+UEs8L3RleHQ+Cjx0ZXh0IHg9IjEyMzIiIHk9IjE1NjIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3MjIxZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iNDAwIj5zaGFyZV9jbGFzczwvdGV4dD4KPHJlY3QgeD0iMTcwMCIgeT0iMTQ4NSIgd2lkdGg9IjQ2MCIgaGVpZ2h0PSIxMDAiIHJ4PSI5IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNhZWJmYjQiIHN0cm9rZS13aWR0aD0iMiIvPgo8cmVjdCB4PSIxNzAwIiB5PSIxNDg1IiB3aWR0aD0iNDYwIiBoZWlnaHQ9IjQ5IiByeD0iOSIgZmlsbD0iIzE3M2QyZCIvPgo8dGV4dCB4PSIxNzE1IiB5PSIxNTE3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNmZmYiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCI+c2V0dGluZ3NfYXVkaXQ8L3RleHQ+Cjx0ZXh0IHg9IjE3MTUiIHk9IjE1NjIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiPlBLPC90ZXh0Pgo8dGV4dCB4PSIxNzgyIiB5PSIxNTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+aWQ8L3RleHQ+CjxyZWN0IHg9IjIyNTAiIHk9IjE0ODUiIHdpZHRoPSI0NjAiIGhlaWdodD0iMTAwIiByeD0iOSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYWViZmI0IiBzdHJva2Utd2lkdGg9IjIiLz4KPHJlY3QgeD0iMjI1MCIgeT0iMTQ4NSIgd2lkdGg9IjQ2MCIgaGVpZ2h0PSI0OSIgcng9IjkiIGZpbGw9IiMxNzNkMmQiLz4KPHRleHQgeD0iMjI2NSIgeT0iMTUxNyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjZmZmIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPmNvbXBhbnlfc2V0dGluZ3M8L3RleHQ+Cjx0ZXh0IHg9IjIyNjUiIHk9IjE1NjIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiPlBLPC90ZXh0Pgo8dGV4dCB4PSIyMzMyIiB5PSIxNTYyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+aWQ8L3RleHQ+CjxyZWN0IHg9IjUwIiB5PSIxNjU1IiB3aWR0aD0iNDYwIiBoZWlnaHQ9IjEwMCIgcng9IjkiIGZpbGw9IiNmZmYiIHN0cm9rZT0iI2FlYmZiNCIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxyZWN0IHg9IjUwIiB5PSIxNjU1IiB3aWR0aD0iNDYwIiBoZWlnaHQ9IjQ5IiByeD0iOSIgZmlsbD0iIzE3M2QyZCIvPgo8dGV4dCB4PSI2NSIgeT0iMTY4NyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjZmZmIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPnNpZ25vZmZzPC90ZXh0Pgo8dGV4dCB4PSI2NSIgeT0iMTczMiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjYTE0ZjJjIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMsQXJpYWwsc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9IjcwMCI+UEs8L3RleHQ+Cjx0ZXh0IHg9IjEzMiIgeT0iMTczMiIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjMTcyMjFkIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSI0MDAiPmlkPC90ZXh0Pgo8cmVjdCB4PSI2MDAiIHk9IjE2NTUiIHdpZHRoPSI0NjAiIGhlaWdodD0iMTAwIiByeD0iOSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYWViZmI0IiBzdHJva2Utd2lkdGg9IjIiLz4KPHJlY3QgeD0iNjAwIiB5PSIxNjU1IiB3aWR0aD0iNDYwIiBoZWlnaHQ9IjQ5IiByeD0iOSIgZmlsbD0iIzE3M2QyZCIvPgo8dGV4dCB4PSI2MTUiIHk9IjE2ODciIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ZmZiIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjE4IiBmb250LXdlaWdodD0iNzAwIj5zaGFyZV9wcmljZV9oaXN0b3J5PC90ZXh0Pgo8dGV4dCB4PSI2MTUiIHk9IjE3MzIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiPlBLPC90ZXh0Pgo8dGV4dCB4PSI2ODIiIHk9IjE3MzIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iIzE3MjIxZCIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zIE1vbm8sbW9ub3NwYWNlIiBmb250LXNpemU9IjIwIiBmb250LXdlaWdodD0iNDAwIj5pZDwvdGV4dD4KPHJlY3QgeD0iMTE1MCIgeT0iMTY1NSIgd2lkdGg9IjQ2MCIgaGVpZ2h0PSIxMDAiIHJ4PSI5IiBmaWxsPSIjZmZmIiBzdHJva2U9IiNhZWJmYjQiIHN0cm9rZS13aWR0aD0iMiIvPgo8cmVjdCB4PSIxMTUwIiB5PSIxNjU1IiB3aWR0aD0iNDYwIiBoZWlnaHQ9IjQ5IiByeD0iOSIgZmlsbD0iIzE3M2QyZCIvPgo8dGV4dCB4PSIxMTY1IiB5PSIxNjg3IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiNmZmYiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIxOCIgZm9udC13ZWlnaHQ9IjcwMCI+c2hhcmVob2xkZXJfYWN0aXZpdHk8L3RleHQ+Cjx0ZXh0IHg9IjExNjUiIHk9IjE3MzIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiPlBLPC90ZXh0Pgo8dGV4dCB4PSIxMjMyIiB5PSIxNzMyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+aWQ8L3RleHQ+CjxyZWN0IHg9IjE3MDAiIHk9IjE2NTUiIHdpZHRoPSI0NjAiIGhlaWdodD0iMTAwIiByeD0iOSIgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjYWViZmI0IiBzdHJva2Utd2lkdGg9IjIiLz4KPHJlY3QgeD0iMTcwMCIgeT0iMTY1NSIgd2lkdGg9IjQ2MCIgaGVpZ2h0PSI0OSIgcng9IjkiIGZpbGw9IiMxNzNkMmQiLz4KPHRleHQgeD0iMTcxNSIgeT0iMTY4NyIgdGV4dC1hbmNob3I9InN0YXJ0IiBmaWxsPSIjZmZmIiBmb250LWZhbWlseT0iRGVqYVZ1IFNhbnMgTW9ubyxtb25vc3BhY2UiIGZvbnQtc2l6ZT0iMTgiIGZvbnQtd2VpZ2h0PSI3MDAiPnNoYXJlaG9sZGVyX3VwbG9hZHM8L3RleHQ+Cjx0ZXh0IHg9IjE3MTUiIHk9IjE3MzIiIHRleHQtYW5jaG9yPSJzdGFydCIgZmlsbD0iI2ExNGYyYyIgZm9udC1mYW1pbHk9IkRlamFWdSBTYW5zLEFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSI3MDAiPlBLPC90ZXh0Pgo8dGV4dCB4PSIxNzgyIiB5PSIxNzMyIiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiMxNzIyMWQiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyBNb25vLG1vbm9zcGFjZSIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9IjQwMCI+b2JqZWN0X3BhdGg8L3RleHQ+Cjx0ZXh0IHg9IjUwIiB5PSIxODU1IiB0ZXh0LWFuY2hvcj0ic3RhcnQiIGZpbGw9IiM1MjY0NWEiIGZvbnQtZmFtaWx5PSJEZWphVnUgU2FucyxBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjIxIiBmb250LXdlaWdodD0iNDAwIj5BcHBsaWNhdGlvbi1tYW5hZ2VkIHJlZmVyZW5jZXMgYW5kIEpTT05CIGFzc29jaWF0aW9ucyBhcmUgaW50ZW50aW9uYWxseSBub3QgZHJhd24gYXMgZW5mb3JjZWQgZGF0YWJhc2UgcmVsYXRpb25zaGlwcy48L3RleHQ+Cjwvc3ZnPg==" alt="Logical Data Model Summary — tables, keys, and relationships"><figcaption>Logical Data Model Summary — tables, keys, and relationships. Zoom the document to inspect labels.</figcaption></figure>
+<p><strong>Model references:</strong> Existing Conceptual Data Model, Logical Data Model Summary, Logical Data Model Detailed, and the combined Shareholder Application Models document remain companion references. Their diagrams are design snapshots; the current Drizzle schema and reviewed migrations govern exact table/column definitions.</p>
+<h3>Important modeling details for technical leads</h3>
+<ul>
+<li>Certificate primary IDs are the visible C-/P- numbers, with a unique class/sequence combination.</li>
+<li>Certificate states include Outstanding, Partially Transferred, Transferred, and Cancelled.</li>
+<li>Batch source allocations are represented in JSON alongside the primary source-certificate link.</li>
+<li>Historic names, signer details, and actor names may be snapshots, intentionally different from a subsequently edited profile.</li>
+<li>Legacy CEO/CFO-named columns remain for compatibility; they do not define current approval policy.</li>
+<li>Notification tracking and upload metadata are operational records, not proof that an external system completed an action.</li>
+<li>Database changes and SharePoint file operations cannot be assumed to share one atomic transaction; recovery must reconcile both systems.</li>
+</ul>
+<h2 id="section-11">9. Identity, privacy, and access</h2>
+<p>Current employee sign-in is tenant-specific Microsoft Entra OIDC with server-side sessions. The application validates the tenant and uses the Entra object ID for new employee attribution. Historical Clerk/Replit actors and prior approvals are preserved rather than automatically merged by email.</p>
+<p><strong>Access boundary:</strong> every successfully authenticated account in the configured tenant currently receives the same application access. There is no separate application Administrator allowlist or current role mapping. Named approval rights remain narrower and are matched to Settings signers. This broad tenant-access policy should be reviewed before introducing real shareholder information.</p>
+<p>SSNs are encrypted using AES-256-GCM with a domain-separated key derived from <code>SESSION_SECRET</code>. Normal APIs expose only the last four digits. Preserve that secret: changing it without an appropriate migration can make existing encrypted SSNs unreadable. Session, token, password, and secret values do not belong in documents, logs, exports, or audit change text.</p>
+<p>Authenticated file access and sensitive-data protections must remain in place even if the project or deployment is public. Public project visibility is not an authorization mechanism for private business files. Uploaded signature images are sensitive evidence, not authentication credentials.</p>
+<h2 id="section-12">10. Operations, maintenance, and support</h2>
+<h3>Source-of-truth locations</h3>
+<table>
+<thead>
+<tr>
+<th>Location</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>artifacts/shareholder-management/src/</code></td>
+<td>Web screens, navigation, forms, and generated-client usage.</td>
+</tr>
+<tr>
+<td><code>artifacts/api-server/src/</code></td>
+<td>API routes, authentication integration, business rules, documents, storage, and notifications.</td>
+</tr>
+<tr>
+<td><code>lib/api-spec/openapi.yaml</code></td>
+<td>Shared HTTP API contract.</td>
+</tr>
+<tr>
+<td><code>lib/db/src/schema/</code></td>
+<td>Current Drizzle table definitions.</td>
+</tr>
+<tr>
+<td><code>lib/db/migrations/</code></td>
+<td>Reviewed, versioned Azure schema migrations.</td>
+</tr>
+<tr>
+<td><code>docs/models/</code></td>
+<td>Independent conceptual, logical-summary, and logical-detailed SVG diagrams.</td>
+</tr>
+</tbody>
+</table>
+<h3>Release and recovery considerations</h3>
+<ul>
+<li>Separate synthetic Preview work from production operations.</li>
+<li>Review the actual deployment configuration and target schema before applying changes; repository defaults alone do not prove production behavior.</li>
+<li>Use the reviewed Azure migration workflow rather than a development schema push against production.</li>
+<li>Protect shareholder rows, certificates, transfer balances, approval evidence, SSN encryption material, and referenced SharePoint files as a connected recovery set.</li>
+<li>Define backup schedules, restore tests, retention, monitoring, and business ownership before real-data go-live; this overview does not certify those controls as configured.</li>
+<li>Confirm real sign-in, signer matching, upload/download access, template availability, issuance/transfer PDF retention, notification behavior, and report reconciliation in the approved target environment.</li>
+<li>Audit search improvements have synthetic performance checks; these are not production latency guarantees or authorization to add production indexes.</li>
+</ul>
+<h3>Common support checks</h3>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>First checks</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Employee cannot sign in</td>
+<td>Entra tenant/callback configuration, credential validity, and any separate hosting entry gate.</td>
+</tr>
+<tr>
+<td>Signed-in person cannot approve</td>
+<td>Captured signer address versus the Entra-returned address; request status; whether the person already decided.</td>
+</tr>
+<tr>
+<td>Request requires a certificate template</td>
+<td>Applicable Common/Preferred template availability and readable file reference in the active environment.</td>
+</tr>
+<tr>
+<td>Final approval cannot complete</td>
+<td>Remaining source balances, competing completed transfers, unchanged request details, and required evidence.</td>
+</tr>
+<tr>
+<td>File cannot open or upload</td>
+<td>SharePoint provider, application permissions, configured site/library/root, object metadata, and API authentication.</td>
+</tr>
+<tr>
+<td>Email not received</td>
+<td>Signer preference, connector access, notification state, and mailbox delivery; continue using the in-app queue.</td>
+</tr>
+<tr>
+<td>Records differ between environments</td>
+<td>Database provider, configured schema, pilot-versus-production dataset, and the deployed build.</td>
+</tr>
+</tbody>
+</table>
+<h3>Companion operational documents</h3>
+<ul>
+<li><code>docs/azure-entra-readiness.md</code> — identity behavior and callback setup.</li>
+<li><code>docs/azure-data-cutover.md</code> — earlier pilot database-copy/cutover evidence; not the authority for a future real-data import.</li>
+<li><code>docs/azure-schema-migrations.md</code> — controlled schema changes and drift checks.</li>
+<li><code>docs/sharepoint-file-storage.md</code> — SharePoint storage configuration and migration considerations.</li>
+<li><code>docs/migrated-file-access-verification.md</code> — scope and evidence of prior file-access checks.</li>
+<li><code>docs/audit-search-performance.md</code> — audit-query test and benchmark interpretation.</li>
+<li><code>docs/shareholder-application-models.html</code> — companion model document.</li>
+</ul>
+<h2 id="section-13">11. Planned legacy import and Azure-only boundary</h2>
+<p>The proposed import utility would populate Azure Production from the previous shareholder application. It is <strong>not yet an implemented Settings function</strong>, and no reset or import is authorized by this overview.</p>
+<ol>
+<li>Agree the Azure hosting, access, isolation, backup, and recovery arrangements.</li>
+<li>Obtain explicit execution approval to clear the application-owned target data and start empty. Prefer a scoped application-schema reset; do not drop a potentially shared database.</li>
+<li>Assess the legacy exports and historical completeness.</li>
+<li>Design source-to-target mappings, import templates, and conversion rules for business review.</li>
+<li>Validate staged records, certificate numbers, owners, quantities, and references; produce actionable errors and reconciliation totals.</li>
+<li>Run the approved import, retain reliable legacy history without fabricating missing detail, and reconcile the results.</li>
+<li>Accept the migrated data, test operations, and cut over in the approved Azure environment.</li>
+</ol>
+<p><strong>Real data must not be uploaded to this chat, the Replit workspace, or a Replit-hosted importer.</strong> Development here uses fully anonymized or synthetic examples and column definitions only. Actual imports, reset tooling, staging, and subsequent real-data application processing must run in Azure, with files in SharePoint.</p>
+<p>The future plan leaves Replit pilot data behind rather than treating it as the authoritative legacy seed. Historical import must not trigger fresh approval emails, imply new approvals, or manufacture completed certificate PDFs. Source cleanup needs separate approval.</p>
+<p>See <code>docs/legacy-data-import-plan.md</code> for the editable proposal and approval gates.</p>
+<h2 id="section-14">12. Ownership and document maintenance</h2>
+<p>Suggested business ownership is HR/Finance for profile quality, holdings reconciliation, signer policy, and acceptance of reports. Suggested technical ownership is the application/IT team for identity, deployment, database changes, SharePoint permissions, secrets, recovery, and monitoring. These are recommended responsibilities, not assigned named owners.</p>
+<p>Update this overview whenever scope, approval policy, access policy, storage, data structures, or hosting changes materially. Keep business explanations aligned with the implemented behavior; mark proposals separately from delivered features.</p>
+<p><strong>Editable source:</strong> <code>docs/shareholder-application-overview.md</code><br>
+<strong>Shareable document:</strong> <code>docs/shareholder-application-overview.html</code><br>
+<strong>Regeneration:</strong> <code>node scripts/generate-application-overview.mjs</code></p>
+
+<footer>Prepared 12 November 2026 · Source-based application reference, not a live production certification. No live shareholder records or secret values are included. Use your browser’s Print / Save as PDF command for a PDF copy.</footer>
+</main></body></html>

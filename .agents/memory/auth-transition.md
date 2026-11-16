@@ -10,8 +10,8 @@ The user approved replacing the pilot's separate Clerk onboarding with existing 
 
 The user has explicitly authorized direct, tenant-specific Microsoft Entra
 sign-in using only the configured `CLIENT_ID`, `CLIENT_SECRET`, and `TENANT_ID`.
-Do not add the Admin Console access check, Microsoft Graph, or Entra role
-mapping. Any authenticated account in the configured tenant receives equal app
+Do not add the Admin Console access check or Microsoft Graph authorization
+for ordinary app access. Any authenticated account in the configured tenant receives equal app
 access, while pending approvals still require a matching Settings signer.
 
 **Why:** The user overrode the earlier deferred Entra plan and rejected the
@@ -22,6 +22,16 @@ verification through Entra without app-level role checks.
 Use the signed tenant sign-in address for signer matching, preserve historical
 actor records, and do not enable shareholder self-service before phase 2.
 Replit private publishing may still add a separate entry gate.
+
+The user explicitly rejected separate legacy-import roles and permissions.
+Anyone already signed into the Azure application may use its import utility,
+without another Entra role, group, approval or sign-in.
+
+**Why:** The app is intended for a small, trusted employee team; the user found
+the additional authorization layer unnecessarily complicated.
+
+**How to apply:** Preserve normal Microsoft sign-in and individual audit
+attribution, but do not reintroduce import-only permissions or alter sign-offs.
 
 Current Entra identity details live in server-side sessions rather than being
 upserted into the legacy `users` table. That table's unique email key must not
