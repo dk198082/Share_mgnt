@@ -189,6 +189,19 @@ paths:
                 properties:
                   authorized: { type: boolean }
                   role: { type: [string, "null"] }
+  /settings/user-directory:
+    get:
+      operationId: listDirectoryUsers
+      responses:
+        "200":
+          description: Read-only retained accounts and current Microsoft app sessions, not an Entra access list
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/DirectoryUser" }
+        "401":
+          description: Sign-in required
   /settings/users:
     get:
       operationId: listAccessUsers
@@ -961,6 +974,16 @@ components:
           type: array
           items: { $ref: "#/components/schemas/SettingsAuditEntry" }
         nextCursor: { type: [string, "null"] }
+    DirectoryUser:
+      type: object
+      required: [id, name, email, source, isCurrent, isSignoff]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        email: { type: [string, "null"] }
+        source: { type: string, enum: [microsoft_session, retained_account] }
+        isCurrent: { type: boolean }
+        isSignoff: { type: boolean }
     AccessUserInput:
       type: object
       required: [email, role]

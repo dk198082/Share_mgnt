@@ -16,8 +16,7 @@ const app: Express = express();
 // AZURE: Azure App Service/Container Apps terminates TLS at a reverse proxy
 // in front of the container and forwards plain HTTP, setting X-Forwarded-*
 // headers. Without this, req.secure/req.protocol would read "http" and the
-// "secure" cookies this app sets (see cookieOptions in routes/auth.ts) would
-// be dropped by the browser since the app would appear to be serving HTTP.
+// "secure" cookies this app sets would be dropped by the browser.
 app.set("trust proxy", 1);
 
 app.use(

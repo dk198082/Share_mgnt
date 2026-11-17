@@ -14,12 +14,14 @@ import sharePricesRouter from "./share-prices";
 import auditRouter from "./settings-audit";
 import pilotDataRouter from "./pilot-data";
 import { signoffChanges, recordSettingsChange } from "../lib/settings-audit";
+import userDirectoryRouter from "./user-directory";
 
 const router: IRouter = Router();
 router.use(sharePricesRouter);
 router.use("/settings", requireEmployee, requireAdmin);
+router.use("/settings", userDirectoryRouter);
 router.all(["/settings/users", "/settings/users/:id"], (_req, res) => {
-  res.status(410).json({ error: "Pilot access is managed through Replit private publishing; separate app invitations and roles are no longer used." });
+  res.status(410).json({ error: "User access is managed through Microsoft Entra ID. The app user directory is read-only; invitations and access roles are not managed here." });
 });
 router.use("/settings", auditRouter);
 router.use("/settings", pilotDataRouter);

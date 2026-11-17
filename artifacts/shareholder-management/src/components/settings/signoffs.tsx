@@ -41,7 +41,7 @@ export function SignoffsPanel() {
 
   return (
     <div className="space-y-6">
-      <PanelHead n="03" title="Sign-offs" sub="The named signers who must all approve every share transfer and every new certificate issuance."
+      <PanelHead n="02" title="Sign-offs" sub="The named signers who must all approve every share transfer and every new certificate issuance."
         actions={<>
           <Button variant="outline" size="sm" onClick={() => q.refetch()} disabled={q.isFetching} data-testid="button-refresh-signoffs"><RefreshCw className={cn('mr-2 h-3.5 w-3.5', q.isFetching && 'animate-spin')} />Refresh</Button>
           <Button size="sm" onClick={() => setDlg({ open: true, editing: null })} data-testid="button-add-signoff"><Plus className="mr-2 h-3.5 w-3.5" />Add sign-off</Button>

@@ -37,7 +37,7 @@ export function SettingsAuditPanel() {
   });
   return (
     <div className="space-y-6">
-      <PanelHead n="04" title="Audit log" sub="Company-wide activity, newest first. Expand an entry to see exactly what changed."
+      <PanelHead n="05" title="Audit log" sub="Company-wide activity, newest first. Expand an entry to see exactly what changed."
         actions={<Button variant="outline" size="sm" onClick={() => { if (cursors.length) setCursors([]); else q.refetch(); }} disabled={q.isFetching || !!rangeError}><RefreshCw className="mr-2 h-3.5 w-3.5" />Refresh</Button>} />
       <Note>Administrative changes and recorded shareholder activity appear together here. The same events remain in Shareholder History and Transfer History. A transfer can have separate entries for the sender and recipient. Older entries may contain summaries only. “Recorded” confirms the history entry—not that a pending issuance or transfer has completed. Protected values and private file links are not exposed.</Note>
       <form className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end" onSubmit={event => { event.preventDefault(); if (rangeError) return; setSearch(searchInput.trim()); setCursors([]); }}>

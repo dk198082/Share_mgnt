@@ -29,6 +29,8 @@ export * from './certificateTemplate';
 export * from './certificateTemplateInput';
 export * from './certificateTemplateInputShareClass';
 export * from './certificateTemplateShareClass';
+export * from './directoryUser';
+export * from './directoryUserSource';
 export * from './document';
 export * from './emailNotificationSummary';
 export * from './getCurrentAuthUser200';

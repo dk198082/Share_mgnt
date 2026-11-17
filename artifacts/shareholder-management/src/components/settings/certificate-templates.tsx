@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { PanelHead } from './common';
 import { useQueryClient } from '@tanstack/react-query';
 import { useListCertificateTemplates, useSaveCertificateTemplate, getListCertificateTemplatesQueryKey } from '@workspace/api-client-react';
 import { FileText, Upload } from 'lucide-react';
@@ -28,7 +29,7 @@ export function CertificateTemplatesPanel() {
     finally { setBusy(''); }
   }
   return <div className="max-w-5xl space-y-6" data-testid="certificate-templates-panel">
-    <div><h2 className="font-display text-2xl">Certificate templates</h2><p className="mt-2 max-w-3xl text-sm text-muted-foreground">Upload a blank, editable PDF for each share class. New requests capture the active template version. Completed PDFs include recorded approval signatures and are retained in transaction and shareholder history. Replacements never overwrite earlier templates or completed certificates.</p></div>
+    <PanelHead n="04" title="Certificate templates" sub="Upload a blank, editable PDF for each share class. New requests capture the active template version. Completed PDFs include recorded approval signatures and are retained in transaction and shareholder history. Replacements never overwrite earlier templates or completed certificates." />
     <p className="rounded-md border border-border bg-secondary/40 p-3 text-xs text-muted-foreground">The supplied templates preserve Common's $100 par value and Preferred's $80 par value and reverse-side terms. Par value is not the Settings share price. Original holders, dates, certificate numbers and signatures have been removed. Signer titles are not inferred.</p>
     {error && <p role="alert" className="rounded border border-destructive/30 p-3 text-sm text-destructive">{error}</p>}
     {templates.isError ? <div role="alert">Templates could not be loaded. <Button variant="outline" onClick={() => templates.refetch()}>Retry</Button></div> : <div className="grid gap-5 md:grid-cols-2">

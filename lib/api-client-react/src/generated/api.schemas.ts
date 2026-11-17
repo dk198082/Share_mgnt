@@ -271,6 +271,24 @@ export interface SettingsAuditPage {
   nextCursor: string | null;
 }
 
+export type DirectoryUserSource = typeof DirectoryUserSource[keyof typeof DirectoryUserSource];
+
+
+export const DirectoryUserSource = {
+  microsoft_session: 'microsoft_session',
+  retained_account: 'retained_account',
+} as const;
+
+export interface DirectoryUser {
+  id: string;
+  name: string;
+  /** @nullable */
+  email: string | null;
+  source: DirectoryUserSource;
+  isCurrent: boolean;
+  isSignoff: boolean;
+}
+
 export type AccessUserInputRole = typeof AccessUserInputRole[keyof typeof AccessUserInputRole];
 
 

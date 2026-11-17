@@ -124,7 +124,7 @@ export function DataImportPanel() {
 
   return (
     <div className="space-y-8">
-      <PanelHead n="05" title="Data import" sub="Stage Pulley exports, review validation and balance reconciliation, then explicitly confirm an add-only import."
+      <PanelHead n="06" title="Data import" sub="Stage Pulley exports, review validation and balance reconciliation, then explicitly confirm an add-only import."
         actions={enabled ? <Button variant="outline" size="sm" asChild><a href="/api/settings/data-import/template" download data-testid="link-import-template"><Download className="mr-2 h-3.5 w-3.5" />Optional history template</a></Button> : undefined} />
 
       <Note>

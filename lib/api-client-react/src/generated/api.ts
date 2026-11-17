@@ -30,6 +30,7 @@ import type {
   CertificatePdfRecord,
   CertificateTemplate,
   CertificateTemplateInput,
+  DirectoryUser,
   EmailNotificationSummary,
   GetCurrentAuthUser200,
   GetSession200,
@@ -995,6 +996,77 @@ export function useGetSession<TData = Awaited<ReturnType<typeof getSession>>, TE
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetSessionQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getListDirectoryUsersUrl = () => {
+
+
+
+
+  return `/api/settings/user-directory`
+}
+
+export const listDirectoryUsers = async ( options?: Parameters<typeof customFetch>[1]): Promise<DirectoryUser[]> => {
+
+  return customFetch<DirectoryUser[]>(getListDirectoryUsersUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListDirectoryUsersQueryKey = () => {
+    return [
+    `/api/settings/user-directory`
+    ] as const;
+    }
+
+
+export const getListDirectoryUsersQueryOptions = <TData = Awaited<ReturnType<typeof listDirectoryUsers>>, TError = ErrorType<void>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listDirectoryUsers>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListDirectoryUsersQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listDirectoryUsers>>> = ({ signal }) => listDirectoryUsers({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listDirectoryUsers>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListDirectoryUsersQueryResult = NonNullable<Awaited<ReturnType<typeof listDirectoryUsers>>>
+export type ListDirectoryUsersQueryError = ErrorType<void>
+
+
+
+export function useListDirectoryUsers<TData = Awaited<ReturnType<typeof listDirectoryUsers>>, TError = ErrorType<void>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listDirectoryUsers>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListDirectoryUsersQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

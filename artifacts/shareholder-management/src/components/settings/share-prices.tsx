@@ -66,7 +66,7 @@ export function SharePricesPanel() {
 
   return (
     <div className="space-y-6">
-      <PanelHead n="02" title="Share prices" sub="Current reference prices in US Dollars (USD). New entries preserve exact decimal strings."
+      <PanelHead n="03" title="Share prices" sub="Current reference prices in US Dollars (USD). New entries preserve exact decimal strings."
         actions={<Button variant="outline" size="sm" onClick={() => q.refetch()} disabled={q.isFetching} data-testid="button-refresh-prices"><RefreshCw className={`mr-2 h-3.5 w-3.5 ${q.isFetching ? 'animate-spin' : ''}`} />Refresh</Button>} />
       <Note>Changing these values does not alter prices recorded on past transfers, and it does not change who must approve. Every signer listed under Settings, Sign-offs must still approve each transfer and issuance.</Note>
       {q.isLoading ? <Skeleton className="h-60 max-w-2xl" />

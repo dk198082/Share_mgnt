@@ -251,6 +251,17 @@ export const GetSessionResponse = zod.object({
 })
 
 
+export const ListDirectoryUsersResponseItem = zod.object({
+  "id": zod.string(),
+  "name": zod.string(),
+  "email": zod.string().nullable(),
+  "source": zod.enum(['microsoft_session', 'retained_account']),
+  "isCurrent": zod.boolean(),
+  "isSignoff": zod.boolean()
+})
+export const ListDirectoryUsersResponse = zod.array(ListDirectoryUsersResponseItem)
+
+
 export const ListAccessUsersResponseItem = zod.object({
   "id": zod.string(),
   "kind": zod.enum(['account', 'invitation']),
