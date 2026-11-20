@@ -159,7 +159,8 @@ export const GetCurrentAuthUserResponse = zod.object({
   "emailVerified": zod.boolean(),
   "firstName": zod.string().nullable(),
   "lastName": zod.string().nullable(),
-  "profileImageUrl": zod.string().nullable()
+  "profileImageUrl": zod.string().nullable(),
+  "role": zod.enum(['viewer', 'editor'])
 }),zod.null()])
 })
 

@@ -15,7 +15,10 @@
     "azure:schema:check": "node --import tsx ./scripts/azure-schema-check.mjs",
     "test:azure-schema": "node --import tsx --test ./scripts/azure-schema.test.mjs",
     "test:azure-migrations": "node --test ./scripts/azure-migration-lib.test.mjs ./scripts/azure-migrate.test.mjs",
-    "test:azure-migrations:postgres": "node --test ./scripts/azure-migrate.postgres.test.mjs"
+    "test:azure-migrations:postgres": "node --test ./scripts/azure-migrate.postgres.test.mjs",
+    "test:share-quantities": "node --import tsx ./scripts/test-share-quantities-disposable.mjs",
+    "test:legacy-import": "node --import tsx ./scripts/test-legacy-import-disposable.mjs",
+    "test:browser-permissions": "node --import tsx ./scripts/test-browser-permissions-disposable.mjs"
   },
   "dependencies": {
     "drizzle-orm": "catalog:",

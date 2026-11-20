@@ -15,6 +15,7 @@ export * from './activity';
 export * from './approvalSigner';
 export * from './approvalVote';
 export * from './authUser';
+export * from './authUserRole';
 export * from './beginBrowserLoginParams';
 export * from './certificate';
 export * from './certificateDirectoryEntry';

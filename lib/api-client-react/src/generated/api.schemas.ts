@@ -135,6 +135,14 @@ export interface PilotDataStatus {
   pilotShareholders: number;
 }
 
+export type AuthUserRole = typeof AuthUserRole[keyof typeof AuthUserRole];
+
+
+export const AuthUserRole = {
+  viewer: 'viewer',
+  editor: 'editor',
+} as const;
+
 export interface AuthUser {
   id: string;
   /** @nullable */
@@ -146,6 +154,7 @@ export interface AuthUser {
   lastName: string | null;
   /** @nullable */
   profileImageUrl: string | null;
+  role: AuthUserRole;
 }
 
 export type CertificateTemplateInputShareClass = typeof CertificateTemplateInputShareClass[keyof typeof CertificateTemplateInputShareClass];

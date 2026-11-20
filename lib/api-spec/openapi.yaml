@@ -900,7 +900,7 @@ components:
         pilotShareholders: { type: integer }
     AuthUser:
       type: object
-      required: [id, email, emailVerified, firstName, lastName, profileImageUrl]
+      required: [id, email, emailVerified, firstName, lastName, profileImageUrl, role]
       properties:
         id: { type: string }
         email: { type: [string, "null"] }
@@ -908,6 +908,7 @@ components:
         firstName: { type: [string, "null"] }
         lastName: { type: [string, "null"] }
         profileImageUrl: { type: [string, "null"] }
+        role: { type: string, enum: [viewer, editor] }
     CertificateTemplateInput:
       type: object
       additionalProperties: false

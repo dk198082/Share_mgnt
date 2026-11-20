@@ -1,12 +1,11 @@
 node_modules
 **/node_modules
 **/dist
-**/.vite
 .git
 .agents
+.conversation
 attached_assets
-screenshots
-reports
+generated-artifacts
 docs
 .config
 .cache

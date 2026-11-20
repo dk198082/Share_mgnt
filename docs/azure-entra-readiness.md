@@ -65,11 +65,16 @@ it is not an Entra credential and also protects encrypted SSN data.
 
 ## Scope and access implications
 
-Without a separate authorization service or app allowlist, tenant authentication
-means any account in the configured Entra tenant that can reach the app can use
-the app. This is intentional for the pilot. It is not limited to a list of
-named Settings users. Replit's private-publishing gate remains separate and is
-not changed by the Entra integration.
+In addition to Microsoft Entra authentication, the Admin Console must grant
+the employee Read Only or Read / Write access to Shareholder Management.
+Replit's private-publishing gate remains separate.
+
+The API checks Admin Console access at sign-in, at token refresh, and on the
+first authenticated request at least 60 seconds after the previous check. A
+downgrade takes effect before that request is handled. If access was removed
+or cannot be verified (including during an outage), the session is invalidated
+and the user must sign in again. All checks run server-side; the API key is
+never sent to the browser.
 
 The tenant sign-in address is used for signer matching; it is not a separate
 mailbox ownership verification process. Configure each Settings signer's email
@@ -78,7 +83,8 @@ to match the address Entra returns for that person.
 ## Verification
 
 `artifacts/api-server/src/lib/pilot-auth-flow.test.ts` exercises signed OIDC
-callbacks, PKCE, session cookies, deep links, signer identity, logout, and
-rejection of identities from another tenant. Production and Preview must both
-have the three Entra secrets configured. No secret values belong in source,
-logs, or documentation.
+callbacks, PKCE, session cookies, deep links, signer identity, logout,
+cross-tenant rejection, and mid-session access changes and outages. Run it
+against isolated PostgreSQL with `pnpm --filter @workspace/db run test:legacy-import`.
+Production and Preview must both have Entra and Admin Console credentials
+configured. No secret values belong in source, logs, or documentation.
