@@ -1,6 +1,6 @@
+import express, { type Express } from "express";
 import path from "node:path";
 import fs from "node:fs";
-import express, { type Express } from "express";
 import { IdentityLookupError } from "./lib/identity-lookup";
 import cors from "cors";
 import pinoHttp from "pino-http";
@@ -8,15 +8,14 @@ import router from "./routes";
 import { logger } from "./lib/logger";
 import cookieParser from "cookie-parser";
 import { authMiddleware } from "./middlewares/authMiddleware";
-import { requireEmployee } from "./middlewares/employee";
+import { requireEditorForWrites, requireEmployee } from "./middlewares/employee";
 import { requireImportUpload } from "./lib/legacy-import/access";
 
 const app: Express = express();
 
-// AZURE: Azure App Service/Container Apps terminates TLS at a reverse proxy
-// in front of the container and forwards plain HTTP, setting X-Forwarded-*
-// headers. Without this, req.secure/req.protocol would read "http" and the
-// "secure" cookies this app sets would be dropped by the browser.
+// AZURE: Azure App Service/Container Apps sits behind a reverse proxy (TLS
+// terminates there, not here). Without this, req.protocol/req.secure and the
+// client IP used for logging/rate-limiting would be wrong.
 app.set("trust proxy", 1);
 
 app.use(
@@ -41,6 +40,7 @@ app.use(
 app.use(cors({ origin: false }));
 app.use(cookieParser());
 app.use(authMiddleware);
+app.use("/api", requireEditorForWrites);
 // XLSX bytes exist transiently in this bounded request only, never in logs or DB.
 app.use("/api/settings/data-import/analyze", requireEmployee, requireImportUpload, express.json({ limit: "8mb" }));
 app.use(express.json());
@@ -57,13 +57,32 @@ app.use((req, res, next) => {
 });
 
 app.use("/api", router);
-// AZURE: this app's own routers never 404 unmatched paths themselves (no
-// catch-all inside routes/index.ts), so an unknown /api/* path would
-// otherwise fall through to the SPA static fallback below and wrongly
-// return 200 with index.html once STATIC_DIR serving is added for Azure.
+// AZURE: no router mounted above 404s an unmatched path itself, so without
+// this, an unknown /api/* path would fall through into the SPA static
+// fallback below (once STATIC_DIR serving is added for Azure) and wrongly
+// return 200 with index.html instead of 404.
 app.use("/api", (_req, res) => {
   res.status(404).json({ error: "Not found" });
 });
+
+// AZURE: in the single-container deployment the built SPA is served by this
+// same process. STATIC_DIR is only set in that deployment; locally/on
+// Replit the frontend is served by its own dev server, so this block is a
+// no-op there.
+const staticDir = process.env.STATIC_DIR;
+if (staticDir) {
+  const indexHtml = path.join(staticDir, "index.html");
+  if (!fs.existsSync(indexHtml)) {
+    throw new Error(`STATIC_DIR is set but "${indexHtml}" does not exist. Did the frontend build run?`);
+  }
+  app.use(express.static(staticDir));
+  // AZURE: this app uses Express 5 (path-to-regexp v8), which rejects a bare
+  // "*" wildcard route ("Missing parameter name") — it must be named.
+  app.get("/*splat", (_req, res) => {
+    res.sendFile(indexHtml);
+  });
+}
+
 app.use((err: unknown, req: express.Request, res: express.Response, _next: express.NextFunction) => {
   if (req.path === "/api/settings/data-import/analyze") {
     const bodyError = err as { type?: string };
@@ -83,22 +102,5 @@ app.use((err: unknown, req: express.Request, res: express.Response, _next: expre
   req.log.error({ errorType: err instanceof Error ? err.name : "Error" }, "Request failed");
   res.status(500).json({ error: "The request could not be completed. Please try again." });
 });
-
-// AZURE: on Replit, the frontend (artifacts/shareholder-management) and this
-// API are two separate deployed services. On Azure this ships as one
-// container, so this server also serves the built frontend as static files,
-// with an SPA fallback for client-side routes. Unset in local dev; set by
-// the Dockerfile below in production.
-const staticDir = process.env.STATIC_DIR;
-if (staticDir) {
-  const indexHtml = path.join(staticDir, "index.html");
-  if (!fs.existsSync(indexHtml)) {
-    throw new Error(`STATIC_DIR is set to "${staticDir}" but "${indexHtml}" does not exist. Did the frontend build run?`);
-  }
-  app.use(express.static(staticDir));
-  app.get(/.*/, (_req, res) => {
-    res.sendFile(indexHtml);
-  });
-}
 
 export default app;

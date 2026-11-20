@@ -36,7 +36,7 @@ router.get("/share-prices/history", requireEmployee, async (_req, res) => {
     ...row, recordedAt: row.recordedAt.toISOString(), legacy: row.effectiveDate === null,
   }))));
 });
-router.get("/settings/share-prices", requireEmployee, requireAdmin, async (_req, res) => {
+router.get("/settings/share-prices", requireEmployee, async (_req, res) => {
   res.json(GetSharePricesResponse.parse(await lookup(priceToday(), true)));
 });
 router.put("/settings/share-prices", requireEmployee, requireAdmin, async (req, res) => {

@@ -95,7 +95,7 @@ test("ordinary Azure employees can stage, view history and commit, while signed-
       let signedIn = true, employeeId = azureActor().id;
       const app = express();
       app.use((req, _res, next) => {
-        if (signedIn) req.user = { id: employeeId, firstName: "Synthetic", lastName: "Employee", email: null, emailVerified: false, profileImageUrl: null };
+        if (signedIn) req.user = { id: employeeId, firstName: "Synthetic", lastName: "Employee", email: null, emailVerified: false, profileImageUrl: null, role: "editor" };
         next();
       });
       app.use("/api/settings/data-import/analyze", requireImportUpload);

@@ -6,7 +6,7 @@ import {
   AddSignoffBody, UpdateSignoffBody,
   ListSignoffsResponse, AddSignoffResponse, UpdateSignoffResponse, RequestSignatureUploadBody, RequestSignatureUploadResponse,
 } from "@workspace/api-zod";
-import { requireAdmin, requireEmployee } from "../middlewares/employee";
+import { requireEmployee } from "../middlewares/employee";
 import { CertificateError } from "../lib/certificates";
 import { ObjectStorageService } from "../lib/objectStorage";
 import { validateSignature } from "../lib/signatures";
@@ -18,7 +18,7 @@ import userDirectoryRouter from "./user-directory";
 
 const router: IRouter = Router();
 router.use(sharePricesRouter);
-router.use("/settings", requireEmployee, requireAdmin);
+router.use("/settings", requireEmployee);
 router.use("/settings", userDirectoryRouter);
 router.all(["/settings/users", "/settings/users/:id"], (_req, res) => {
   res.status(410).json({ error: "User access is managed through Microsoft Entra ID. The app user directory is read-only; invitations and access roles are not managed here." });

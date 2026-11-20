@@ -250,7 +250,7 @@ test("API requires sign-in, validates attestation and returns template", async (
   const app = express(); app.use(express.json({ limit: "8mb" })); app.use("/api", router);
   assert.equal((await request(app).get("/api/settings/data-import/status")).status, 401);
   const signed = express(); signed.use(express.json({ limit: "8mb" }));
-  signed.use((req, _res, next) => { req.user = { id: actor.id, firstName: "Synthetic", lastName: "Operator", email: null, emailVerified: false, profileImageUrl: null }; next(); });
+  signed.use((req, _res, next) => { req.user = { id: actor.id, firstName: "Synthetic", lastName: "Operator", email: null, emailVerified: false, profileImageUrl: null, role: "editor" }; next(); });
   signed.use("/api", router);
   assert.equal((await request(signed).get("/api/settings/data-import/status")).body.enabled, true);
   assert.equal((await request(signed).post("/api/settings/data-import/analyze").send({ syntheticOnly: false, files: await fixtureFiles() })).status, 400);

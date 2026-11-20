@@ -2,7 +2,7 @@ import { Router, type IRouter } from "express";
 import { db, shareholdersTable, certificatesTable, shareTransfersTable } from "@workspace/db";
 import { sql } from "drizzle-orm";
 import { ExportShareholderReportBody } from "@workspace/api-zod";
-import { requireEmployee, requireAdmin } from "../middlewares/employee";
+import { requireEmployee } from "../middlewares/employee";
 import { auditContext } from "../lib/audit";
 import { buildReport, ReportError, reportTypes, type ReportType } from "../lib/report-data";
 import { reportWorkbook } from "../lib/report-workbook";
@@ -12,7 +12,7 @@ router.use("/reports", (_req, res, next) => {
   res.set("Cache-Control", "private, no-store");
   res.set("X-Content-Type-Options", "nosniff");
   next();
-}, requireEmployee, requireAdmin);
+}, requireEmployee);
 router.post("/reports/:reportType/export", async (req, res, next) => {
   try {
     const type = req.params.reportType as ReportType;

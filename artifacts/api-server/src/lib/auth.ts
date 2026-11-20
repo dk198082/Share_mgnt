@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import type { AuthUser } from "@workspace/api-zod";
 import { db, sessionsTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { and, eq, gt, lte } from "drizzle-orm";
 import type { Request, Response } from "express";
 import * as oidc from "openid-client";
 import { profileNames, sessionProfileNames } from "./profile-names";
@@ -15,6 +15,7 @@ export interface SessionData {
   id_token?: string;
   refresh_token?: string;
   expires_at?: number;
+  access_checked_at?: number; // Epoch milliseconds; absent on pre-recheck sessions.
 }
 let config: Promise<oidc.Configuration> | undefined;
 export function getOidcConfig() {
@@ -47,7 +48,7 @@ function getTenantId() {
   if (!tenantId) throw new Error("Microsoft Entra authentication requires TENANT_ID.");
   return tenantId;
 }
-export function identityFromClaims(claims: Record<string, unknown>): AuthUser {
+export function identityFromClaims(claims: Record<string, unknown>): Omit<AuthUser, "role"> {
   const stringOrNull = (v: unknown) => typeof v === "string" && v ? v : null;
   const oid = stringOrNull(claims.oid);
   const tenantId = stringOrNull(claims.tid);
@@ -76,31 +77,47 @@ export async function createSession(data: SessionData): Promise<string> {
   });
   return sid;
 }
-export async function getSession(sid: string): Promise<SessionData | null> {
+export async function getSessionSnapshot(sid: string) {
   const [row] = await db.select().from(sessionsTable).where(eq(sessionsTable.sid, sid));
-  if (!row || row.expire < new Date()) {
-    if (row) await deleteSession(sid);
+  if (!row) return null;
+  const now = new Date();
+  if (row.expire <= now) {
+    await db.delete(sessionsTable).where(and(eq(sessionsTable.sid, sid), lte(sessionsTable.expire, now)));
     return null;
   }
-  const session = row.sess as unknown as SessionData;
+  const session = { ...row.sess as SessionData };
   if (session.provider === "entra" && session.user?.id) {
     session.user = {
       ...session.user,
       ...sessionProfileNames(session.user, session.id_token, getTenantId()),
     };
   }
-  return session;
+  return { session, stored: row.sess };
 }
-export async function updateSession(sid: string, data: SessionData) {
-  await db.update(sessionsTable).set({
-    sess: data as unknown as Record<string, unknown>, expire: new Date(Date.now() + SESSION_TTL),
-  }).where(eq(sessionsTable.sid, sid));
+export async function getSession(sid: string): Promise<SessionData | null> {
+  return (await getSessionSnapshot(sid))?.session ?? null;
+}
+export async function updateSession(
+  sid: string, stored: typeof sessionsTable.$inferSelect.sess, data: SessionData, extendExpiry: boolean,
+): Promise<boolean> {
+  const updated = await db.update(sessionsTable).set({
+    sess: data as unknown as Record<string, unknown>,
+    ...(extendExpiry ? { expire: new Date(Date.now() + SESSION_TTL) } : {}),
+  }).where(and(
+    eq(sessionsTable.sid, sid),
+    eq(sessionsTable.sess, stored),
+    gt(sessionsTable.expire, new Date()),
+  )).returning({ sid: sessionsTable.sid });
+  return updated.length === 1;
 }
 export async function deleteSession(sid: string) {
   await db.delete(sessionsTable).where(eq(sessionsTable.sid, sid));
 }
 export async function clearSession(res: Response, sid?: string) {
   if (sid) await deleteSession(sid);
+  clearSessionCookie(res);
+}
+export function clearSessionCookie(res: Response) {
   res.clearCookie(SESSION_COOKIE, { path: "/", secure: true, httpOnly: true, sameSite: "lax" });
 }
 export function getSessionId(req: Request): string | undefined {

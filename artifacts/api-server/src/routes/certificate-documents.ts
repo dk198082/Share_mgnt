@@ -7,8 +7,8 @@ import { installCertificateTemplate, readPrivateBytes } from "../lib/certificate
 import { SaveCertificateTemplateBody, ListCertificatePdfsQueryParams } from "@workspace/api-zod";
 
 const router: IRouter = Router();
-router.use("/settings/certificate-templates", requireEmployee, requireAdmin);
-router.get("/settings/certificate-templates", requireAdmin, async (_req, res) => {
+router.use("/settings/certificate-templates", requireEmployee);
+router.get("/settings/certificate-templates", async (_req, res) => {
   res.json((await db.select().from(certificateTemplatesTable).orderBy(desc(certificateTemplatesTable.createdAt)))
     .map(({ objectPath: _path, ...row }) => ({ ...row, createdAt: row.createdAt.toISOString() })));
 });
@@ -27,7 +27,7 @@ router.post("/settings/certificate-templates", requireAdmin, async (req, res) =>
     res.status(error instanceof CertificateError ? error.status : 400).json({ error: error instanceof Error ? error.message : "The template could not be saved." });
   }
 });
-router.get("/settings/certificate-templates/:id/pdf", requireAdmin, async (req, res) => {
+router.get("/settings/certificate-templates/:id/pdf", async (req, res) => {
   const [template] = await db.select().from(certificateTemplatesTable).where(eq(certificateTemplatesTable.id, String(req.params.id)));
   if (!template) { res.status(404).json({ error: "Template not found." }); return; }
   const bytes = await readPrivateBytes(template.objectPath);

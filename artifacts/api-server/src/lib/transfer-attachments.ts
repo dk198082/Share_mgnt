@@ -55,7 +55,7 @@ export async function appendRequestDocuments(tx: Transaction, id: string, docs: 
   const [row] = await tx.select().from(transferRequestsTable).where(eq(transferRequestsTable.id, id)).for("update");
   if (!row) throw new CertificateError(404, "Transfer request not found.");
   if (row.kind !== "Transfer") throw new CertificateError(400, "Attachments are supported on transfer requests only.");
-  if (row.requestedBy !== actor && role !== "admin" && role !== "pilot") throw new CertificateError(403, "Only an authorized pilot participant can attach request files.");
+  if (row.requestedBy !== actor && role !== "editor") throw new CertificateError(403, "Only the requester or a Read / Write user can attach request files.");
   if (row.status !== "Pending" || row.approvals.length || row.ceoApprovedBy || row.cfoApprovedBy) {
     throw new CertificateError(409, "Request attachments are locked after the first sign-off. Completed transfers accept separate supporting documents.");
   }
