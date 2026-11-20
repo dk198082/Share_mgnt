@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useRetrySignoffEmailNotifications, type EmailNotificationSummary } from '@workspace/api-client-react';
 import { Button } from '@/components/ui/button';
 import { errMsg } from '@/lib/format';
+import { useCanWrite } from '@/lib/authorization';
 
 export function EmailNotificationStatus({ requestId, initialSummary }: {
   requestId: string;
   initialSummary: EmailNotificationSummary;
 }) {
+  const canWrite = useCanWrite();
   const [summary, setSummary] = useState(initialSummary);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
@@ -44,7 +46,7 @@ export function EmailNotificationStatus({ requestId, initialSummary }: {
       {error && <p className="text-destructive">{error}</p>}
       {needsFallback && (
         <div className="flex flex-wrap gap-2">
-          {summary.failed > 0 && summary.pending === 0 && (
+          {canWrite && summary.failed > 0 && summary.pending === 0 && (
             <Button type="button" variant="outline" size="sm" disabled={retry.isPending} onClick={retryEmails} data-testid="button-retry-signoff-email">
               {retry.isPending ? 'Retrying…' : 'Retry failed emails'}
             </Button>

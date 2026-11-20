@@ -11,7 +11,7 @@ function Stat({ label, value, loading, tone }: { label: string; value?: number; 
   return (
     <div className="relative overflow-hidden rounded-lg border border-card-border bg-card p-5">
       <span className={`absolute inset-x-0 top-0 h-[3px] ${tone}`} />
-      <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">{label}</div>
+      <div className="font-display text-lg leading-tight text-muted-foreground">{label}</div>
       {loading ? <Skeleton className="mt-3 h-8 w-20" /> : (
         <div className="mt-2 font-display text-3xl tnum" data-testid={`stat-${label.toLowerCase().replace(/\s/g, '-')}`}>{nf.format(value ?? 0)}</div>
       )}
@@ -21,6 +21,7 @@ function Stat({ label, value, loading, tone }: { label: string; value?: number; 
 
 export default function Home() {
   const { user } = useAuth();
+  const canWrite = user?.role === 'editor';
   const summary = useGetSummary();
   const activity = useListActivity();
   const list = useListShareholders();
@@ -33,7 +34,7 @@ export default function Home() {
       <PageHeader
         eyebrow={new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
         title={<>Good to see you{user?.firstName ? `, ${user.firstName}` : ''}.</>}
-        actions={<Link href="/shareholders/new" className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90" data-testid="link-new-shareholder"><Plus className="h-4 w-4" /> New shareholder</Link>}
+        actions={canWrite ? <Link href="/shareholders/new" className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90" data-testid="link-new-shareholder"><Plus className="h-4 w-4" /> New shareholder</Link> : undefined}
       />
       <div className="space-y-8 px-6 py-8 md:px-10">
         {summary.isError ? (
@@ -64,7 +65,7 @@ export default function Home() {
               <div className="p-10 text-center">
                 <div className="font-display text-lg">The registry is empty.</div>
                 <p className="mt-1 text-sm text-muted-foreground">Add the first shareholder to begin.</p>
-                <Link href="/shareholders/new" className="mt-4 inline-flex items-center gap-1 text-sm text-accent hover:underline"><Plus className="h-3.5 w-3.5" /> Add shareholder</Link>
+                {canWrite && <Link href="/shareholders/new" className="mt-4 inline-flex items-center gap-1 text-sm text-accent hover:underline"><Plus className="h-3.5 w-3.5" /> Add shareholder</Link>}
               </div>
             ) : (
               <ul className="divide-y divide-border">

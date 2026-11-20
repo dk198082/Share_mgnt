@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { errMsg, nf } from '@/lib/format';
 import { LIVE, fmtDay, refreshRegistry } from '@/lib/registry-sync';
 import { sourceLabel } from '@/lib/transfer-sources';
+import { useCanWrite } from '@/lib/authorization';
 
 type Row = {
   key: string; href: string; status: 'Completed' | 'Pending' | 'Rejected';
@@ -159,6 +160,7 @@ function TransferHistory() {
 }
 
 function TransferDetail({ id }: { id: string }) {
+  const canWrite = useCanWrite();
   const qc = useQueryClient();
   const t = useGetTransfer(id, { query: { queryKey: getGetTransferQueryKey(id), ...LIVE } });
   const requests = useListTransferRequests(undefined, { query: { queryKey: getListTransferRequestsQueryKey(), ...LIVE } });
@@ -200,7 +202,7 @@ function TransferDetail({ id }: { id: string }) {
                 <h2 className="text-[10px] uppercase tracking-[0.16em] text-muted-foreground">Supporting documents ({d.attachments.length})</h2>
                 <AttachmentList docs={d.attachments} />
               </section>
-              <AppendAttachments
+              {canWrite && <AppendAttachments
                 existing={d.attachments.length}
                 pending={attach.isPending}
                 error={err}
@@ -212,7 +214,7 @@ function TransferDetail({ id }: { id: string }) {
                     onError: (e) => setErr(errMsg(e, 'Files could not be attached. Your uploads are kept; try again.')),
                   });
                 }}
-              />
+              />}
             </>
           );
         })()}

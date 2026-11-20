@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { cn } from '@/lib/utils';
 import { Note, LoadError, PanelHead } from './common';
+import { useCanWrite } from '@/lib/authorization';
 
 const MAX_TOTAL = 5 * 1024 * 1024;
 const fmt = (n: number) => n.toLocaleString(undefined, { maximumFractionDigits: 2 });
@@ -46,6 +47,7 @@ function StatusPill({ status }: { status: string }) {
 }
 
 export function DataImportPanel() {
+  const canWrite = useCanWrite();
   const qc = useQueryClient();
   const status = useGetLegacyImportStatus({ query: { queryKey: getGetLegacyImportStatusQueryKey(), refetchInterval: 15000 } });
   const runs = useListLegacyImportRuns({ query: {
@@ -124,19 +126,20 @@ export function DataImportPanel() {
 
   return (
     <div className="space-y-8">
-      <PanelHead n="06" title="Data import" sub="Stage Pulley exports, review validation and balance reconciliation, then explicitly confirm an add-only import."
+      <PanelHead n="05" title="Data import" sub="Stage Pulley exports, review validation and balance reconciliation, then explicitly confirm an add-only import."
         actions={enabled ? <Button variant="outline" size="sm" asChild><a href="/api/settings/data-import/template" download data-testid="link-import-template"><Download className="mr-2 h-3.5 w-3.5" />Optional history template</a></Button> : undefined} />
 
       <Note>
         <p className="font-medium text-foreground">How this import behaves</p>
         <ul className="mt-1 list-disc space-y-0.5 pl-4">
-          <li>{syntheticOnly ? "Preview accepts fully anonymized samples only." : "Anyone signed into the Azure app can import. Source workbooks are retained privately in SharePoint; unresolved certificate owners block importing."}</li>
+          <li>{syntheticOnly ? "Preview accepts fully anonymized samples only." : "Read / Write users assigned to this app in the Admin Console can import. Source workbooks are retained privately in SharePoint; unresolved certificate owners block importing."}</li>
           <li>Staging creates a review run only. No live shareholder, certificate or transfer rows change until you commit.</li>
           <li>Securities whose owner cannot be identified are excluded and counted, not guessed.</li>
           <li>Incomplete transfer history is reported as an issue; missing transfers are never invented.</li>
           <li>Existing registry rows are preserved. There is no reset or delete from this screen.</li>
         </ul>
       </Note>
+      {!canWrite && <Note>Read-only access. Staging or committing an import requires the Shareholder Management Read / Write entitlement.</Note>}
 
       {status.isLoading ? <Skeleton className="h-16 w-full" /> : status.isError ? (
         <LoadError message={errMsg(status.error, 'Could not load import availability.')} onRetry={() => qc.invalidateQueries({ queryKey: getGetLegacyImportStatusQueryKey() })} testId="error-import-status" />
@@ -149,14 +152,14 @@ export function DataImportPanel() {
       )}
 
       {/* Step 1 */}
-      <section className={cn('rounded-lg border border-card-border bg-card p-5 md:p-6', !enabled && 'opacity-60')} aria-disabled={!enabled}>
+      <section className={cn('rounded-lg border border-card-border bg-card p-5 md:p-6', (!enabled || !canWrite) && 'opacity-60')} aria-disabled={!enabled || !canWrite}>
         <h3 className="font-display text-lg">1. Select workbooks</h3>
         <p className="mt-1 text-sm text-muted-foreground">Select all six Pulley exports at once (.xlsx, 3 to 7 files, 5 MB total).</p>
         <input ref={inputRef} type="file" multiple accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" className="hidden"
-          disabled={!enabled || busy} onChange={(e) => { onPick(e.target.files); e.target.value = ''; }} data-testid="input-import-files" />
+          disabled={!enabled || !canWrite || busy} onChange={(e) => { onPick(e.target.files); e.target.value = ''; }} data-testid="input-import-files" />
         <div className="mt-4 flex flex-wrap gap-2">
-          <Button variant="outline" disabled={!enabled || busy} onClick={() => inputRef.current?.click()} data-testid="button-choose-files"><FileSpreadsheet className="mr-2 h-4 w-4" />{files.length ? 'Choose different files' : 'Choose files'}</Button>
-          {files.length > 0 && <Button variant="ghost" disabled={busy} onClick={() => onPick(null)} data-testid="button-clear-files"><X className="mr-2 h-4 w-4" />Clear</Button>}
+          <Button variant="outline" disabled={!enabled || !canWrite || busy} onClick={() => inputRef.current?.click()} data-testid="button-choose-files"><FileSpreadsheet className="mr-2 h-4 w-4" />{files.length ? 'Choose different files' : 'Choose files'}</Button>
+          {files.length > 0 && canWrite && <Button variant="ghost" disabled={busy} onClick={() => onPick(null)} data-testid="button-clear-files"><X className="mr-2 h-4 w-4" />Clear</Button>}
         </div>
         {files.length > 0 && (
           <ul className="mt-4 divide-y divide-border rounded-md border border-border text-sm" data-testid="list-selected-files">
@@ -168,11 +171,11 @@ export function DataImportPanel() {
         )}
         {fileProblem && <p role="alert" className="mt-3 flex items-center gap-2 text-sm text-destructive" data-testid="text-file-error"><AlertCircle className="h-4 w-4" />{fileProblem}</p>}
         <label className="mt-5 flex items-start gap-3 text-sm">
-          <Checkbox checked={attest} disabled={!enabled || busy} onCheckedChange={(v) => setAttest(v === true)} className="mt-0.5" data-testid="checkbox-attest-anonymized" />
+          <Checkbox checked={attest} disabled={!enabled || !canWrite || busy} onCheckedChange={(v) => setAttest(v === true)} className="mt-0.5" data-testid="checkbox-attest-anonymized" />
           <span>{syntheticOnly ? "I confirm these workbooks are fully anonymized synthetic data and contain no real personal information." : "I am authorized to process these legacy workbooks in Azure and have approval to stage this source data for review."}</span>
         </label>
         <div className="mt-5 flex flex-wrap items-center gap-3">
-          <Button disabled={!enabled || !files.length || !!fileProblem || !attest || busy} onClick={stage} data-testid="button-stage-import">
+          <Button disabled={!enabled || !canWrite || !files.length || !!fileProblem || !attest || busy} onClick={stage} data-testid="button-stage-import">
             <Upload className="mr-2 h-4 w-4" />{reading ? 'Reading files…' : analyze.isPending ? 'Validating…' : 'Stage and validate'}
           </Button>
           <span className="text-xs text-muted-foreground">Creates a review run only.</span>
@@ -181,8 +184,8 @@ export function DataImportPanel() {
       </section>
 
       {/* Step 2 */}
-      {selected && (
-        <RunDetail run={selected} ack={ackWarnings} setAck={setAckWarnings} enabled={enabled}
+        {selected && (
+        <RunDetail run={selected} ack={ackWarnings} setAck={setAckWarnings} enabled={enabled && canWrite}
           committing={commit.isPending} commitError={commitError} onCommit={() => { setCommitError(null); setConfirmOpen(true); }} onClose={() => setSelectedId(null)} />
       )}
 

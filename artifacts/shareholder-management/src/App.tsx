@@ -28,7 +28,13 @@ function SignInPage() {
   const params = new URLSearchParams(window.location.search);
   const target = params.get('redirect_url') || `${basePath}/home`;
   const safeTarget = target.startsWith('/') && !target.startsWith('//') && !target.includes('\\') ? target : `${basePath}/home`;
-  const callbackFailed = params.has('error');
+  const callbackError = params.get('error');
+  const callbackFailed = !!callbackError;
+  const accessMessage = callbackError === 'access-denied'
+    ? 'Your Microsoft account does not have a Shareholder Management Read Only or Read / Write entitlement. Ask your administrator to assign one in the Admin Console.'
+    : callbackError === 'access-unavailable'
+      ? 'Your sign-in was verified, but application access could not be checked. Please try again later or contact your administrator.'
+      : null;
   const embedded = window.top !== window.self;
   const redirectStarted = useRef(false);
   useEffect(() => {
@@ -44,7 +50,7 @@ function SignInPage() {
         <Brand light={false} />
         <h1 className="mt-8 font-display text-3xl">{error || callbackFailed ? 'Unable to sign in' : 'Sign in with Microsoft'}</h1>
         {embedded && !error && !callbackFailed && <p className="mt-4 text-sm text-muted-foreground">Microsoft sign-in opens in a new tab from the embedded preview.</p>}
-        {callbackFailed && <p role="alert" className="mt-4 text-sm text-destructive">Sign-in could not be completed or expired. Please try again.</p>}
+        {callbackFailed && <p role="alert" className="mt-4 text-sm text-destructive">{accessMessage ?? 'Sign-in could not be completed or expired. Please try again.'}</p>}
         {error && <p role="alert" className="mt-4 text-sm text-destructive">{error}</p>}
         <Button className="mt-6 w-full" disabled={isLoading} onClick={() => error ? reload() : login(safeTarget)} data-testid="login-btn">
           {isLoading ? 'Checking sign-in…' : error || callbackFailed ? 'Try again' : 'Continue with Microsoft'}

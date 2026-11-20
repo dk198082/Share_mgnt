@@ -17,6 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { errMsg, nf } from '@/lib/format';
 import { approvalTally, SignerList } from '@/components/approval-signers';
 import { LIVE, QUEUE_POLL, fmtDay, refreshRegistry } from '@/lib/registry-sync';
+import { useCanWrite } from '@/lib/authorization';
 
 const basePath = import.meta.env.BASE_URL.replace(/\/$/, '');
 
@@ -78,6 +79,7 @@ function MyQueue() {
 
 function RequestDetail({ id }: { id: string }) {
   const { user } = useAuth();
+  const canWrite = useCanWrite();
   const qc = useQueryClient();
   const request = useGetTransferRequest(id, { query: { queryKey: getGetTransferRequestQueryKey(id), refetchInterval: QUEUE_POLL, ...LIVE } });
   const decide = useDecideTransferRequest();
@@ -102,7 +104,7 @@ function RequestDetail({ id }: { id: string }) {
   const pending = r.status === 'Pending';
   const isRequester = r.requestedBy === user?.id;
   const historicSigned = !!(r.ceoApprovedAt || r.cfoApprovedAt);
-  const mayAttach = !issuance && pending && r.approvals.length === 0 && !historicSigned;
+  const mayAttach = canWrite && !issuance && pending && r.approvals.length === 0 && !historicSigned;
   const files = r.input.attachments ?? [];
   const approvalUrl = `${window.location.origin}${basePath}/sign-off-requests/${encodeURIComponent(id)}`;
   const noSigners = r.requiredSigners.length === 0;
@@ -209,14 +211,14 @@ function RequestDetail({ id }: { id: string }) {
         {r.status === 'Completed' && <CertificatePdfList requestId={r.id} />}
         {pending && (
           <div className="space-y-2 rounded-md border border-border p-4 text-sm">
-            <p>New requests notify the captured signers through the connected Outlook mailbox. This link remains available as a manual fallback. Signers must use a Microsoft account whose tenant sign-in address matches the signer list; the link does not grant access.</p>
+            <p>New requests notify the captured signers through the connected Outlook mailbox. This link remains available as a manual fallback. Signers must use a Microsoft account whose tenant sign-in address matches the signer list and have a Read / Write entitlement in the Admin Console; the link does not grant access.</p>
             <label className="block text-xs text-muted-foreground" htmlFor="approval-link">Approval link</label>
             <input id="approval-link" readOnly value={approvalUrl} className="w-full min-w-0 rounded border border-border bg-background p-2 text-xs" onFocus={(e) => e.target.select()} data-testid="input-approval-link" />
             <Button type="button" variant="outline" size="sm" onClick={async () => { try { await navigator.clipboard.writeText(approvalUrl); setCopied(true); } catch { setMessage('Could not copy automatically. Select and copy the link above.'); } }} data-testid="button-copy-link">{copied ? 'Link copied' : 'Copy approval link'}</Button>
           </div>
         )}
 
-        {pending && (r.canApprove || r.canReject) ? (
+        {canWrite && pending && (r.canApprove || r.canReject) ? (
           <div className="space-y-3">
             <p className="text-sm" data-testid="text-decision-context">
               {r.canApprove

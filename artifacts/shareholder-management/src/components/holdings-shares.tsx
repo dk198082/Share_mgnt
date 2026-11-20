@@ -59,6 +59,7 @@ function Help({ text, testId }: { text: string; testId?: string }) {
 
 type Props = {
   shareholderId: string;
+  canWrite: boolean;
   ledger?: CertificateLedger;
   isLoading: boolean;
   isError: boolean;
@@ -66,7 +67,7 @@ type Props = {
   onRetry: () => void;
 };
 
-export function HoldingsShares({ shareholderId, ledger, isLoading, isError, error, onRetry }: Props) {
+export function HoldingsShares({ shareholderId, canWrite, ledger, isLoading, isError, error, onRetry }: Props) {
   const [sortAsc, setSortAsc] = useState(false);
   const [detailId, setDetailId] = useState<string | null>(null);
   const [issueOpen, setIssueOpen] = useState(false);
@@ -96,14 +97,14 @@ export function HoldingsShares({ shareholderId, ledger, isLoading, isError, erro
           <summary className="cursor-pointer py-1 hover:text-foreground" data-testid="help-calculation">How fully diluted is calculated</summary>
           <p className="mt-2 max-w-prose leading-relaxed" data-testid="text-calculation-note">{note}</p>
         </details>
-        <div className="flex flex-wrap gap-2">
+        {canWrite && <div className="flex flex-wrap gap-2">
         <Button type="button" variant="outline" size="sm" onClick={() => setTransferFor('')} disabled={isLoading || isError || !ledger?.certificates.some(canTransfer)} data-testid="button-transfer-shares">
           <ArrowLeftRight className="mr-1 h-3.5 w-3.5" />Transfer shares
         </Button>
         <Button type="button" variant="outline" size="sm" onClick={() => setIssueOpen(true)} disabled={isLoading || isError} data-testid="button-issue-certificate">
           <Plus className="mr-1 h-3.5 w-3.5" />Request issuance
         </Button>
-        </div>
+        </div>}
       </div>
 
       {isLoading ? (
@@ -141,7 +142,7 @@ export function HoldingsShares({ shareholderId, ledger, isLoading, isError, erro
                     <button type="button" onClick={() => setDetailId(c.id)} className="font-mono text-accent hover:underline" data-testid={`link-certificate-${c.id}`}>
                       {c.id} <span className="font-sans text-muted-foreground">({c.shareClass})</span>
                     </button>
-                    {canTransfer(c) && (
+                    {canWrite && canTransfer(c) && (
                       <button type="button" onClick={() => setTransferFor(c.id)} className="rounded-sm border border-border px-1.5 py-px text-[11px] text-muted-foreground hover:border-accent hover:text-accent" data-testid={`button-transfer-${c.id}`} aria-label={`Transfer shares from ${c.id}`}>Transfer</button>
                     )}
                     </div>
@@ -197,15 +198,15 @@ export function HoldingsShares({ shareholderId, ledger, isLoading, isError, erro
                     {linked.map((t) => <TransferLine key={t.id} t={t} shareholderId={shareholderId} />)}
                   </ul>
                 </div>); })()}
-              {canTransfer(detail) && <Button type="button" variant="outline" size="sm" className="w-fit" onClick={() => { setTransferFor(detail.id); setDetailId(null); }} data-testid="button-detail-transfer"><ArrowLeftRight className="mr-1 h-3.5 w-3.5" />Transfer from {detail.id}</Button>}
+              {canWrite && canTransfer(detail) && <Button type="button" variant="outline" size="sm" className="w-fit" onClick={() => { setTransferFor(detail.id); setDetailId(null); }} data-testid="button-detail-transfer"><ArrowLeftRight className="mr-1 h-3.5 w-3.5" />Transfer from {detail.id}</Button>}
               {!detail.issueDate && <p className="text-xs text-muted-foreground">Imported from an earlier holding record; the original issue date was not captured.</p>}
             </>
           )}
         </DialogContent>
       </Dialog>
 
-      {transferFor !== null && ledger && <TransferDialog shareholderId={shareholderId} ledger={ledger} initialCertId={transferFor || undefined} onClose={() => setTransferFor(null)} onConflict={onRetry} />}
-      {issueOpen && <IssueDialog shareholderId={shareholderId} onClose={() => setIssueOpen(false)} />}
+      {canWrite && transferFor !== null && ledger && <TransferDialog shareholderId={shareholderId} ledger={ledger} initialCertId={transferFor || undefined} onClose={() => setTransferFor(null)} onConflict={onRetry} />}
+      {canWrite && issueOpen && <IssueDialog shareholderId={shareholderId} onClose={() => setIssueOpen(false)} />}
     </TooltipProvider>
   );
 }

@@ -9,11 +9,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { PageHeader } from '@/components/shell';
 import { fileUrl, fmtDate, initials, nf, totalShares } from '@/lib/format';
+import { useCanWrite } from '@/lib/authorization';
 
 const ALL = '__all';
 
 export default function Shareholders() {
   const [, setLocation] = useLocation();
+  const canWrite = useCanWrite();
   const { data, isLoading, isError, refetch } = useListShareholders();
   const [q, setQ] = useState('');
   const [line, setLine] = useState(ALL);
@@ -51,7 +53,7 @@ export default function Shareholders() {
       <PageHeader
         eyebrow="Registry report"
         title="Shareholders"
-        actions={<Link href="/shareholders/new" className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90" data-testid="link-create-shareholder"><Plus className="h-4 w-4" /> New shareholder</Link>}
+        actions={canWrite ? <Link href="/shareholders/new" className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90" data-testid="link-create-shareholder"><Plus className="h-4 w-4" /> New shareholder</Link> : undefined}
       />
       <div className="sticky top-0 z-20 flex flex-wrap items-center gap-2 border-b border-border bg-background/90 px-6 py-3 backdrop-blur md:px-10">
         <div className="relative w-full sm:w-72">
@@ -87,7 +89,7 @@ export default function Shareholders() {
           <div className="ruled rounded-lg border border-dashed border-border bg-card px-6 py-16 text-center">
             <div className="font-display text-2xl">No shareholders on file.</div>
             <p className="mt-2 text-sm text-muted-foreground">Start the registry with the first person who holds shares.</p>
-            <Link href="/shareholders/new" className="mt-5 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"><Plus className="h-4 w-4" />Create shareholder</Link>
+            {canWrite && <Link href="/shareholders/new" className="mt-5 inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm text-primary-foreground"><Plus className="h-4 w-4" />Create shareholder</Link>}
           </div>
         ) : filtered.length === 0 ? (
           <div className="rounded-lg border border-border bg-card p-12 text-center">

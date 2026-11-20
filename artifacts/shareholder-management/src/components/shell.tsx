@@ -39,11 +39,10 @@ export function SidebarNav({ preview = false }: { preview?: boolean }) {
   const [loc] = useLocation();
   return (
     <nav className="flex flex-col gap-0.5">
-      <div className="px-3 pb-2 text-[10px] uppercase tracking-[0.2em] text-sidebar-foreground/50">Registry</div>
       {NAV.map(({ href, label, icon: Icon }) => {
         const active = !preview && (loc === href || loc.startsWith(href + '/') || (href === '/sign-off-requests' && loc.startsWith('/transfer-requests')));
         const cls = cn(
-          'group relative flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
+          'group relative flex items-center gap-3 whitespace-nowrap rounded-md px-3 py-2 text-base transition-colors',
           active ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground',
         );
         const inner = (
@@ -74,7 +73,7 @@ function SettingsLink() {
   return (
     <div className="px-3 pb-3">
       <Link href="/settings" data-testid="link-nav-settings"
-        className={cn('relative flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors', active ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground')}>
+        className={cn('relative flex items-center gap-3 whitespace-nowrap rounded-md px-3 py-2 text-base transition-colors', active ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-accent-foreground')}>
         <span className={cn('absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r bg-sidebar-primary transition-opacity', active ? 'opacity-100' : 'opacity-0')} />
         <Settings className="h-4 w-4" />Settings
       </Link>
@@ -110,11 +109,11 @@ function UserFooter() {
 export function AppShell({ children }: { children: ReactNode }) {
   const [loc] = useLocation();
   const hasAccess = useHasPilotAccess();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const mobileNav = hasAccess ? [...NAV, { href: '/settings', label: 'Settings', icon: Settings }] : NAV;
   return (
     <div className="flex min-h-[100dvh] flex-col md:flex-row">
-      <aside className="sticky top-0 hidden h-[100dvh] w-64 shrink-0 flex-col justify-between bg-sidebar py-5 md:flex">
+      <aside className="sticky top-0 hidden h-[100dvh] w-72 shrink-0 flex-col justify-between bg-sidebar py-5 md:flex">
         <div className="space-y-8 px-3">
           <div className="px-2"><Brand /></div>
           <SidebarNav />
@@ -132,7 +131,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           <button onClick={logout} className="rounded px-2.5 py-1.5 text-xs text-sidebar-foreground" data-testid="button-mobile-sign-out">Log out</button>
         </div>
       </header>
-      <main className="min-w-0 flex-1 overflow-x-hidden">{children}</main>
+      <main className="min-w-0 flex-1 overflow-x-hidden">
+        {user?.role === 'viewer' && <div role="status" className="border-b border-border bg-muted/50 px-6 py-2 text-xs text-muted-foreground md:px-10">Read-only access · assigned in the Admin Console</div>}
+        {children}
+      </main>
     </div>
   );
 }
@@ -141,7 +143,7 @@ export function PageHeader({ eyebrow, title, actions }: { eyebrow?: string; titl
   return (
     <div className="flex flex-wrap items-end justify-between gap-4 border-b border-border px-6 pb-5 pt-8 md:px-10">
       <div>
-        {eyebrow && <div className="mb-1 text-[11px] uppercase tracking-[0.2em] text-accent">{eyebrow}</div>}
+        {eyebrow && <div className="mb-1 text-[14px] uppercase tracking-[0.2em] text-accent">{eyebrow}</div>}
         <h1 className="font-display text-3xl text-foreground md:text-[34px]">{title}</h1>
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}

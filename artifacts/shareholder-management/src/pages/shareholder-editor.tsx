@@ -28,6 +28,7 @@ import { errMsg, fileUrl, fmtBytes, initials, nf } from '@/lib/format';
 import { HoldingsShares } from '@/components/holdings-shares';
 import { ShareholderHistory } from '@/components/shareholder-history';
 import { DOC_TYPES, IMAGE_TYPES, useUploader, validateFile } from '@/lib/upload';
+import { useCanWrite } from '@/lib/authorization';
 
 type FormState = {
   name: string; email: string; dateOfBirth: string; dateOfPassing: string; address: string; phone: string;
@@ -51,6 +52,7 @@ const SECTIONS = [
 ] as const;
 
 export default function ShareholderEditor() {
+  const canWrite = useCanWrite();
   const params = useParams<{ id?: string }>();
   const isNew = !params.id || params.id === 'new';
   const id = isNew ? '' : params.id!;
@@ -78,10 +80,10 @@ export default function ShareholderEditor() {
       </div>
     );
   }
-  return <EditorForm key={id || 'new'} id={id} record={query.data} />;
+  return <EditorForm key={id || 'new'} id={id} record={query.data} canWrite={canWrite} />;
 }
 
-function EditorForm({ id, record }: { id: string; record?: Shareholder }) {
+function EditorForm({ id, record, canWrite }: { id: string; record?: Shareholder; canWrite: boolean }) {
   const isNew = !record;
   const [, setLocation] = useLocation();
   const qc = useQueryClient();
@@ -183,6 +185,10 @@ function EditorForm({ id, record }: { id: string; record?: Shareholder }) {
     else update.mutate({ id, data }, { onSuccess: done, onError: fail });
   }
 
+  if (isNew && !canWrite) {
+    return <div className="p-8"><div className="rounded-md border border-border bg-card p-5 text-sm">Creating shareholder records requires Read / Write access. <Link href="/shareholders" className="ml-1 text-accent hover:underline">Return to Shareholders</Link></div></div>;
+  }
+
   return (
     <div className="pb-24">
       <div className="border-b border-border px-6 pb-5 pt-6 md:px-10">
@@ -227,6 +233,7 @@ function EditorForm({ id, record }: { id: string; record?: Shareholder }) {
         </div>
       )}
 
+      {!canWrite && tab === 'record' && <p className="mx-6 mt-6 rounded-md border border-border bg-muted/40 px-4 py-3 text-sm text-muted-foreground md:mx-10">Read-only access. Changes and uploads require the Shareholder Management Read / Write entitlement.</p>}
       <div id="panel-record" role="tabpanel" aria-labelledby="tab-record" hidden={tab !== 'record'} className="grid [&[hidden]]:hidden grid-cols-1 gap-8 px-6 py-8 md:px-10 lg:grid-cols-[190px_minmax(0,1fr)]">
         <nav className="hidden lg:block">
           <ol className="sticky top-8 space-y-1 border-l border-border">
@@ -242,6 +249,7 @@ function EditorForm({ id, record }: { id: string; record?: Shareholder }) {
         </nav>
 
         <div className="min-w-0 max-w-3xl space-y-6">
+        <fieldset disabled={!canWrite} className="min-w-0 space-y-6 border-0 p-0 m-0">
           <Section id="picture" n={1} title="Picture">
             <div className="flex items-center gap-5">
               <button type="button" onClick={() => photoInput.current?.click()} disabled={photoBusy}
@@ -301,17 +309,18 @@ function EditorForm({ id, record }: { id: string; record?: Shareholder }) {
               <Textarea rows={5} value={f.financialNotes} onChange={(e) => set('financialNotes', e.target.value)} maxLength={5000} className="ruled leading-7" data-testid="input-financial-notes" />
             </Field>
           </Section>
+        </fieldset>
 
           <Section id="shares" n={5} title="Holdings - Shares">
             {isNew ? (
               <div className="rounded-md border border-dashed border-border py-8 text-center text-sm text-muted-foreground">Create the shareholder first, then issue certificates here.</div>
             ) : (
-              <HoldingsShares shareholderId={id} ledger={certs.data} isLoading={certs.isLoading} isError={certs.isError} error={certs.error} onRetry={() => certs.refetch()} />
+              <HoldingsShares shareholderId={id} canWrite={canWrite} ledger={certs.data} isLoading={certs.isLoading} isError={certs.isError} error={certs.error} onRetry={() => certs.refetch()} />
             )}
           </Section>
 
           <Section id="documents" n={6} title="Documents">
-            <div
+            {canWrite && <div
               onDragOver={(e) => { e.preventDefault(); setDrag(true); }}
               onDragLeave={() => setDrag(false)}
               onDrop={(e) => { e.preventDefault(); setDrag(false); onDocs(e.dataTransfer.files); }}
@@ -324,7 +333,7 @@ function EditorForm({ id, record }: { id: string; record?: Shareholder }) {
               <div className="mt-2 text-sm font-medium">Drop files here or click to browse</div>
               <div className="text-xs text-muted-foreground">PDF, JPEG, PNG, WebP, or plain text · 10 MB each</div>
               <input ref={docInput} type="file" multiple accept={DOC_TYPES.join(',')} className="hidden" onChange={(e) => { onDocs(e.target.files); e.target.value = ''; }} />
-            </div>
+            </div>}
             {docErrors.length > 0 && (
               <div className="mt-3 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-xs text-destructive">
                 <div className="flex justify-between"><span className="font-medium">Some files were not added</span><button onClick={() => setDocErrors([])}><X className="h-3.5 w-3.5" /></button></div>
@@ -340,9 +349,9 @@ function EditorForm({ id, record }: { id: string; record?: Shareholder }) {
                   <FileText className="h-4 w-4 shrink-0 text-primary" />
                   <a href={fileUrl(d.objectPath)} target="_blank" rel="noreferrer" className="min-w-0 flex-1 truncate hover:text-accent hover:underline">{d.name}</a>
                   <span className="text-xs text-muted-foreground tnum">{fmtBytes(d.size)}</span>
-                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => set('documents', f.documents.filter((x) => x.objectPath !== d.objectPath))} aria-label="Remove document" data-testid={`button-remove-doc-${i}`}>
+                  {canWrite && <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => set('documents', f.documents.filter((x) => x.objectPath !== d.objectPath))} aria-label="Remove document" data-testid={`button-remove-doc-${i}`}>
                     <X className="h-3.5 w-3.5" />
-                  </Button>
+                  </Button>}
                 </li>
               ))}
               {f.documents.length === 0 && docBusy.length === 0 && <li className="py-3 text-center text-xs text-muted-foreground">No documents attached.</li>}
@@ -351,7 +360,7 @@ function EditorForm({ id, record }: { id: string; record?: Shareholder }) {
         </div>
       </div>
 
-      {tab === 'record' && <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-card/95 backdrop-blur md:left-64">
+      {tab === 'record' && <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-card/95 backdrop-blur md:left-72">
         <div className="flex items-center justify-between gap-3 px-6 py-3 md:px-10">
           <div className="min-w-0 text-xs">
             {saveError ? <span className="text-destructive" data-testid="text-save-error">{saveError}</span>
@@ -361,9 +370,9 @@ function EditorForm({ id, record }: { id: string; record?: Shareholder }) {
           </div>
           <div className="flex gap-2">
             <Button type="button" variant="ghost" onClick={() => setLocation('/shareholders')} data-testid="button-cancel">Cancel</Button>
-            <Button type="button" onClick={save} disabled={busy || (!dirty && !isNew)} data-testid="button-save">
+            {canWrite && <Button type="button" onClick={save} disabled={busy || (!dirty && !isNew)} data-testid="button-save">
               {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{isNew ? 'Create shareholder' : 'Save changes'}
-            </Button>
+            </Button>}
           </div>
         </div>
       </div>}
