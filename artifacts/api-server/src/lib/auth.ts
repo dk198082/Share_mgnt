@@ -16,6 +16,8 @@ export interface SessionData {
   refresh_token?: string;
   expires_at?: number;
   access_checked_at?: number; // Epoch milliseconds; absent on pre-recheck sessions.
+  // Microsoft Entra logout hint
+  login_hint?: string;
 }
 let config: Promise<oidc.Configuration> | undefined;
 export function getOidcConfig() {
