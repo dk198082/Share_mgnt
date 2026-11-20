@@ -119,11 +119,15 @@ router.get("/auth/callback", async (req, res) => {
       
       // Microsoft logout hint
         login_hint:
-          typeof claims.email === "string"
-            ? claims.email
+          typeof claims.login_hint === "string"
+            ? claims.login_hint
             : typeof claims.preferred_username === "string"
               ? claims.preferred_username
-              : undefined,
+              : typeof claims.upn === "string"
+                ? claims.upn
+                : typeof claims.email === "string"
+                  ? claims.email
+                  : undefined,
             };
   } catch (error) {
     req.log.warn({ errorType: error instanceof Error ? error.name : "Error" }, "Microsoft Entra sign-in could not be completed");
