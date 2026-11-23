@@ -24,6 +24,8 @@ import type {
   AccessUserInput,
   Activity,
   BeginBrowserLoginParams,
+  CertificateCounterAdvanceInput,
+  CertificateCounterState,
   CertificateDirectoryEntry,
   CertificateInput,
   CertificateLedger,
@@ -4130,6 +4132,160 @@ export function useGetCertificateTemplatePdf<TData = Awaited<ReturnType<typeof g
 
 
 
+
+export const getGetCertificateCountersUrl = () => {
+
+
+
+
+  return `/api/settings/certificate-counters`
+}
+
+export const getCertificateCounters = async ( options?: Parameters<typeof customFetch>[1]): Promise<CertificateCounterState[]> => {
+
+  return customFetch<CertificateCounterState[]>(getGetCertificateCountersUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetCertificateCountersQueryKey = () => {
+    return [
+    `/api/settings/certificate-counters`
+    ] as const;
+    }
+
+
+export const getGetCertificateCountersQueryOptions = <TData = Awaited<ReturnType<typeof getCertificateCounters>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCertificateCounters>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCertificateCountersQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCertificateCounters>>> = ({ signal }) => getCertificateCounters({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCertificateCounters>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetCertificateCountersQueryResult = NonNullable<Awaited<ReturnType<typeof getCertificateCounters>>>
+export type GetCertificateCountersQueryError = ErrorType<unknown>
+
+
+
+export function useGetCertificateCounters<TData = Awaited<ReturnType<typeof getCertificateCounters>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getCertificateCounters>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetCertificateCountersQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getAdvanceCertificateCounterUrl = (shareClass: 'Common' | 'Preferred',) => {
+
+
+
+
+  return `/api/settings/certificate-counters/${shareClass}`
+}
+
+export const advanceCertificateCounter = async (shareClass: 'Common' | 'Preferred',
+    certificateCounterAdvanceInput: CertificateCounterAdvanceInput, options?: Parameters<typeof customFetch>[1]): Promise<CertificateCounterState> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<CertificateCounterState>(getAdvanceCertificateCounterUrl(shareClass),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(certificateCounterAdvanceInput)
+  }
+);}
+
+
+
+
+
+export const getAdvanceCertificateCounterMutationKey = () => ['advanceCertificateCounter'] as const;
+
+export const getAdvanceCertificateCounterMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof advanceCertificateCounter>>, TError,AdvanceCertificateCounterMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof advanceCertificateCounter>>, TError,AdvanceCertificateCounterMutationVariables, TContext> => {
+
+const mutationKey = getAdvanceCertificateCounterMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof advanceCertificateCounter>>, AdvanceCertificateCounterMutationVariables> = (props) => {
+          const {shareClass,data} = props ?? {};
+
+          return  advanceCertificateCounter(shareClass,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type AdvanceCertificateCounterMutationResult = NonNullable<Awaited<ReturnType<typeof advanceCertificateCounter>>>
+    export type AdvanceCertificateCounterMutationBody = BodyType<CertificateCounterAdvanceInput>
+    export type AdvanceCertificateCounterMutationError = ErrorType<void>
+    export type AdvanceCertificateCounterMutationVariables = {shareClass: 'Common' | 'Preferred';data: BodyType<CertificateCounterAdvanceInput>}
+
+    export const useAdvanceCertificateCounter = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof advanceCertificateCounter>>, TError,AdvanceCertificateCounterMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof advanceCertificateCounter>>,
+        TError,
+        AdvanceCertificateCounterMutationVariables,
+        TContext
+      > => {
+      return useMutation(getAdvanceCertificateCounterMutationOptions(options));
+    }
 
 export const getListCertificatePdfsUrl = (params?: ListCertificatePdfsParams,) => {
   const normalizedParams = new URLSearchParams();

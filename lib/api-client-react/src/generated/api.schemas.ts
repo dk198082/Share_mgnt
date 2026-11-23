@@ -194,6 +194,35 @@ export interface CertificateTemplate {
   createdAt: string;
 }
 
+export type CertificateCounterStateShareClass = typeof CertificateCounterStateShareClass[keyof typeof CertificateCounterStateShareClass];
+
+
+export const CertificateCounterStateShareClass = {
+  Common: 'Common',
+  Preferred: 'Preferred',
+} as const;
+
+export interface CertificateCounterState {
+  shareClass: CertificateCounterStateShareClass;
+  /** @minimum 0 */
+  lastIssuedNumber: number;
+  /** @minimum 1 */
+  nextNumber: number;
+}
+
+export interface CertificateCounterAdvanceInput {
+  /**
+     * @minimum 1
+     * @maximum 2147483647
+     */
+  nextNumber: number;
+  /**
+     * @minLength 1
+     * @maxLength 2000
+     */
+  reason: string;
+}
+
 export interface CertificatePdfRecord {
   id: string;
   certificateId: string;

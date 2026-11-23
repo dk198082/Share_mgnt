@@ -2230,6 +2230,46 @@ export const GetCertificateTemplatePdfParams = zod.object({
 export const GetCertificateTemplatePdfResponse = zod.unknown()
 
 
+export const getCertificateCountersResponseLastIssuedNumberMin = 0;
+
+
+
+
+export const GetCertificateCountersResponseItem = zod.object({
+  "shareClass": zod.enum(['Common', 'Preferred']),
+  "lastIssuedNumber": zod.number().int().min(getCertificateCountersResponseLastIssuedNumberMin),
+  "nextNumber": zod.number().int().min(1)
+})
+export const GetCertificateCountersResponse = zod.array(GetCertificateCountersResponseItem)
+
+
+export const AdvanceCertificateCounterParams = zod.object({
+  "shareClass": zod.enum(['Common', 'Preferred'])
+})
+
+export const advanceCertificateCounterBodyNextNumberMax = 2147483647;
+
+export const advanceCertificateCounterBodyReasonMax = 2000;
+
+
+
+export const AdvanceCertificateCounterBody = zod.object({
+  "nextNumber": zod.number().int().min(1).max(advanceCertificateCounterBodyNextNumberMax),
+  "reason": zod.string().min(1).max(advanceCertificateCounterBodyReasonMax)
+})
+
+export const advanceCertificateCounterResponseLastIssuedNumberMin = 0;
+
+
+
+
+export const AdvanceCertificateCounterResponse = zod.object({
+  "shareClass": zod.enum(['Common', 'Preferred']),
+  "lastIssuedNumber": zod.number().int().min(advanceCertificateCounterResponseLastIssuedNumberMin),
+  "nextNumber": zod.number().int().min(1)
+})
+
+
 export const ListCertificatePdfsQueryParams = zod.object({
   "shareholderId": zod.coerce.string().optional(),
   "certificateId": zod.coerce.string().optional(),
