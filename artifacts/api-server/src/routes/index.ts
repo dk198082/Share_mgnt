@@ -11,6 +11,7 @@ import directoriesRouter from "./directories";
 import reportsRouter from "./reports";
 import certificateDocumentsRouter from "./certificate-documents";
 import legacyImportRouter from "./legacy-import";
+import certificateCountersRouter from "./certificate-counters";
 
 const router: IRouter = Router();
 
@@ -18,6 +19,7 @@ router.use(healthRouter);
 router.use(authRouter);
 router.use(reportsRouter);
 router.use(certificateDocumentsRouter);
+router.use(certificateCountersRouter);
 router.use(shareholdersRouter);
 router.use(historyRouter);
 router.use(legacyImportRouter);
