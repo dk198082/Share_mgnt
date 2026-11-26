@@ -71,7 +71,27 @@ router.get("/settings/data-import/template", async (req, res): Promise<void> => 
 router.use("/settings/data-import", (error: unknown, req: import("express").Request, res: import("express").Response, _next: import("express").NextFunction) => {
   if (error instanceof CertificateError) { res.status(error.status).json({ error: error.message }); return; }
   // Do not serialize pg errors, cell values, request bodies or encrypted SSNs.
-  req.log.error({ errorType: error instanceof Error ? error.name : "Error" }, "Legacy import failed");
+
+  // req.log.error({ errorType: error instanceof Error ? error.name : "Error" }, "Legacy import failed");
+  const pgError = (
+            error && typeof error === "object" ? error : {}
+          ) as {
+            code?: string;
+            schema?: string;
+            table?: string;
+            column?: string;
+            constraint?: string;
+          };
+
+          req.log.error({
+            errorType: error instanceof Error ? error.name : "Error",
+            errorMessage: error instanceof Error ? error.message : String(error),
+            code: pgError.code,
+            schema: pgError.schema,
+            table: pgError.table,
+            column: pgError.column,
+            constraint: pgError.constraint,
+          }, "Legacy import failed");
   res.status(500).json({ error: "Import could not be completed. No partial ledger changes were saved. Check run history before retrying." });
 });
 export default router;
