@@ -100,18 +100,6 @@ export async function commitImport(id: string, actor: Actor, acknowledgeWarnings
   const mode = requireImportAccess(actor);
   const prefix = mode === "azure" ? "legacy" : "legacy-sample";
   return auditContext.run(actor, () => db.transaction(async tx => {
-    // TEMPORARY DIAGNOSTIC: verify Azure PostgreSQL schema
-        const schemaCheck = await tx.execute(sql`
-          SELECT
-            current_database() AS database_name,
-            current_schema() AS schema_name,
-            current_setting('search_path') AS search_path
-        `);
-
-        console.info(
-          "LEGACY_IMPORT_DB_SCHEMA",
-          schemaCheck.rows
-        );
     await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtextextended('legacy-sample-import', 0))`);
     const [run] = await tx.select().from(legacyImportRunsTable).where(eq(legacyImportRunsTable.id, id)).for("update");
     if (!run) throw new CertificateError(404, "Import run not found.");
